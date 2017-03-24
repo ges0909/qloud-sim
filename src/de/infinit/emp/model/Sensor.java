@@ -5,14 +5,14 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
+	@DatabaseField(id = true)
+	private String uuid;
+
 	@DatabaseField
 	private String description;
 
 	@DatabaseField
 	private String code;
-
-	@DatabaseField
-	private String uuid;
 
 	public Sensor() {
 	}

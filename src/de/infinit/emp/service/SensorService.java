@@ -25,7 +25,7 @@ public class SensorService {
 		TableUtils.createTableIfNotExists(connectionSource, Sensor.class);
 	}
 
-	public Sensor createSensor(Sensor sensor) {
+	public Sensor create(Sensor sensor) {
 		sensor.setUuid(UUID.randomUUID().toString());
 		try {
 			sensorDao.create(sensor);
@@ -34,5 +34,26 @@ public class SensorService {
 			return null;
 		}
 		return sensor;
+	}
+
+	public Sensor getByUuid(String uuid) {
+		Sensor sensor;
+		try {
+			sensor = sensorDao.queryForId(uuid);
+		} catch (SQLException e) {
+			LOG.severe(e.toString());
+			return null;
+		}
+		return sensor;
+	}
+
+	public int deleteByUuid(String uuid) {
+		int rowCount = 0;
+		try {
+			rowCount = sensorDao.deleteById(uuid);
+		} catch (SQLException e) {
+			LOG.severe(e.toString());
+		}
+		return rowCount;
 	}
 }

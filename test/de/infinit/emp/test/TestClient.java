@@ -27,17 +27,18 @@ public class TestClient {
 	
 	private static Server server; // database server
 
-	protected static class Response {
+	protected static class TestResponse {
 		public final int status;
 		public final Map<String, Object> body;
 
-		public Response(int status, String body) {
+		@SuppressWarnings("unchecked")
+		public TestResponse(int status, String body) {
 			this.status = status;
 			this.body = GSON.fromJson(body, HashMap.class);
 		}
 	}
 
-	private Response request(String method, String path, String input) {
+	private TestResponse request(String method, String path, String input) {
 		try {
 			URL url = new URL(SERVER + path);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -53,7 +54,7 @@ public class TestClient {
 			}
 			connection.connect();
 			String output = IOUtils.toString(connection.getInputStream());
-			return new Response(connection.getResponseCode(), output);
+			return new TestResponse(connection.getResponseCode(), output);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assert.fail("Sending request failed: " + e.getMessage());
@@ -61,12 +62,16 @@ public class TestClient {
 		}
 	}
 
-	public Response get(String path) {
+	public TestResponse post(String path, Map<String, Object> body) {
+		return request("POST", path, GSON.toJson(body));
+	}
+
+	public TestResponse get(String path) {
 		return request("GET", path, null);
 	}
 
-	public Response post(String path, Map<String, Object> body) {
-		return request("POST", path, GSON.toJson(body));
+	public TestResponse delete(String path) {
+		return request("DELETE", path, null);
 	}
 	
 	@BeforeClass
