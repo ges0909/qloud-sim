@@ -1,4 +1,4 @@
-package de.infinit.emp.rest;
+package de.infinit.emp.model;
 
 public class Session {
 	private boolean auth;

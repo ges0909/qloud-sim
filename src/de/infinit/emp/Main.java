@@ -1,10 +1,11 @@
 package de.infinit.emp;
 
-import de.infinit.emp.rest.SessionController;
-import de.infinit.emp.rest.SessionService;
+import de.infinit.emp.controller.SensorController;
+import de.infinit.emp.controller.SessionController;
 
 public class Main {
 	public static void main(String[] args) {
-		new SessionController(new SessionService());
+		new SessionController();
+		new SensorController();
 	}
 }
