@@ -15,7 +15,7 @@ public class SensorTest extends TestClient {
 		body.put("description", "Testsensor");
 		body.put("code", "ABCDE-FGHIJ-KLMNI-OPQRS");
 		Response res = post("/api/sensor", body);
-		assertEquals(200, res.status);
+		assertEquals(201, res.status);
 		assertEquals("ok", res.body.get("status"));
 		assertNotNull(res.body.get("uuid"));
 	}

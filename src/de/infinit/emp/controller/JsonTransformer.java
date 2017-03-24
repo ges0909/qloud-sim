@@ -1,12 +1,11 @@
-package de.infinit.emp;
+package de.infinit.emp.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import spark.ResponseTransformer;
 
 public class JsonTransformer implements ResponseTransformer {
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	private static final Gson GSON = new Gson();
 
 	@Override
 	public String render(Object model) throws Exception {

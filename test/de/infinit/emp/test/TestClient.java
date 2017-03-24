@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -22,6 +24,8 @@ public class TestClient {
 
 	private static final String SERVER = "http://localhost:4567";
 	private static final Gson GSON = new GsonBuilder().create();
+	
+	private static Server server; // database server
 
 	protected static class Response {
 		public final int status;
@@ -66,12 +70,14 @@ public class TestClient {
 	}
 	
 	@BeforeClass
-	public static void setUp() {
+	public static void setUp() throws IOException, SQLException {
+		server = Server.createTcpServer().start();
 		Main.main(null);
 	}
 
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDown() throws SQLException {
 		Spark.stop();
+		server.start();
 	}
 }
