@@ -14,4 +14,8 @@ public interface SimulatorConfig extends Config {
 	@Key("db.password")
 	@DefaultValue("test")
 	String password();
+	
+	@Key("device.code.pattern")
+	@DefaultValue("SIMUL-.*")
+	String deviceCodePattern();
 }
