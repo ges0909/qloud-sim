@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -75,7 +76,7 @@ public class TestClient {
 	}
 	
 	@BeforeClass
-	public static void setUp() throws IOException, SQLException {
+	public static void setUp() throws IOException, SQLException, ConfigurationException {
 		server = Server.createTcpServer().start();
 		Main.main(null);
 	}

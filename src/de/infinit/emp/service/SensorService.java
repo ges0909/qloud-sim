@@ -10,7 +10,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import de.infinit.emp.Database;
+import de.infinit.emp.Persistence;
 import de.infinit.emp.model.Sensor;
 
 public class SensorService {
@@ -19,7 +19,7 @@ public class SensorService {
 	private final Dao<Sensor, String> sensorDao;
 
 	public SensorService() throws IOException, SQLException {
-		Database db = new Database();
+		Persistence db = new Persistence();
 		this.connectionSource = db.getConnectionSource();
 		this.sensorDao = DaoManager.createDao(connectionSource, Sensor.class);
 		TableUtils.createTableIfNotExists(connectionSource, Sensor.class);
