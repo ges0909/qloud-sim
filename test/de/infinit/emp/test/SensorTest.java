@@ -18,7 +18,7 @@ public class SensorTest extends TestClient {
 		body.put("description", "Testsensor");
 		body.put("code", "ABCDE-FGHIJ-KLMNI-OPQRS");
 		TestResponse resp = post("/api/sensor", body);
-		assertEquals(HttpStatus.CREATED_201, resp.status);
+		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 		assertNotNull(resp.body.get("uuid"));
 		uuid = (String) resp.body.get("uuid");
@@ -34,7 +34,7 @@ public class SensorTest extends TestClient {
 	@Test
 	public void testC() {
 		TestResponse resp = delete("/api/sensor/" + uuid);
-		assertEquals(HttpStatus.NO_CONTENT_204, resp.status);
+		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}
 }

@@ -5,12 +5,10 @@ import java.util.UUID;
 import de.infinit.emp.model.Session;
 
 public class SessionService {
-	private static final String SERVER = "http://localhost:4567";
-	
-	public Session newSession() {
+	public Session newSession(String scheme, String host) {
 		Session session = new Session();
 		session.setSid(UUID.randomUUID().toString());
-		session.setServer(SERVER);
+		session.setServer(scheme + "://" + host);
 		session.setAuth(false);
 		return session;
 	}

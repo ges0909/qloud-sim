@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-//import java.util.logging.Logger;
-
-import org.eclipse.jetty.http.HttpStatus;
 
 import com.google.gson.Gson;
 
@@ -18,11 +15,17 @@ import de.infinit.emp.model.Sensor;
 import de.infinit.emp.service.SensorService;
 
 public class SensorController {
-	// private static final Logger LOG =
-	// Logger.getLogger(SensorController.class.getName());
 	private static final String PATH = "/api/sensor";
 	private static final Gson GSON = new Gson();
 	private final SensorService sensorService;
+
+	private Map<String, Object> result(Object... args) {
+		Map<String, Object> r = new HashMap<>();
+		for (int i = 0; i < args.length; i = i + 2) {
+			r.put((String) args[i], args[i + 1]);
+		}
+		return r;
+	}
 
 	public SensorController() throws IOException, SQLException {
 		sensorService = new SensorService();
@@ -31,47 +34,29 @@ public class SensorController {
 		post(PATH, (request, response) -> {
 			Sensor sensor = GSON.fromJson(request.body(), Sensor.class);
 			sensor = sensorService.create(sensor);
-			Map<String, String> result = new HashMap<>();
 			if (sensor == null) {
-				result.put("status", "fail");
-				response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-			} else {
-				result.put("uuid", sensor.getUuid());
-				result.put("status", "ok");
-				response.status(HttpStatus.CREATED_201);
+				return result("status", "fail");
 			}
-			return result;
-		}, new JsonTransformer());
+			return result("status", "ok", "uuid", sensor.getUuid());
+		}, GSON::toJson);
 
-		// GET /api/sensor/:id
+		// GET /api/sensor/:uuid
 		get(PATH + "/:uuid", (request, response) -> {
-			String uuid = request.params("uuid");
+			String uuid = request.params(":uuid");
 			Sensor sensor = sensorService.getByUuid(uuid);
-			Map<String, String> result = new HashMap<>();
 			if (sensor == null) {
-				result.put("status", "fail");
-				response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-			} else {
-				result.put("uuid", sensor.getUuid());
-				result.put("status", "ok");
-				response.status(HttpStatus.OK_200);
+				return result("status", "fail");
 			}
-			return result;
-		}, new JsonTransformer());
+			return result("status", "ok");
+		}, GSON::toJson);
 
-		// DELETE /api/sensor/:id
+		// DELETE /api/sensor/:uuid
 		delete(PATH + "/:uuid", (request, response) -> {
-			String uuid = request.params("uuid");
-			int rowCount = sensorService.deleteByUuid(uuid);
-			Map<String, String> result = new HashMap<>();
-			if (rowCount == 1) {
-				result.put("status", "ok");
-				response.status(HttpStatus.NO_CONTENT_204);
-			} else {
-				result.put("status", "fail");
-				response.status(HttpStatus.NOT_FOUND_404);
+			String uuid = request.params(":uuid");
+			if (sensorService.deleteByUuid(uuid) == 1) {
+				return result("status", "ok");
 			}
-			return result;
-		}, new JsonTransformer());
+			return result("status", "fail");
+		}, GSON::toJson);
 	}
 }

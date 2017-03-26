@@ -83,6 +83,6 @@ public class TestClient {
 	@AfterClass
 	public static void tearDown() throws SQLException {
 		Spark.stop();
-		server.start();
+		server.stop();
 	}
 }
