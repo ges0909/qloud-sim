@@ -19,25 +19,25 @@ public class LoggingFilter {
 	private static final JsonParser PARSER = new JsonParser();
 
 	public LoggingFilter() {
-		before("/*", this::printRequest);
-		after("/*", this::printResponse);
+		before(this::logRequest);
+		after(this::logResponse);
 	}
 
-	private void printRequest(Request req, Response res) {
-		String method = req.requestMethod();
-		String path = req.uri();
+	private void logRequest(Request request, Response response) {
+		String method = request.requestMethod();
+		String path = request.uri();
 		String body = "";
-		if (req.body() != null && !req.body().isEmpty()) {
-			body = GSON.toJson(PARSER.parse(req.body()).getAsJsonObject());
+		if (request.body() != null && !request.body().isEmpty()) {
+			body = GSON.toJson(PARSER.parse(request.body()).getAsJsonObject());
 		}
 		LOG.log(Level.INFO, "{0} {1} {2}", new Object[] { method, path, body });
 	}
 
-	private void printResponse(Request req, Response res) {
-		int status = res.status();
+	private void logResponse(Request request, Response response) {
+		int status = response.status();
 		String body = "";
-		if (res.body() != null && !res.body().isEmpty()) {
-			body = GSON.toJson(PARSER.parse(res.body()).getAsJsonObject());
+		if (response.body() != null && !response.body().isEmpty()) {
+			body = GSON.toJson(PARSER.parse(response.body()).getAsJsonObject());
 		}
 		LOG.log(Level.INFO, "{0} {1}", new Object[] { status, body });
 	}

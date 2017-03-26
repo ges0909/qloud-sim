@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import de.infinit.emp.model.Session;
 import de.infinit.emp.service.SessionService;
 
-public class SessionController extends LoggingFilter {
+public class SessionController {
 	private static final String PATH = "/api/session";
 	private static final Gson GSON = new Gson();
 	private final SessionService sessionService = new SessionService();
