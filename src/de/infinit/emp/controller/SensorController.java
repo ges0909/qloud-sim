@@ -44,7 +44,7 @@ public class SensorController extends Controller {
 		Sensor sensor = new Sensor();
 		sensor.setCode(code);
 		sensor.setDescription(description);
-		if (sensorService.create(sensor) != 1) {
+		if (sensorService.create(sensor) == null) {
 			return status(Status.FAIL);
 		}
 		return result("uuid", sensor.getUuid());

@@ -1,16 +1,23 @@
 package de.infinit.emp.model;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
+	@NotNull
 	@DatabaseField(id = true)
 	private String uuid;
 
+	@NotNull
+	@Pattern(regexp = "^.{10,50}$")
 	@DatabaseField(unique = true, canBeNull = false)
 	private String code;
 
+	@Pattern(regexp = "^.{0,200}$")
 	@DatabaseField
 	private String description;
 

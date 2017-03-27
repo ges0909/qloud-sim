@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.j256.ormlite.dao.Dao;
@@ -14,7 +13,7 @@ import com.j256.ormlite.table.TableUtils;
 
 import de.infinit.emp.model.Sensor;
 
-public class SensorService {
+public class SensorService extends Service {
 	static final Logger LOG = Logger.getLogger(SensorService.class.getName());
 	final ConnectionSource connectionSource;
 	final Dao<Sensor, String> sensorDao;
@@ -25,21 +24,26 @@ public class SensorService {
 		TableUtils.createTableIfNotExists(connectionSource, Sensor.class);
 	}
 
-	public int create(Sensor sensor) {
+	public Sensor create(Sensor sensor) {
 		sensor.setUuid(UUID.randomUUID().toString());
-		try {
-			return sensorDao.create(sensor);
-		} catch (SQLException e) {
-			LOG.log(Level.SEVERE, "sensor creation", e);
+		if (!isValid(sensor)) {
+			return null;
 		}
-		return 0;
+		try {
+			if (sensorDao.create(sensor) == 1) {
+				return sensor;
+			}
+		} catch (SQLException e) {
+			LOG.severe(e.toString());
+		}
+		return null;
 	}
 
 	public Sensor findByUuid(String uuid) {
 		try {
 			return sensorDao.queryForId(uuid);
 		} catch (SQLException e) {
-			LOG.log(Level.SEVERE, "sensor query", e);
+			LOG.severe(e.toString());
 		}
 		return null;
 	}
@@ -48,7 +52,7 @@ public class SensorService {
 		try {
 			return sensorDao.deleteById(uuid);
 		} catch (SQLException e) {
-			LOG.log(Level.SEVERE, "sensor delete", e);
+			LOG.severe(e.toString());
 		}
 		return 0;
 	}
@@ -60,7 +64,7 @@ public class SensorService {
 				return list.get(0);
 			}
 		} catch (SQLException e) {
-			LOG.log(Level.SEVERE, "sensor query", e);
+			LOG.severe(e.toString());
 		}
 		return null;
 	}

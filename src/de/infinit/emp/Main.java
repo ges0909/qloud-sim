@@ -39,6 +39,8 @@ public class Main {
 			delete("/sensor/:uuid", sensorController::delete, GSON::toJson);
 		});
 
+		// Database.getConnectionSource().close();
+
 		server.stop();
 	}
 }
