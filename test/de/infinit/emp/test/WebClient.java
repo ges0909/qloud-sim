@@ -15,9 +15,7 @@ import com.google.gson.GsonBuilder;
 import spark.utils.IOUtils;
 
 public class WebClient {
-
-	private static final String SERVER = "http://localhost:4567";
-	private static final Gson GSON = new GsonBuilder().create();
+	static final Gson GSON = new GsonBuilder().create();
 	
 	protected static class WebResponse {
 		public final int status;
@@ -30,13 +28,16 @@ public class WebClient {
 		}
 	}
 
-	private WebResponse request(String method, String path, String input) {
+	WebResponse request(String method, String path, String input, String sid, String server) {
 		try {
-			URL url = new URL(SERVER + path);
+			URL url = new URL(server + path);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestMethod(method);
 			connection.setRequestProperty("Accept", "application/json");
+			if (sid != null) {
+				connection.setRequestProperty("Authorization", "Bearer " + sid);
+			}
 			if (input != null) {
 				connection.setDoInput(true);
 				connection.setRequestProperty("Content-Type", "application/json");
@@ -54,15 +55,15 @@ public class WebClient {
 		}
 	}
 
-	public WebResponse post(String path, Map<String, Object> body) {
-		return request("POST", path, GSON.toJson(body));
+	public WebResponse post(String path, Map<String, Object> body, String sid, String server) {
+		return request("POST", path, GSON.toJson(body), sid, server);
 	}
 
-	public WebResponse get(String path) {
-		return request("GET", path, null);
+	public WebResponse get(String path, String sid, String server) {
+		return request("GET", path, null, sid, server);
 	}
 
-	public WebResponse delete(String path) {
-		return request("DELETE", path, null);
+	public WebResponse delete(String path, String sid, String server) {
+		return request("DELETE", path, null, sid, server);
 	}
 }

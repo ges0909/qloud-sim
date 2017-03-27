@@ -15,7 +15,19 @@ public interface SimulatorConfig extends Config {
 	@DefaultValue("test")
 	String password();
 	
-	@Key("device.code.pattern")
+	@Key("partner")
+	@DefaultValue("brightone")
+	String partner();
+	
+	@Key("key")
+	@DefaultValue("abcdefghijklmnopqrstuvwxyz")
+	String key();
+	
+	@Key("user.pattern")
+	@DefaultValue("sim.*")
+	String userPattern();
+
+	@Key("device.pattern")
 	@DefaultValue("SIMUL-.*")
-	String deviceCodePattern();
+	String devicePattern();
 }

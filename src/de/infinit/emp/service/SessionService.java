@@ -1,15 +1,24 @@
 package de.infinit.emp.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import de.infinit.emp.model.Session;
 
 public class SessionService {
-	public Session newSession(String scheme, String host) {
+	static Map<String, Session> sessions = new HashMap<>();
+
+	public Session createSession(String scheme, String host) {
 		Session session = new Session();
-		session.setSid(UUID.randomUUID().toString());
+		String sid = UUID.randomUUID().toString();
+		session.setSid(sid);
 		session.setServer(scheme + "://" + host);
-		session.setAuth(false);
+		sessions.put(sid, session);
 		return session;
+	}
+	
+	public Session findSessionBySid(String sid) {
+		return sessions.get(sid);
 	}
 }
