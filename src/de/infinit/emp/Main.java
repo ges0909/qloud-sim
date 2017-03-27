@@ -32,6 +32,7 @@ public class Main {
 		path("/api", () -> {
 			get("/session", sessionController::get, GSON::toJson);
 			post("/session", sessionController::post, GSON::toJson);
+			delete("/session", sessionController::delete, GSON::toJson);
 
 			get("/sensor/:uuid", sensorController::get, GSON::toJson);
 			post("/sensor", sensorController::post, GSON::toJson);

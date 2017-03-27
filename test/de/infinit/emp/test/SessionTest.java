@@ -42,6 +42,7 @@ public class SessionTest extends WebClient {
 		server = (String) resp.body.get("server");
 		assertNotNull(sid);
 		assertEquals("http://localhost:4567", server);
+		assertEquals("ok", resp.body.get("status"));
 	}
 
 	@Test // partner login
@@ -51,15 +52,24 @@ public class SessionTest extends WebClient {
 		body.put("key", "abcdefghijklmnopqrstuvwxyz");
 		WebResponse resp = post("/api/session", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
 	}
 
 	@Test // proxy login
-	public void testc() {
+	public void testC() {
 		Map<String, Object> body = new HashMap<>();
 		body.put("partner", "brightone");
 		body.put("key", "abcdefghijklmnopqrstuvwxyz");
 		body.put("user", "sim-abcd");
 		WebResponse resp = post("/api/session", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
+	}
+
+	@Test // delete session
+	public void testD() {
+		WebResponse resp = delete("/api/session", sid, server);
+		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
 	}
 }

@@ -59,4 +59,11 @@ public class SessionController extends Controller {
 		return status(Status.OK);
 	}
 
+	public Map<String, Object> delete(Request request, Response response) {
+		Session session = request.session().attribute(QLOUD_SESSION);
+		if (sessionService.deleteSession(session) == null) {
+			return status(Status.FAIL);
+		}
+		return status(Status.OK);
+	}
 }

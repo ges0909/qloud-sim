@@ -9,6 +9,10 @@ import de.infinit.emp.model.Session;
 public class SessionService {
 	static Map<String, Session> sessions = new HashMap<>();
 
+	public Session findSessionBySid(String sid) {
+		return sessions.get(sid);
+	}
+	
 	public Session createSession(String scheme, String host) {
 		Session session = new Session();
 		String sid = UUID.randomUUID().toString();
@@ -18,7 +22,7 @@ public class SessionService {
 		return session;
 	}
 	
-	public Session findSessionBySid(String sid) {
-		return sessions.get(sid);
+	public Session deleteSession(Session session) {
+		return sessions.remove(session.getSid());
 	}
 }
