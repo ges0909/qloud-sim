@@ -23,10 +23,6 @@ public class User {
 	@DatabaseField
 	private String email;
 
-	// ORMLite needs a no-arg constructor
-	public User() {
-	}
-
 	public String getUuid() {
 		return uuid;
 	}

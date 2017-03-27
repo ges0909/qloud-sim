@@ -8,21 +8,18 @@ public class Sensor {
 	@DatabaseField(id = true)
 	private String uuid;
 
+	@DatabaseField(unique = true, canBeNull = false)
+	private String code;
+
 	@DatabaseField
 	private String description;
 
-	@DatabaseField
-	private String code;
-
-	public Sensor() {
+	public String getUuid() {
+		return uuid;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public String getCode() {
@@ -33,11 +30,11 @@ public class Sensor {
 		this.code = code;
 	}
 
-	public String getUuid() {
-		return uuid;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
