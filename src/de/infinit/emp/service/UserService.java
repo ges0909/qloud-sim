@@ -2,37 +2,36 @@ package de.infinit.emp.service;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Logger;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 
 import de.infinit.emp.model.User;
 
-public class UserService extends Service {
+public class UserService extends Service<User, String> {
 	static final Logger LOG = Logger.getLogger(UserService.class.getName());
-	final ConnectionSource connectionSource;
-	final Dao<User, String> userDao;
 
 	public UserService() throws IOException, SQLException {
-		connectionSource = Database.getConnectionSource();
-		userDao = DaoManager.createDao(connectionSource, User.class);
-		TableUtils.createTableIfNotExists(connectionSource, User.class);
+		super(User.class);
 	}
 
 	public User create(User user) {
-		return create(userDao, user);
+		return create(super.dao, user);
 	}
 
 	public User update(User user) {
-		return update(userDao, user);
+		return update(super.dao, user);
 	}
 
+	public List<User> findAll() {
+		return super.queryForAll(dao);	
+	}
+	
 	public User findByVerification(String verification) {
 		try {
-			return userDao.queryBuilder().where().eq("verification", verification).queryForFirst();
+			return super.dao.queryBuilder()
+					.where()
+					.eq("verification", verification)
+					.queryForFirst();
 		} catch (SQLException e) {
 			LOG.severe(e.toString());
 		}

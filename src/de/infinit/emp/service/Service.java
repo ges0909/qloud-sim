@@ -1,6 +1,9 @@
 package de.infinit.emp.service;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -9,12 +12,23 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 
-public class Service {
+public class Service<T, U> {
 	static final Logger LOG = Logger.getLogger(SensorService.class.getName());
 	static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+	final ConnectionSource connectionSource;
+	Dao<T, U> dao;
 
-	public <T> boolean isValid(T bean) {
+	public Service(Class<T> bean) throws IOException, SQLException {
+		connectionSource = Database.getConnectionSource();
+		dao = DaoManager.createDao(connectionSource, bean);
+		TableUtils.createTableIfNotExists(connectionSource, bean);
+	}
+
+	public boolean isBeanValid(T bean) {
 		Set<ConstraintViolation<T>> violations = validator.validate(bean);
 		if (violations.isEmpty())
 			return true;
@@ -25,8 +39,8 @@ public class Service {
 		return false;
 	}
 
-	public <T, U> T create(Dao<T, U> dao, T bean) {
-		if (!isValid(bean)) {
+	public T create(Dao<T, U> dao, T bean) {
+		if (!isBeanValid(bean)) {
 			return null;
 		}
 		try {
@@ -39,8 +53,8 @@ public class Service {
 		return null;
 	}
 
-	public <T, U> T update(Dao<T, U> dao, T bean) {
-		if (!isValid(bean)) {
+	public T update(Dao<T, U> dao, T bean) {
+		if (!isBeanValid(bean)) {
 			return null;
 		}
 		try {
@@ -53,7 +67,7 @@ public class Service {
 		return null;
 	}
 
-	public <T, U> T queryForId(Dao<T, U> dao, U id) {
+	public T queryForId(Dao<T, U> dao, U id) {
 		try {
 			return dao.queryForId(id);
 		} catch (SQLException e) {
@@ -62,7 +76,16 @@ public class Service {
 		return null;
 	}
 
-	public <T, U> int deleteByUuid(Dao<T, U> dao, U id) {
+	public List<T> queryForAll(Dao<T, U> dao) {
+		try {
+			return dao.queryForAll();
+		} catch (SQLException e) {
+			LOG.severe(e.toString());
+		}
+		return new ArrayList<>();
+	}
+
+	public int deleteByUuid(Dao<T, U> dao, U id) {
 		try {
 			return dao.deleteById(id);
 		} catch (SQLException e) {

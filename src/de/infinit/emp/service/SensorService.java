@@ -4,39 +4,30 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
 import de.infinit.emp.model.Sensor;
 
-public class SensorService extends Service {
+public class SensorService extends Service<Sensor, String> {
 	static final Logger LOG = Logger.getLogger(SensorService.class.getName());
-	final ConnectionSource connectionSource;
-	final Dao<Sensor, String> sensorDao;
 
 	public SensorService() throws IOException, SQLException {
-		connectionSource = Database.getConnectionSource();
-		sensorDao = DaoManager.createDao(connectionSource, Sensor.class);
-		TableUtils.createTableIfNotExists(connectionSource, Sensor.class);
+		super(Sensor.class);
 	}
 
 	public Sensor create(Sensor sensor) {
-		return create(sensorDao, sensor);
+		return create(super.dao, sensor);
 	}
 
 	public Sensor findByUuid(String uuid) {
-		return queryForId(sensorDao, uuid);
+		return queryForId(super.dao, uuid);
 	}
 
 	public int deleteByUuid(String uuid) {
-		return deleteByUuid(sensorDao, uuid);
+		return deleteByUuid(super.dao, uuid);
 	}
 
 	public Sensor findByCode(String code) {
 		try {
-			return sensorDao.queryBuilder()
+			return super.dao.queryBuilder()
 					.where()
 					.eq("code", code)
 					.queryForFirst();

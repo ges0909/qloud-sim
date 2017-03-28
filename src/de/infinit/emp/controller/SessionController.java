@@ -28,23 +28,17 @@ public class SessionController extends Controller {
 		sessionService = new SessionService();
 	}
 
-	public Map<String, Object> get(Request request, Response response) {
+	public Map<String, Object> getUnauthorizedSession(Request request, Response response) {
 		Session session = sessionService.createSession(request.scheme(), request.host());
 		return result("server", session.getServer(), "sid", session.getSid());
 	}
 
-	public Map<String, Object> post(Request request, Response response) {
+	public Map<String, Object> partnerOrProxySessionLogin(Request request, Response response) {
 		LoginRequest body = Globals.GSON.fromJson(request.body(), LoginRequest.class);
-		if (body.partner == null) {
+		if (body.partner == null || body.key == null) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
-		if (body.key == null) {
-			return status(Status.WRONG_CREDENTIALS);
-		}
-		if (!config.partner().equals(body.partner)) {
-			return status(Status.WRONG_CREDENTIALS);
-		}
-		if (!config.key().equals(body.key)) {
+		if (!(config.partner().equals(body.partner) && config.key().equals(body.key))) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
 		Session session = request.session().attribute(QLOUD_SESSION);
@@ -54,7 +48,7 @@ public class SessionController extends Controller {
 		return status(Status.OK);
 	}
 
-	public Map<String, Object> delete(Request request, Response response) {
+	public Map<String, Object> sessionLogout(Request request, Response response) {
 		Session session = request.session().attribute(QLOUD_SESSION);
 		if (sessionService.deleteSession(session) == null) {
 			return status(Status.FAIL);

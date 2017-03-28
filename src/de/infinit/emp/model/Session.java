@@ -47,7 +47,7 @@ public class Session {
 		this.userUuid = userUuid;
 	}
 	
-	boolean isPartnerSession() {
+	public boolean isPartnerSession() {
 		return partner != null && key != null;
 	}
 }
