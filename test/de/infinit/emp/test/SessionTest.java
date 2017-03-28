@@ -13,7 +13,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.infinit.emp.Main;
+import de.infinit.emp.AppMain;
 import spark.Spark;
 
 public class SessionTest extends WebClient {
@@ -22,7 +22,7 @@ public class SessionTest extends WebClient {
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
-		Main.main(null);
+		AppMain.main(null);
 	}
 
 	@AfterClass

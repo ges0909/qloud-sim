@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import org.aeonbits.owner.ConfigCache;
 
-import de.infinit.emp.Globals;
+import de.infinit.emp.Global;
 import de.infinit.emp.SimulatorConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.model.Sensor;
@@ -32,7 +32,7 @@ public class SensorController extends Controller {
 	}
 
 	public Map<String, Object> post(Request request, Response response) throws IOException, SQLException {
-		Body body = Globals.GSON.fromJson(request.body(), Body.class);
+		Body body = Global.GSON.fromJson(request.body(), Body.class);
 		if (body.code == null) {
 			return status(Status.WRONG_CODE);
 		}
@@ -45,7 +45,7 @@ public class SensorController extends Controller {
 		Sensor sensor = new Sensor();
 		sensor.setCode(body.code);
 		sensor.setDescription(body.description);
-		sensor.setUuid(Globals.getUUID());
+		sensor.setUuid(Global.getUUID());
 		if (sensorService.create(sensor) == null) {
 			return status(Status.FAIL);
 		}

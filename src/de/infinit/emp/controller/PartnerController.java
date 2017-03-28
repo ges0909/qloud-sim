@@ -18,6 +18,13 @@ public class PartnerController extends Controller {
 	static final Logger LOG = Logger.getLogger(PartnerController.class.getName());
 	final UserService userService;
 
+	class GetUserInformationResponse {
+		String email;
+		String username;
+		String firstname;
+		String lastname;
+		String displayname;
+	}
 	public PartnerController() throws IOException, SQLException {
 		userService = new UserService();
 	}
@@ -25,14 +32,28 @@ public class PartnerController extends Controller {
 	public Map<String, Object> getPartnerRelatedUsers(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		if (!session.isPartnerSession()) {
-			LOG.severe("request allowed for partner sessions only");
-			return status(Status.FAIL);	
+			LOG.severe("request for partner sessions allowed only");
+			return status(Status.NO_AUTH);	
 		}
 		List <User> users = userService.findAll();
-		List <String> userUuids = users
+		List <String> uuids = users
 				.stream()
 				.map(User::getUuid)
 				.collect(Collectors.toList());
-		return result("users", userUuids);
+		return result("users", uuids);
+	}
+	
+	public Map<String, Object> getUserInformation(Request request, Response response) {
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		if (!session.isPartnerSession()) {
+			LOG.severe("request for partner sessions allowed only");
+			return status(Status.NO_AUTH);	
+		}
+		String uuid = request.params(":uuid");
+		User user = userService.findById(uuid);
+		if (user == null) {
+			return status(Status.WRONG_USER);
+		}
+		return result("user", convert(user, GetUserInformationResponse.class));
 	}
 }

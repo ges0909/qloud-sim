@@ -22,6 +22,10 @@ public class UserService extends Service<User, String> {
 		return update(super.dao, user);
 	}
 
+	public User findById(String uuid) {
+		return super.queryForId(dao, uuid);	
+	}
+	
 	public List<User> findAll() {
 		return super.queryForAll(dao);	
 	}

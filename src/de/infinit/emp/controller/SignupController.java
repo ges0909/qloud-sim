@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import de.infinit.emp.Globals;
+import de.infinit.emp.Global;
 import de.infinit.emp.Status;
 import de.infinit.emp.model.User;
 import de.infinit.emp.service.UserService;
@@ -15,14 +15,14 @@ import spark.Response;
 public class SignupController extends Controller {
 	final UserService userService;
 
-	class InitiateRequest {
+	class ReserveUserAccountRequest {
 		class Obj {
 			List<String> companyId;
 		}
 		Obj info;
 	}
 
-	class CompleteRequest {
+	class AddUserAccountRequest {
 		String email;
 		String username;
 		String firstname;
@@ -36,19 +36,19 @@ public class SignupController extends Controller {
 		userService = new UserService();
 	}
 
-	public Map<String, Object> initiateSignup(Request request, Response response) {
-		InitiateRequest body = Globals.GSON.fromJson(request.body(), InitiateRequest.class);
+	public Map<String, Object> reserveUserAccount(Request request, Response response) {
+		ReserveUserAccountRequest body = Global.GSON.fromJson(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
-		user.setUuid(Globals.getUUID());
-		user.setVerification(Globals.getUUID());
+		user.setUuid(Global.getUUID());
+		user.setVerification(Global.getUUID());
 		if (userService.create(user) == null) {
 			return status(Status.FAIL);
 		}
 		return result("uuid", user.getUuid(), "verification", user.getVerification(), "info", body.info);
 	}
 
-	public Map<String, Object> completeSignup(Request request, Response response) {
-		CompleteRequest body = Globals.GSON.fromJson(request.body(), CompleteRequest.class);
+	public Map<String, Object> addUserAccount(Request request, Response response) {
+		AddUserAccountRequest body = Global.GSON.fromJson(request.body(), AddUserAccountRequest.class);
 		User user = userService.findByVerification(body.verification);
 		if (user == null) {
 			return status(Status.UNKNOWN_VERIFICATION);

@@ -33,7 +33,9 @@ public class Service<T, U> {
 		if (violations.isEmpty())
 			return true;
 		for (ConstraintViolation<T> v : violations) {
-			LOG.warning("constraint violation: " + v.getPropertyPath().toString() + "=" + v.getInvalidValue() + ": "
+			LOG.warning("constraint violation: " 
+					+ v.getPropertyPath().toString() + "="
+					+ v.getInvalidValue() + ": "
 					+ v.getMessage());
 		}
 		return false;

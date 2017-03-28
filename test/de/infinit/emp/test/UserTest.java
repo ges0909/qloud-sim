@@ -15,7 +15,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.infinit.emp.Main;
+import de.infinit.emp.AppMain;
 import spark.Spark;
 
 public class UserTest extends WebClient {
@@ -23,7 +23,7 @@ public class UserTest extends WebClient {
 	static String server;
 	static String uuid;
 
-	private void addUser(String email) {
+	private String addUser(String email) {
 		List<String> companyIds = new ArrayList<>();
 		companyIds.add("12345");
 		Map<String, Object> obj = new HashMap<>();
@@ -35,6 +35,7 @@ public class UserTest extends WebClient {
 		assertEquals("ok", resp.body.get("status"));
 		assertNotNull(resp.body.get("uuid"));
 		assertNotNull(resp.body.get("verification"));
+		String uuid = (String) resp.body.get("uuid");
 		String verification = (String) resp.body.get("verification");
 		body = new HashMap<>();
 		body.put("email", email);
@@ -42,11 +43,12 @@ public class UserTest extends WebClient {
 		resp = post("/api/signup/user", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
+		return uuid;
 	}
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
-		Main.main(null);
+		AppMain.main(null);
 	}
 
 	@AfterClass
@@ -101,5 +103,15 @@ public class UserTest extends WebClient {
 		List<String> users = (List<String>) resp.body.get("users");
 		assertEquals(2, users.size());
 	}
-
+	
+	@Test
+	public void testE() {
+		String uuid = addUser("peter.pan@test.de");
+		WebResponse resp = get("/api/partner/user/" + uuid, sid, server);
+		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
+		@SuppressWarnings("unchecked")
+		Map<String, Object> user = (Map<String, Object>) resp.body.get("user");
+		assertEquals("peter.pan@test.de", user.get("email"));
+	}
 }
