@@ -2,8 +2,6 @@ package de.infinit.emp.service;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.j256.ormlite.dao.Dao;
@@ -25,44 +23,23 @@ public class SensorService extends Service {
 	}
 
 	public Sensor create(Sensor sensor) {
-		sensor.setUuid(UUID.randomUUID().toString());
-		if (!isValid(sensor)) {
-			return null;
-		}
-		try {
-			if (sensorDao.create(sensor) == 1) {
-				return sensor;
-			}
-		} catch (SQLException e) {
-			LOG.severe(e.toString());
-		}
-		return null;
+		return create(sensorDao, sensor);
 	}
 
 	public Sensor findByUuid(String uuid) {
-		try {
-			return sensorDao.queryForId(uuid);
-		} catch (SQLException e) {
-			LOG.severe(e.toString());
-		}
-		return null;
+		return queryForId(sensorDao, uuid);
 	}
 
 	public int deleteByUuid(String uuid) {
-		try {
-			return sensorDao.deleteById(uuid);
-		} catch (SQLException e) {
-			LOG.severe(e.toString());
-		}
-		return 0;
+		return deleteByUuid(sensorDao, uuid);
 	}
 
 	public Sensor findByCode(String code) {
 		try {
-			List<Sensor> list = sensorDao.queryBuilder().where().eq("code", code).query();
-			if (list.size() == 1) {
-				return list.get(0);
-			}
+			return sensorDao.queryBuilder()
+					.where()
+					.eq("code", code)
+					.queryForFirst();
 		} catch (SQLException e) {
 			LOG.severe(e.toString());
 		}

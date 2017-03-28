@@ -1,13 +1,10 @@
 package de.infinit.emp.controller;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.aeonbits.owner.ConfigCache;
 
-import com.google.gson.Gson;
-
+import de.infinit.emp.Globals;
 import de.infinit.emp.SimulatorConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.model.Session;
@@ -17,9 +14,14 @@ import spark.Response;
 
 public class SessionController extends Controller {
 	public static final String QLOUD_SESSION = "session";
-	static final Gson GSON = new Gson();
 	final SimulatorConfig config;
 	final SessionService sessionService;
+
+	class LoginRequest {
+		String partner;
+		String key;
+		String user;
+	}
 
 	public SessionController() {
 		config = ConfigCache.getOrCreate(SimulatorConfig.class);
@@ -31,31 +33,24 @@ public class SessionController extends Controller {
 		return result("server", session.getServer(), "sid", session.getSid());
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> post(Request request, Response response) {
-		Map<String, Object> req = GSON.fromJson(request.body(), HashMap.class);
-		String partner = (String) req.get("partner");
-		String key = (String) req.get("key");
-		String user = (String) req.get("user");
-		if (partner == null) {
+		LoginRequest body = Globals.GSON.fromJson(request.body(), LoginRequest.class);
+		if (body.partner == null) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
-		if (key == null) {
+		if (body.key == null) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
-		if (!config.partner().equals(partner)) {
+		if (!config.partner().equals(body.partner)) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
-		if (!config.key().equals(key)) {
+		if (!config.key().equals(body.key)) {
 			return status(Status.WRONG_CREDENTIALS);
-		}
-		if (user != null && !Pattern.matches(config.userPattern(), user)) {
-			return status(Status.WRONG_USER);
 		}
 		Session session = request.session().attribute(QLOUD_SESSION);
-		session.setPartner(partner);
-		session.setKey(key);
-		session.setUserUuid(user);
+		session.setPartner(body.partner);
+		session.setKey(body.key);
+		session.setUserUuid(body.user);
 		return status(Status.OK);
 	}
 

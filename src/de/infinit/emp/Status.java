@@ -7,4 +7,6 @@ public class Status {
 	public static final String WRONG_CODE = "wrong-code";
 	public static final String WRONG_CREDENTIALS = "wrong-credentials";
 	public static final String WRONG_USER = "wrong-user";
+	public static final String NOT_IMPLEMENTED = "not-implemented";
+	public static final String UNKNOWN_VERIFICATION = "unknown-verification";
 }

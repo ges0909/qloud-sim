@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.aeonbits.owner.ConfigCache;
 
-import com.google.gson.Gson;
-
+import de.infinit.emp.Globals;
 import de.infinit.emp.SimulatorConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.model.Sensor;
@@ -18,32 +18,34 @@ import spark.Request;
 import spark.Response;
 
 public class SensorController extends Controller {
-	static final Gson GSON = new Gson();
 	final SimulatorConfig config;
 	final SensorService sensorService;
 
+	class Body {
+		String code;
+		String description;
+	}
+	
 	public SensorController() throws IOException, SQLException {
 		config = ConfigCache.getOrCreate(SimulatorConfig.class);
 		sensorService = new SensorService();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> post(Request request, Response response) throws IOException, SQLException {
-		Map<String, Object> req = GSON.fromJson(request.body(), HashMap.class);
-		String code = (String) req.get("code");
-		String description = (String) req.get("description");
-		if (code == null) {
+		Body body = Globals.GSON.fromJson(request.body(), Body.class);
+		if (body.code == null) {
 			return status(Status.WRONG_CODE);
 		}
-		if (!Pattern.matches(config.devicePattern(), code)) {
+		if (!Pattern.matches(config.devicePattern(), body.code)) {
 			return status(Status.WRONG_CODE);
 		}
-		if (sensorService.findByCode(code) != null) {
+		if (sensorService.findByCode(body.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
 		Sensor sensor = new Sensor();
-		sensor.setCode(code);
-		sensor.setDescription(description);
+		sensor.setCode(body.code);
+		sensor.setDescription(body.description);
+		sensor.setUuid(Globals.getUUID());
 		if (sensorService.create(sensor) == null) {
 			return status(Status.FAIL);
 		}

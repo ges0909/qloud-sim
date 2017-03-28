@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jetty.http.HttpStatus;
-import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,21 +18,18 @@ import de.infinit.emp.Main;
 import spark.Spark;
 
 public class SensorTest extends WebClient {
-	static Server h2DbServer;
 	static String sid;
 	static String server;
 	static String uuid;
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
-		h2DbServer = Server.createTcpServer().start();
 		Main.main(null);
 	}
 
 	@AfterClass
 	public static void tearDown() throws SQLException {
 		Spark.stop();
-		h2DbServer.stop();
 	}
 
 	@Before

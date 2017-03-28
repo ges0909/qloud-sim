@@ -22,10 +22,6 @@ public interface SimulatorConfig extends Config {
 	@Key("key")
 	@DefaultValue("abcdefghijklmnopqrstuvwxyz")
 	String key();
-	
-	@Key("user.pattern")
-	@DefaultValue("sim.*")
-	String userPattern();
 
 	@Key("device.pattern")
 	@DefaultValue("SIMUL-.*")
