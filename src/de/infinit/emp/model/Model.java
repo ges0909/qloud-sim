@@ -71,7 +71,16 @@ public class Model<T, U> {
 		}
 		return null;
 	}
-
+	
+	public int delete(Dao<T, U> dao, U id) {
+		try {
+			return dao.deleteById(id);
+		} catch (SQLException e) {
+			log.severe(e.toString());
+		}
+		return 0;
+	}
+	
 	public T queryForId(Dao<T, U> dao, U id) {
 		try {
 			return dao.queryForId(id);
@@ -88,14 +97,5 @@ public class Model<T, U> {
 			log.severe(e.toString());
 		}
 		return new ArrayList<>();
-	}
-
-	public int deleteByUuid(Dao<T, U> dao, U id) {
-		try {
-			return dao.deleteById(id);
-		} catch (SQLException e) {
-			log.severe(e.toString());
-		}
-		return 0;
 	}
 }

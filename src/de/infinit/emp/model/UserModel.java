@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import de.infinit.emp.entity.User;
 
 public class UserModel extends Model<User, String> {
-	static final Logger LOG = Logger.getLogger(UserModel.class.getName());
+	static final Logger log = Logger.getLogger(UserModel.class.getName());
 
 	public UserModel()  {
 		super(User.class);
@@ -19,6 +19,10 @@ public class UserModel extends Model<User, String> {
 
 	public User update(User user) {
 		return update(super.dao, user);
+	}
+	
+	public int delete(String uuid) {
+		return delete(super.dao, uuid);
 	}
 
 	public User findById(String uuid) {
@@ -36,7 +40,7 @@ public class UserModel extends Model<User, String> {
 					.eq("verification", verification)
 					.queryForFirst();
 		} catch (SQLException e) {
-			LOG.severe(e.toString());
+			log.severe(e.toString());
 		}
 		return null;
 	}

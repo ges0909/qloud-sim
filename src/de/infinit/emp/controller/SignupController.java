@@ -1,7 +1,6 @@
 package de.infinit.emp.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
@@ -25,13 +24,13 @@ public class SignupController extends Controller {
 		String username;
 		String firstname;
 		String lastname;
-		String displayname;
+		String display_name;
 		String password;
 		String verification;
 	}
 
-	public static Map<String, Object> reserveUserAccount(Request request, Response response) {
-		ReserveUserAccountRequest body = gson.fromJson(request.body(), ReserveUserAccountRequest.class);
+	public static Object reserveUserAccount(Request request, Response response) {
+		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
 		user.setUuid(Uuid.get());
 		user.setVerification(Uuid.get());
@@ -41,13 +40,13 @@ public class SignupController extends Controller {
 		return result("uuid", user.getUuid(), "verification", user.getVerification(), "info", body.info);
 	}
 
-	public static Map<String, Object> addUserAccount(Request request, Response response) {
-		AddUserAccountRequest body = gson.fromJson(request.body(), AddUserAccountRequest.class);
+	public static Object addUserAccount(Request request, Response response) {
+		AddUserAccountRequest body = decode(request.body(), AddUserAccountRequest.class);
 		User user = userModel.findByVerification(body.verification);
 		if (user == null) {
 			return status(Status.UNKNOWN_VERIFICATION);
 		}
-		user.setDisplayName(body.displayname);
+		user.setDisplayName(body.display_name);
 		user.setEmail(body.email);
 		user.setFirstName(body.firstname);
 		user.setLastName(body.lastname);

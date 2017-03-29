@@ -20,7 +20,7 @@ public class SensorController extends Controller {
 		String description;
 	}
 
-	public static Map<String, Object> post(Request request, Response response) throws IOException, SQLException {
+	public static Object post(Request request, Response response) throws IOException, SQLException {
 		Body body = gson.fromJson(request.body(), Body.class);
 		if (body.code == null) {
 			return status(Status.WRONG_CODE);
@@ -41,7 +41,7 @@ public class SensorController extends Controller {
 		return result("uuid", sensor.getUuid());
 	}
 
-	public static Map<String, Object> get(Request request, Response response) throws IOException, SQLException {
+	public static Object get(Request request, Response response) throws IOException, SQLException {
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.findByUuid(uuid);
 		if (sensor == null) {
@@ -50,7 +50,7 @@ public class SensorController extends Controller {
 		return status(Status.OK);
 	}
 
-	public static Map<String, Object> delete(Request request, Response response) throws IOException, SQLException {
+	public static Object delete(Request request, Response response) throws IOException, SQLException {
 		String uuid = request.params(":uuid");
 		if (sensorModel.deleteByUuid(uuid) == 1) {
 			return status(Status.OK);

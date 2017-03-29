@@ -16,12 +16,12 @@ public class SensorModel extends Model<Sensor, String> {
 		return create(super.dao, sensor);
 	}
 
-	public Sensor findByUuid(String uuid) {
-		return queryForId(super.dao, uuid);
+	public int deleteByUuid(String uuid) {
+		return delete(super.dao, uuid);
 	}
 
-	public int deleteByUuid(String uuid) {
-		return deleteByUuid(super.dao, uuid);
+	public Sensor findByUuid(String uuid) {
+		return queryForId(super.dao, uuid);
 	}
 
 	public Sensor findByCode(String code) {

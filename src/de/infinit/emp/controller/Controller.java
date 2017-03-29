@@ -22,12 +22,16 @@ public class Controller {
 		return map;
 	}
 
-	protected static Map<String, Object> result(Object... args) {
+	protected static Map<String, Object> result(Object... keyValuePairs) {
 		Map<String, Object> map = status(Status.OK);
-		for (int i = 0; i < args.length; i = i + 2) {
-			map.put((String) args[i], args[i + 1]);
+		for (int i = 0; i < keyValuePairs.length; i = i + 2) {
+			map.put((String) keyValuePairs[i], keyValuePairs[i + 1]);
 		}
 		return map;
+	}
+
+	protected static <U> U decode(String jsonString, Class<U> to) {
+		return gson.fromJson(jsonString, to);
 	}
 
 	protected static <T, U> U convert(T from, Class<U> to) {

@@ -36,9 +36,9 @@ public class Application {
 				delete("", SessionController::logoutFromSession, gson::toJson); // logout
 			});
 			path("/partner", () -> {
-				get("/user", PartnerController::getPartnerRelatedUsers, gson::toJson); // lists all partner related users
-				get("/user/:uuid", PartnerController::getUserInformation, gson::toJson); // get data of user ':uuid'
-				post("/user/:uuid", Controller::notImplemented, gson::toJson); // delete user
+				get("/user", PartnerController::getUsers, gson::toJson); // lists all partner related users
+				get("/user/:uuid", PartnerController::getUserData, gson::toJson); // get data of user ':uuid'
+				post("/user/:uuid", PartnerController::deleteUser, gson::toJson); // delete user
 			});
 			path("/signup", () -> {
 				post("/verification", SignupController::reserveUserAccount, gson::toJson); // partner-controlled sign-up: pre-reserve user account
