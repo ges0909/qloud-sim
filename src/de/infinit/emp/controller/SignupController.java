@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import de.infinit.emp.Global;
+import com.google.gson.Gson;
+
+import de.infinit.emp.Uuid;
 import de.infinit.emp.Status;
 import de.infinit.emp.model.User;
 import de.infinit.emp.service.UserService;
@@ -13,6 +15,7 @@ import spark.Request;
 import spark.Response;
 
 public class SignupController extends Controller {
+	static final Gson gson = new Gson();
 	final UserService userService;
 
 	class ReserveUserAccountRequest {
@@ -37,10 +40,10 @@ public class SignupController extends Controller {
 	}
 
 	public Map<String, Object> reserveUserAccount(Request request, Response response) {
-		ReserveUserAccountRequest body = Global.GSON.fromJson(request.body(), ReserveUserAccountRequest.class);
+		ReserveUserAccountRequest body = gson.fromJson(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
-		user.setUuid(Global.getUUID());
-		user.setVerification(Global.getUUID());
+		user.setUuid(Uuid.get());
+		user.setVerification(Uuid.get());
 		if (userService.create(user) == null) {
 			return status(Status.FAIL);
 		}
@@ -48,7 +51,7 @@ public class SignupController extends Controller {
 	}
 
 	public Map<String, Object> addUserAccount(Request request, Response response) {
-		AddUserAccountRequest body = Global.GSON.fromJson(request.body(), AddUserAccountRequest.class);
+		AddUserAccountRequest body = gson.fromJson(request.body(), AddUserAccountRequest.class);
 		User user = userService.findByVerification(body.verification);
 		if (user == null) {
 			return status(Status.UNKNOWN_VERIFICATION);

@@ -15,8 +15,8 @@ import spark.Response;
 
 public class LoggingFilter {
 	private static final Logger LOG = Logger.getLogger(LoggingFilter.class.getName());
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private static final JsonParser PARSER = new JsonParser();
+	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static final JsonParser parser = new JsonParser();
 
 	public LoggingFilter() {
 		before(this::logRequest);
@@ -28,7 +28,7 @@ public class LoggingFilter {
 		String path = request.uri();
 		String body = "";
 		if (request.body() != null && !request.body().isEmpty()) {
-			body = GSON.toJson(PARSER.parse(request.body()).getAsJsonObject());
+			body = gson.toJson(parser.parse(request.body()).getAsJsonObject());
 		}
 		LOG.log(Level.INFO, "{0} {1} {2}", new Object[] { method, path, body });
 	}
@@ -37,7 +37,7 @@ public class LoggingFilter {
 		int status = response.status();
 		String body = "";
 		if (response.body() != null && !response.body().isEmpty()) {
-			body = GSON.toJson(PARSER.parse(response.body()).getAsJsonObject());
+			body = gson.toJson(parser.parse(response.body()).getAsJsonObject());
 		}
 		LOG.log(Level.INFO, "{0} {1}", new Object[] { status, body });
 	}

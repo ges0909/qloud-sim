@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.aeonbits.owner.ConfigCache;
 
-import de.infinit.emp.Global;
+import com.google.gson.Gson;
+
+import de.infinit.emp.Uuid;
 import de.infinit.emp.SimulatorConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.model.Session;
@@ -14,6 +16,7 @@ import spark.Response;
 
 public class SessionController extends Controller {
 	public static final String QLOUD_SESSION = "session";
+	static final Gson gson = new Gson();
 	final SimulatorConfig config;
 	final SessionService sessionService;
 
@@ -34,7 +37,7 @@ public class SessionController extends Controller {
 	}
 
 	public Map<String, Object> loginToPartnerOrProxySession(Request request, Response response) {
-		LoginRequest body = Global.GSON.fromJson(request.body(), LoginRequest.class);
+		LoginRequest body = gson.fromJson(request.body(), LoginRequest.class);
 		if (body.partner == null || body.key == null) {
 			return status(Status.WRONG_CREDENTIALS);
 		}

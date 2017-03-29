@@ -9,7 +9,9 @@ import java.util.regex.Pattern;
 
 import org.aeonbits.owner.ConfigCache;
 
-import de.infinit.emp.Global;
+import com.google.gson.Gson;
+
+import de.infinit.emp.Uuid;
 import de.infinit.emp.SimulatorConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.model.Sensor;
@@ -18,6 +20,7 @@ import spark.Request;
 import spark.Response;
 
 public class SensorController extends Controller {
+	static final Gson gson = new Gson();
 	final SimulatorConfig config;
 	final SensorService sensorService;
 
@@ -32,7 +35,7 @@ public class SensorController extends Controller {
 	}
 
 	public Map<String, Object> post(Request request, Response response) throws IOException, SQLException {
-		Body body = Global.GSON.fromJson(request.body(), Body.class);
+		Body body = gson.fromJson(request.body(), Body.class);
 		if (body.code == null) {
 			return status(Status.WRONG_CODE);
 		}
@@ -45,7 +48,7 @@ public class SensorController extends Controller {
 		Sensor sensor = new Sensor();
 		sensor.setCode(body.code);
 		sensor.setDescription(body.description);
-		sensor.setUuid(Global.getUUID());
+		sensor.setUuid(Uuid.get());
 		if (sensorService.create(sensor) == null) {
 			return status(Status.FAIL);
 		}

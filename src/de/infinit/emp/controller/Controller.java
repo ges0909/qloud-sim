@@ -10,6 +10,8 @@ import spark.Request;
 import spark.Response;
 
 public class Controller {
+	static final Gson gson = new Gson();
+	
 	protected Map<String, Object> status(String value) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", value);
@@ -25,7 +27,6 @@ public class Controller {
 	}
 
 	protected <T, U> U convert(T from, Class<U> to) {
-		Gson gson = new Gson();
 		String jsonString = gson.toJson(from);
 		return gson.fromJson(jsonString, to);
 	}

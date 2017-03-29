@@ -10,6 +10,8 @@ import java.sql.SQLException;
 
 import org.h2.tools.Server;
 
+import com.google.gson.Gson;
+
 import de.infinit.emp.controller.AuthenticationFilter;
 import de.infinit.emp.controller.Controller;
 import de.infinit.emp.controller.LoggingFilter;
@@ -19,6 +21,7 @@ import de.infinit.emp.controller.SessionController;
 import de.infinit.emp.controller.SignupController;
 
 public class AppMain {
+	static final Gson gson = new Gson();
 	public static void main(String[] args) throws IOException, SQLException {
 		Server server = Server.createTcpServer().start();
 
@@ -32,48 +35,48 @@ public class AppMain {
 
 		path("/api", () -> {
 			path("/session", () -> {
-				get("", sessionController::requestNonAuthorizedSession, Global.GSON::toJson); // get non-authorized session
-				post("", sessionController::loginToPartnerOrProxySession, Global.GSON::toJson); // authorize partner/proxy session (login)
-				delete("", sessionController::logoutFromSession, Global.GSON::toJson); // logout
+				get("", sessionController::requestNonAuthorizedSession, gson::toJson); // get non-authorized session
+				post("", sessionController::loginToPartnerOrProxySession, gson::toJson); // authorize partner/proxy session (login)
+				delete("", sessionController::logoutFromSession, gson::toJson); // logout
 			});
 			path("/partner", () -> {
-				get("/user", partnerController::getPartnerRelatedUsers, Global.GSON::toJson); // lists all partner related users
-				get("/user/:uuid", partnerController::getUserInformation, Global.GSON::toJson); // get data of user ':uuid'
-				post("/user/:uuid", Controller::notImplemented, Global.GSON::toJson); // delete user
+				get("/user", partnerController::getPartnerRelatedUsers, gson::toJson); // lists all partner related users
+				get("/user/:uuid", partnerController::getUserInformation, gson::toJson); // get data of user ':uuid'
+				post("/user/:uuid", Controller::notImplemented, gson::toJson); // delete user
 			});
 			path("/signup", () -> {
-				post("/verification", signupController::reserveUserAccount, Global.GSON::toJson); // partner-controlled sign-up: pre-reserve user account
-				post("/user", signupController::addUserAccount, Global.GSON::toJson); // complete sign-up: create new user account
+				post("/verification", signupController::reserveUserAccount, gson::toJson); // partner-controlled sign-up: pre-reserve user account
+				post("/user", signupController::addUserAccount, gson::toJson); // complete sign-up: create new user account
 			});
 			path("/user", () -> {
-				get("", Controller::notImplemented, Global.GSON::toJson); // get user
-				post("", Controller::notImplemented, Global.GSON::toJson); // update user
-				get("/invitation", Controller::notImplemented, Global.GSON::toJson); // get invitation code
-				post("/invitation", Controller::notImplemented, Global.GSON::toJson); // invite user
-				post("/link", Controller::notImplemented, Global.GSON::toJson); // accept invitation
+				get("", Controller::notImplemented, gson::toJson); // get user
+				post("", Controller::notImplemented, gson::toJson); // update user
+				get("/invitation", Controller::notImplemented, gson::toJson); // get invitation code
+				post("/invitation", Controller::notImplemented, gson::toJson); // invite user
+				post("/link", Controller::notImplemented, gson::toJson); // accept invitation
 			});
 			path("/tag", () -> {
-				get("", Controller::notImplemented, Global.GSON::toJson); // get user tags
-				get("/:uuid", Controller::notImplemented, Global.GSON::toJson); // get data of tag ':uuid'
-				post("", Controller::notImplemented, Global.GSON::toJson); // add tag
-				delete("/:uuid", Controller::notImplemented, Global.GSON::toJson); // delete tag
-				post("/:uuid", Controller::notImplemented, Global.GSON::toJson); // add/delete user to/from tag
+				get("", Controller::notImplemented, gson::toJson); // get user tags
+				get("/:uuid", Controller::notImplemented, gson::toJson); // get data of tag ':uuid'
+				post("", Controller::notImplemented, gson::toJson); // add tag
+				delete("/:uuid", Controller::notImplemented, gson::toJson); // delete tag
+				post("/:uuid", Controller::notImplemented, gson::toJson); // add/delete user to/from tag
 			});
 			path("/object", () -> {
-				post("/:uuid/tag", Controller::notImplemented, Global.GSON::toJson); // attach tag to object
+				post("/:uuid/tag", Controller::notImplemented, gson::toJson); // attach tag to object
 			});
 			path("/sensor", () -> {
-				post("", sensorController::post, Global.GSON::toJson); // add sensor
-				get("/:uuid", sensorController::get, Global.GSON::toJson); // get sensor
-				post("/:uuid", Controller::notImplemented, Global.GSON::toJson); // update sensor
-				delete(":uuid", sensorController::delete, Global.GSON::toJson); // delete sensor
-				get("/:uuid/data", Controller::notImplemented, Global.GSON::toJson); // get sensor historic data
-				get("/:uuid/event", Controller::notImplemented, Global.GSON::toJson); // subscribe sensor events
-				delete("/:uuid/event", Controller::notImplemented, Global.GSON::toJson); // unsubscribe sensor events
-				post("/:uuid/action", Controller::notImplemented, Global.GSON::toJson); // sensor action
+				post("", sensorController::post, gson::toJson); // add sensor
+				get("/:uuid", sensorController::get, gson::toJson); // get sensor
+				post("/:uuid", Controller::notImplemented, gson::toJson); // update sensor
+				delete(":uuid", sensorController::delete, gson::toJson); // delete sensor
+				get("/:uuid/data", Controller::notImplemented, gson::toJson); // get sensor historic data
+				get("/:uuid/event", Controller::notImplemented, gson::toJson); // subscribe sensor events
+				delete("/:uuid/event", Controller::notImplemented, gson::toJson); // unsubscribe sensor events
+				post("/:uuid/action", Controller::notImplemented, gson::toJson); // sensor action
 			});
 			path("/event", () -> {
-				get("", Controller::notImplemented, Global.GSON::toJson); // get events
+				get("", Controller::notImplemented, gson::toJson); // get events
 			});
 		});
 
