@@ -62,6 +62,7 @@ public class UserTest extends WebClient {
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
 		Application.main(null);
+		Spark.awaitInitialization();
 	}
 
 	@AfterClass
