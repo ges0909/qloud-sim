@@ -10,7 +10,14 @@ import static spark.Spark.path;
 import static spark.Spark.post;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.Part;
 
 import org.h2.tools.Server;
 
@@ -32,7 +39,7 @@ public class Application {
 
 		before(Filter::authenticateRequest);
 		before(Filter::logRequest);
-			
+
 		path("/api", () -> {
 			path("/session", () -> {
 				get("", SessionController::requestNonAuthorizedSession, gson::toJson); // get non-authorized session
@@ -53,7 +60,8 @@ public class Application {
 				post("", Controller::notImplemented, gson::toJson); // update user
 				get("/invitation", Controller::notImplemented, gson::toJson); // get invitation code
 				post("/invitation", Controller::notImplemented, gson::toJson); // invite user
-				post("/link", Controller::notImplemented, gson::toJson); // accept invitation
+				post("/link", Controller::notImplemented, gson::toJson); // accept
+																			// invitation
 			});
 			path("/tag", () -> {
 				get("", Controller::notImplemented, gson::toJson); // get user tags
@@ -70,7 +78,7 @@ public class Application {
 				get("/:uuid", SensorController::getSensor, gson::toJson); // get sensor
 				post("/:uuid", Controller::notImplemented, gson::toJson); // update sensor
 				delete("/:uuid", SensorController::deleteSensor, gson::toJson); // delete sensor
-				get("/:uuid/data", Controller::notImplemented, gson::toJson); // get sensor historic data
+				get("/:uuid/data", Controller::notImplemented, gson::toJson); // getsensor historicdata
 				get("/:uuid/event", Controller::notImplemented, gson::toJson); // subscribe sensor events
 				delete("/:uuid/event", Controller::notImplemented, gson::toJson); // unsubscribe sensor events
 				post("/:uuid/action", Controller::notImplemented, gson::toJson); // sensor action
@@ -80,11 +88,30 @@ public class Application {
 			});
 		});
 
+		get("/upload", (request, response) ->
+			"<form method='post' enctype='multipart/form-data'>"
+		  + "    <input type='file' name='upload' accept='*'>"
+		  + "    <button>Upload</button>"
+		  + "</form>");
+		post("/upload", (request, response) -> {
+			MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
+			request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+			Part uploadedFile = request.raw().getPart("uploadedFile");
+			Path path = Paths.get("/tmp/meh");
+			try (InputStream in = uploadedFile.getInputStream()) {
+				Files.copy(in, path);
+			}
+			response.redirect("/");
+			return "OK";
+		});
+
 		notFound(Controller::notFound);
-		exception(Exception.class, (exception, request, response) -> { Controller.notFound(request, response); });
-		
+		exception(Exception.class, (exception, request, response) -> {
+			Controller.notFound(request, response);
+		});
+
 		after(Filter::logResponse);
-		
+
 		// Database.getConnectionSource().close();
 		server.stop();
 	}
