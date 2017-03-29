@@ -1,12 +1,12 @@
-package de.infinit.emp.service;
+package de.infinit.emp.model;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import de.infinit.emp.model.Session;
+import de.infinit.emp.entity.Session;
 
-public class SessionService {
+public class SessionModel {
 	static Map<String, Session> sessions = new HashMap<>();
 
 	public Session findSessionBySid(String sid) {

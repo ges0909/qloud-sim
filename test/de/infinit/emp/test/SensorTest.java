@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.infinit.emp.AppMain;
+import de.infinit.emp.Application;
 import spark.Spark;
 
 public class SensorTest extends WebClient {
@@ -24,7 +24,7 @@ public class SensorTest extends WebClient {
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
-		AppMain.main(null);
+		Application.main(null);
 	}
 
 	@AfterClass

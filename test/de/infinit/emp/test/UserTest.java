@@ -15,7 +15,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.infinit.emp.AppMain;
+import de.infinit.emp.Application;
 import spark.Spark;
 
 public class UserTest extends WebClient {
@@ -48,7 +48,7 @@ public class UserTest extends WebClient {
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
-		AppMain.main(null);
+		Application.main(null);
 	}
 
 	@AfterClass

@@ -1,4 +1,4 @@
-package de.infinit.emp.model;
+package de.infinit.emp.entity;
 
 public class Session {
 	String sid;

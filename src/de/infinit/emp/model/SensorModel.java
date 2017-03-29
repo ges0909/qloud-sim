@@ -1,15 +1,14 @@
-package de.infinit.emp.service;
+package de.infinit.emp.model;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-import de.infinit.emp.model.Sensor;
+import de.infinit.emp.entity.Sensor;
 
-public class SensorService extends Service<Sensor, String> {
-	static final Logger LOG = Logger.getLogger(SensorService.class.getName());
+public class SensorModel extends Model<Sensor, String> {
+	static final Logger log = Logger.getLogger(SensorModel.class.getName());
 
-	public SensorService() throws IOException, SQLException {
+	public SensorModel() {
 		super(Sensor.class);
 	}
 
@@ -32,7 +31,7 @@ public class SensorService extends Service<Sensor, String> {
 					.eq("code", code)
 					.queryForFirst();
 		} catch (SQLException e) {
-			LOG.severe(e.toString());
+			log.severe(e.toString());
 		}
 		return null;
 	}

@@ -2,39 +2,25 @@ package de.infinit.emp.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.aeonbits.owner.ConfigCache;
-
-import com.google.gson.Gson;
-
-import de.infinit.emp.Uuid;
-import de.infinit.emp.SimulatorConfig;
 import de.infinit.emp.Status;
-import de.infinit.emp.model.Sensor;
-import de.infinit.emp.service.SensorService;
+import de.infinit.emp.Uuid;
+import de.infinit.emp.entity.Sensor;
+import de.infinit.emp.model.SensorModel;
 import spark.Request;
 import spark.Response;
 
 public class SensorController extends Controller {
-	static final Gson gson = new Gson();
-	final SimulatorConfig config;
-	final SensorService sensorService;
+	static SensorModel sensorModel = new SensorModel();
 
 	class Body {
 		String code;
 		String description;
 	}
-	
-	public SensorController() throws IOException, SQLException {
-		config = ConfigCache.getOrCreate(SimulatorConfig.class);
-		sensorService = new SensorService();
-	}
 
-	public Map<String, Object> post(Request request, Response response) throws IOException, SQLException {
+	public static Map<String, Object> post(Request request, Response response) throws IOException, SQLException {
 		Body body = gson.fromJson(request.body(), Body.class);
 		if (body.code == null) {
 			return status(Status.WRONG_CODE);
@@ -42,31 +28,31 @@ public class SensorController extends Controller {
 		if (!Pattern.matches(config.devicePattern(), body.code)) {
 			return status(Status.WRONG_CODE);
 		}
-		if (sensorService.findByCode(body.code) != null) {
+		if (sensorModel.findByCode(body.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
 		Sensor sensor = new Sensor();
 		sensor.setCode(body.code);
 		sensor.setDescription(body.description);
 		sensor.setUuid(Uuid.get());
-		if (sensorService.create(sensor) == null) {
+		if (sensorModel.create(sensor) == null) {
 			return status(Status.FAIL);
 		}
 		return result("uuid", sensor.getUuid());
 	}
 
-	public Map<String, Object> get(Request request, Response response) throws IOException, SQLException {
+	public static Map<String, Object> get(Request request, Response response) throws IOException, SQLException {
 		String uuid = request.params(":uuid");
-		Sensor sensor = sensorService.findByUuid(uuid);
+		Sensor sensor = sensorModel.findByUuid(uuid);
 		if (sensor == null) {
 			return status(Status.FAIL);
 		}
 		return status(Status.OK);
 	}
 
-	public Map<String, Object> delete(Request request, Response response) throws IOException, SQLException {
+	public static Map<String, Object> delete(Request request, Response response) throws IOException, SQLException {
 		String uuid = request.params(":uuid");
-		if (sensorService.deleteByUuid(uuid) == 1) {
+		if (sensorModel.deleteByUuid(uuid) == 1) {
 			return status(Status.OK);
 		}
 		return status(Status.FAIL);

@@ -1,4 +1,4 @@
-package de.infinit.emp.service;
+package de.infinit.emp.model;
 
 import java.sql.SQLException;
 
@@ -7,7 +7,7 @@ import org.aeonbits.owner.ConfigCache;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
-import de.infinit.emp.SimulatorConfig;
+import de.infinit.emp.ApplicationConfig;
 
 public class Database {
 	static ConnectionSource connectionSource = null;
@@ -17,7 +17,7 @@ public class Database {
 
 	public static ConnectionSource getConnectionSource() throws SQLException {
 		if (connectionSource == null) {
-			SimulatorConfig config = ConfigCache.getOrCreate(SimulatorConfig.class);
+			ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 			connectionSource = new JdbcConnectionSource(config.url());
 			((JdbcConnectionSource) connectionSource).setUsername(config.username());
 			((JdbcConnectionSource) connectionSource).setPassword(config.password());

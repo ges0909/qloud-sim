@@ -1,6 +1,5 @@
-package de.infinit.emp.service;
+package de.infinit.emp.model;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,25 +15,29 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-public class Service<T, U> {
-	static final Logger LOG = Logger.getLogger(SensorService.class.getName());
+public class Model<T, U> {
+	static final Logger log = Logger.getLogger(Model.class.getName());
 	static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-	final ConnectionSource connectionSource;
-	Dao<T, U> dao;
+	ConnectionSource connectionSource = null;
+	Dao<T, U> dao = null;
 
-	public Service(Class<T> bean) throws IOException, SQLException {
-		connectionSource = Database.getConnectionSource();
-		dao = DaoManager.createDao(connectionSource, bean);
-		TableUtils.createTableIfNotExists(connectionSource, bean);
+	public Model(Class<T> bean) {
+		try {
+			connectionSource = Database.getConnectionSource();
+			dao = DaoManager.createDao(connectionSource, bean);
+			TableUtils.createTableIfNotExists(connectionSource, bean);
+		} catch (SQLException e) {
+			log.severe(log.toString());
+		}
 	}
 
-	public boolean isBeanValid(T bean) {
+	public boolean isValid(T bean) {
 		Set<ConstraintViolation<T>> violations = validator.validate(bean);
 		if (violations.isEmpty())
 			return true;
 		for (ConstraintViolation<T> v : violations) {
-			LOG.warning("constraint violation: " 
-					+ v.getPropertyPath().toString() + "="
+			log.warning("constraint violation: " 
+					+ v.getPropertyPath().toString() + "=" 
 					+ v.getInvalidValue() + ": "
 					+ v.getMessage());
 		}
@@ -42,7 +45,7 @@ public class Service<T, U> {
 	}
 
 	public T create(Dao<T, U> dao, T bean) {
-		if (!isBeanValid(bean)) {
+		if (!isValid(bean)) {
 			return null;
 		}
 		try {
@@ -50,13 +53,13 @@ public class Service<T, U> {
 				return bean;
 			}
 		} catch (SQLException e) {
-			LOG.severe(e.toString());
+			log.severe(e.toString());
 		}
 		return null;
 	}
 
 	public T update(Dao<T, U> dao, T bean) {
-		if (!isBeanValid(bean)) {
+		if (!isValid(bean)) {
 			return null;
 		}
 		try {
@@ -64,7 +67,7 @@ public class Service<T, U> {
 				return bean;
 			}
 		} catch (SQLException e) {
-			LOG.severe(e.toString());
+			log.severe(e.toString());
 		}
 		return null;
 	}
@@ -73,7 +76,7 @@ public class Service<T, U> {
 		try {
 			return dao.queryForId(id);
 		} catch (SQLException e) {
-			LOG.severe(e.toString());
+			log.severe(e.toString());
 		}
 		return null;
 	}
@@ -82,7 +85,7 @@ public class Service<T, U> {
 		try {
 			return dao.queryForAll();
 		} catch (SQLException e) {
-			LOG.severe(e.toString());
+			log.severe(e.toString());
 		}
 		return new ArrayList<>();
 	}
@@ -91,7 +94,7 @@ public class Service<T, U> {
 		try {
 			return dao.deleteById(id);
 		} catch (SQLException e) {
-			LOG.severe(e.toString());
+			log.severe(e.toString());
 		}
 		return 0;
 	}

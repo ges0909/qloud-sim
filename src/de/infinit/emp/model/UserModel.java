@@ -1,16 +1,15 @@
-package de.infinit.emp.service;
+package de.infinit.emp.model;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import de.infinit.emp.model.User;
+import de.infinit.emp.entity.User;
 
-public class UserService extends Service<User, String> {
-	static final Logger LOG = Logger.getLogger(UserService.class.getName());
+public class UserModel extends Model<User, String> {
+	static final Logger LOG = Logger.getLogger(UserModel.class.getName());
 
-	public UserService() throws IOException, SQLException {
+	public UserModel()  {
 		super(User.class);
 	}
 

@@ -1,8 +1,9 @@
-package de.infinit.emp.model;
+package de.infinit.emp.entity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -12,22 +13,27 @@ public class User {
 	@DatabaseField(id = true)
 	String uuid;
 
+	@SerializedName("email")
 	@DatabaseField(unique = true)
 	String email;
 
 	@Pattern(regexp = "^[a-zA-Z0-9]{2,20}$")
+	@SerializedName("username")
 	@DatabaseField
 	String userName;
 
 	@Pattern(regexp = "^.{1,50}$")
+	@SerializedName("firstname")
 	@DatabaseField
 	String firstName;
 
 	@Pattern(regexp = "^.{1,50}$")
+	@SerializedName("lastname")
 	@DatabaseField
 	String lastName;
 
 	@Pattern(regexp = "^.{1,100}$")
+	@SerializedName("display_name")
 	@DatabaseField
 	String displayName;
 

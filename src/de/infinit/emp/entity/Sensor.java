@@ -1,4 +1,4 @@
-package de.infinit.emp.model;
+package de.infinit.emp.entity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
