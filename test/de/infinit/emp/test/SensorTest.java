@@ -8,15 +8,16 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
 import spark.Spark;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SensorTest extends WebClient {
 	static String sid;
 	static String server;
@@ -32,42 +33,44 @@ public class SensorTest extends WebClient {
 		Spark.stop();
 	}
 
-	@Before
-	public void login() {
+	@Test
+	public void testA_Login() {
 		WebResponse resp = get("/api/session", null, "http://localhost:4567");
-		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals(200, resp.status);
 		sid = (String) resp.body.get("sid");
 		server = (String) resp.body.get("server");
 		Map<String, Object> body = new HashMap<>();
 		body.put("partner", "brightone");
 		body.put("key", "abcdefghijklmnopqrstuvwxyz");
 		resp = post("/api/session", body, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals(200, resp.status);
 	}
 
-	@Test // register sensor
-	public void testA() {
+	@Test
+	public void testB_Add_Sensor() {
 		Map<String, Object> body = new HashMap<>();
 		body.put("description", "Testsensor");
 		body.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
 		WebResponse resp = post("/api/sensor", body, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 		assertNotNull(resp.body.get("uuid"));
 		uuid = (String) resp.body.get("uuid");
 	}
 
-	@Test // get sensor
-	public void testB() {
+	@Test
+	public void testC_Get_Sensor() {
 		WebResponse resp = get("/api/sensor/" + uuid, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
+		//Map<String, Object> sensor = (Map<String, Object>) resp.body.get("sensor");
+		//assertNotNull("description", sensor.get("description"));
 	}
 
-	//@Test // delete sensor
-	public void testC() {
+	@Test
+	public void testD_Delete_Sensor() {
 		WebResponse resp = delete("/api/sensor/" + uuid, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
+		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}
 }

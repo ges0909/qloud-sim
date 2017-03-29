@@ -39,9 +39,11 @@ public class Controller {
 		return gson.fromJson(jsonString, to);
 	}
 
+	public static String notFound(Request request, Response response) {
+		return gson.toJson(status(Status.FAIL));
+	}
+	
 	public static Map<String, Object> notImplemented(Request request, Response response) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("status", Status.NOT_IMPLEMENTED);
-		return map;
+		return status(Status.FAIL);
 	}
 }

@@ -3,6 +3,7 @@ package de.infinit.emp.entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -18,6 +19,7 @@ public class Sensor {
 	private String code;
 
 	@Pattern(regexp = "^.{0,200}$")
+	@SerializedName("description")
 	@DatabaseField
 	private String description;
 

@@ -13,11 +13,14 @@ import java.util.Map;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
 import spark.Spark;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SignupTest extends WebClient {
 	static String sid;
 	static String server;
