@@ -21,6 +21,7 @@ import de.infinit.emp.controller.PartnerController;
 import de.infinit.emp.controller.SensorController;
 import de.infinit.emp.controller.SessionController;
 import de.infinit.emp.controller.SignupController;
+import de.infinit.emp.controller.UserController;
 import de.infinit.emp.filter.Filter;
 
 public class Application {
@@ -48,7 +49,7 @@ public class Application {
 				post("/user", SignupController::addUserAccount, gson::toJson); // create user account
 			});
 			path("/user", () -> {
-				get("", Controller::notImplemented, gson::toJson); // get user
+				get("", UserController::getUser, gson::toJson); // get user
 				post("", Controller::notImplemented, gson::toJson); // update user
 				get("/invitation", Controller::notImplemented, gson::toJson); // get invitation code
 				post("/invitation", Controller::notImplemented, gson::toJson); // invite user

@@ -16,10 +16,11 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.test.utils.RestClient;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SessionTest extends WebClient {
+public class SessionTest {
 	static String sid;
 	static String server;
 
@@ -36,7 +37,7 @@ public class SessionTest extends WebClient {
 
 	@Test // get unauthorized session
 	public void testA() {
-		WebResponse resp = get("/api/session", null, "http://localhost:4567");
+		RestClient.Response resp = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(HttpStatus.OK_200, resp.status);
 		sid = (String) resp.body.get("sid");
 		server = (String) resp.body.get("server");
@@ -50,7 +51,7 @@ public class SessionTest extends WebClient {
 		Map<String, Object> body = new HashMap<>();
 		body.put("partner", "brightone");
 		body.put("key", "abcdefghijklmnopqrstuvwxyz");
-		WebResponse resp = post("/api/session", body, sid, server);
+		RestClient.Response resp = RestClient.POST("/api/session", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}
@@ -61,14 +62,14 @@ public class SessionTest extends WebClient {
 		body.put("partner", "brightone");
 		body.put("key", "abcdefghijklmnopqrstuvwxyz");
 		body.put("user", "sim-abcd");
-		WebResponse resp = post("/api/session", body, sid, server);
+		RestClient.Response resp = RestClient.POST("/api/session", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}
 
 	@Test // delete session
 	public void testD() {
-		WebResponse resp = delete("/api/session", sid, server);
+		RestClient.Response resp = RestClient.DELETE("/api/session", sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}

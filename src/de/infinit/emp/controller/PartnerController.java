@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.entity.Session;
 import de.infinit.emp.entity.User;
 import de.infinit.emp.model.UserModel;
 import spark.Request;
@@ -25,15 +24,6 @@ public class PartnerController extends Controller {
 
 	class DeleteUserRequest {
 		boolean deleted;
-	}
-
-	private static boolean isPartnerSession(Request request) {
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		if (!session.isPartnerSession()) {
-			log.severe("request for partner sessions allowed only");
-			return false;
-		}
-		return true;
 	}
 
 	public static Object getUsers(Request request, Response response) {

@@ -18,10 +18,11 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.test.utils.RestClient;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SignupTest extends WebClient {
+public class SignupTest {
 	static String sid;
 	static String server;
 	static String uuid;
@@ -40,14 +41,14 @@ public class SignupTest extends WebClient {
 
 	@Test // login
 	public void testA() {
-		WebResponse resp = get("/api/session", null, "http://localhost:4567");
+		RestClient.Response resp = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(HttpStatus.OK_200, resp.status);
 		sid = (String) resp.body.get("sid");
 		server = (String) resp.body.get("server");
 		Map<String, Object> body = new HashMap<>();
 		body.put("partner", "brightone");
 		body.put("key", "abcdefghijklmnopqrstuvwxyz");
-		resp = post("/api/session", body, sid, server);
+		resp = RestClient.POST("/api/session", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
 	}
 
@@ -59,7 +60,7 @@ public class SignupTest extends WebClient {
 		obj.put("companyId", companyIds);
 		Map<String, Object> body = new HashMap<>();
 		body.put("info", obj);
-		WebResponse resp = post("/api/signup/verification", body, sid, server);
+		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 		assertNotNull(resp.body.get("uuid"));
@@ -78,7 +79,7 @@ public class SignupTest extends WebClient {
 		body.put("displayname", "max.mustermann");
 		body.put("password", "geheim");
 		body.put("verification", verification);
-		WebResponse resp = post("/api/signup/user", body, sid, server);
+		RestClient.Response resp = RestClient.POST("/api/signup/user", body, sid, server);
 		assertEquals(HttpStatus.OK_200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}

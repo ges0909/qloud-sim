@@ -1,4 +1,4 @@
-package de.infinit.emp.test;
+package de.infinit.emp.test.utils;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -14,21 +14,21 @@ import com.google.gson.GsonBuilder;
 
 import spark.utils.IOUtils;
 
-public class WebClient {
+public class RestClient {
 	static final Gson GSON = new GsonBuilder().create();
 	
-	protected static class WebResponse {
+	public static class Response {
 		public final int status;
 		public final Map<String, Object> body;
 
 		@SuppressWarnings("unchecked")
-		public WebResponse(int status, String body) {
+		public Response(int status, String body) {
 			this.status = status;
 			this.body = GSON.fromJson(body, HashMap.class);
 		}
 	}
 
-	WebResponse request(String method, String path, String input, String sid, String server) {
+	static Response request(String method, String path, String input, String sid, String server) {
 		try {
 			URL url = new URL(server + path);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -47,7 +47,7 @@ public class WebClient {
 			}
 			connection.connect();
 			String output = IOUtils.toString(connection.getInputStream());
-			return new WebResponse(connection.getResponseCode(), output);
+			return new Response(connection.getResponseCode(), output);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assert.fail("Sending request failed: " + e.getMessage());
@@ -55,15 +55,15 @@ public class WebClient {
 		}
 	}
 
-	public WebResponse post(String path, Map<String, Object> body, String sid, String server) {
+	public static Response POST(String path, Map<String, Object> body, String sid, String server) {
 		return request("POST", path, GSON.toJson(body), sid, server);
 	}
 
-	public WebResponse get(String path, String sid, String server) {
+	public static Response GET(String path, String sid, String server) {
 		return request("GET", path, null, sid, server);
 	}
 
-	public WebResponse delete(String path, String sid, String server) {
+	public static Response DELETE(String path, String sid, String server) {
 		return request("DELETE", path, null, sid, server);
 	}
 }

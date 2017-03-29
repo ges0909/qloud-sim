@@ -2,6 +2,7 @@ package de.infinit.emp.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.aeonbits.owner.ConfigCache;
 
@@ -9,10 +10,12 @@ import com.google.gson.Gson;
 
 import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
+import de.infinit.emp.entity.Session;
 import spark.Request;
 import spark.Response;
 
 public class Controller {
+	static final Logger log = Logger.getLogger(UserController.class.getName());
 	static ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static Gson gson = new Gson();
 
@@ -39,11 +42,20 @@ public class Controller {
 		return gson.fromJson(jsonString, to);
 	}
 
+	protected static boolean isPartnerSession(Request request) {
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		if (!session.isPartnerSession()) {
+			log.severe("request for partner sessions allowed only");
+			return false;
+		}
+		return true;
+	}
+	
 	public static String notFound(Request request, Response response) {
 		return gson.toJson(status(Status.FAIL));
 	}
 	
 	public static Map<String, Object> notImplemented(Request request, Response response) {
-		return status(Status.FAIL);
+		return status(Status.NOT_IMPLEMENTED);
 	}
 }

@@ -15,10 +15,11 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.test.utils.RestClient;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SensorTest extends WebClient {
+public class SensorTest {
 	static String sid;
 	static String server;
 	static String uuid;
@@ -36,14 +37,14 @@ public class SensorTest extends WebClient {
 
 	@Test
 	public void testA_Login() {
-		WebResponse resp = get("/api/session", null, "http://localhost:4567");
+		RestClient.Response resp = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, resp.status);
 		sid = (String) resp.body.get("sid");
 		server = (String) resp.body.get("server");
 		Map<String, Object> body = new HashMap<>();
 		body.put("partner", "brightone");
 		body.put("key", "abcdefghijklmnopqrstuvwxyz");
-		resp = post("/api/session", body, sid, server);
+		resp = RestClient.POST("/api/session", body, sid, server);
 		assertEquals(200, resp.status);
 	}
 
@@ -52,7 +53,7 @@ public class SensorTest extends WebClient {
 		Map<String, Object> body = new HashMap<>();
 		body.put("description", "Testsensor");
 		body.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
-		WebResponse resp = post("/api/sensor", body, sid, server);
+		RestClient.Response resp = RestClient.POST("/api/sensor", body, sid, server);
 		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 		assertNotNull(resp.body.get("uuid"));
@@ -61,7 +62,7 @@ public class SensorTest extends WebClient {
 
 	@Test
 	public void testC_Get_Sensor() {
-		WebResponse resp = get("/api/sensor/" + uuid, sid, server);
+		RestClient.Response resp = RestClient.GET("/api/sensor/" + uuid, sid, server);
 		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 		//Map<String, Object> sensor = (Map<String, Object>) resp.body.get("sensor");
@@ -70,7 +71,7 @@ public class SensorTest extends WebClient {
 
 	@Test
 	public void testD_Delete_Sensor() {
-		WebResponse resp = delete("/api/sensor/" + uuid, sid, server);
+		RestClient.Response resp = RestClient.DELETE("/api/sensor/" + uuid, sid, server);
 		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}

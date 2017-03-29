@@ -48,6 +48,6 @@ public class Session {
 	}
 	
 	public boolean isPartnerSession() {
-		return partner != null && key != null;
+		return userUuid == null;
 	}
 }
