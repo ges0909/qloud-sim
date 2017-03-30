@@ -10,14 +10,7 @@ import static spark.Spark.path;
 import static spark.Spark.post;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
-
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.Part;
 
 import org.h2.tools.Server;
 
@@ -28,8 +21,10 @@ import de.infinit.emp.controller.PartnerController;
 import de.infinit.emp.controller.SensorController;
 import de.infinit.emp.controller.SessionController;
 import de.infinit.emp.controller.SignupController;
+import de.infinit.emp.controller.UploadController;
 import de.infinit.emp.controller.UserController;
-import de.infinit.emp.filter.Filter;
+import de.infinit.emp.filter.AuthenticationFilter;
+import de.infinit.emp.filter.LoggingFilter;
 
 public class Application {
 	static final Gson gson = new Gson();
@@ -37,8 +32,8 @@ public class Application {
 	public static void main(String[] args) throws IOException, SQLException {
 		Server server = Server.createTcpServer().start();
 
-		before(Filter::authenticateRequest);
-		before(Filter::logRequest);
+		before(LoggingFilter::logRequest);
+		before(AuthenticationFilter::authenticateRequest);
 
 		path("/api", () -> {
 			path("/session", () -> {
@@ -78,9 +73,9 @@ public class Application {
 				get("/:uuid", SensorController::getSensor, gson::toJson); // get sensor
 				post("/:uuid", Controller::notImplemented, gson::toJson); // update sensor
 				delete("/:uuid", SensorController::deleteSensor, gson::toJson); // delete sensor
-				get("/:uuid/data", Controller::notImplemented, gson::toJson); // getsensor historicdata
+				get("/:uuid/data", Controller::notImplemented, gson::toJson); // get sensor historic data
 				get("/:uuid/event", Controller::notImplemented, gson::toJson); // subscribe sensor events
-				delete("/:uuid/event", Controller::notImplemented, gson::toJson); // unsubscribe sensor events
+				delete("/:uuid/event", Controller::notImplemented, gson::toJson); // un-subscribe sensor events
 				post("/:uuid/action", Controller::notImplemented, gson::toJson); // sensor action
 			});
 			path("/event", () -> {
@@ -88,21 +83,9 @@ public class Application {
 			});
 		});
 
-		get("/upload", (request, response) ->
-			"<form method='post' enctype='multipart/form-data'>"
-		  + "    <input type='file' name='upload' accept='*'>"
-		  + "    <button>Upload</button>"
-		  + "</form>");
-		post("/upload", (request, response) -> {
-			MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
-			request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
-			Part uploadedFile = request.raw().getPart("uploadedFile");
-			Path path = Paths.get("/tmp/meh");
-			try (InputStream in = uploadedFile.getInputStream()) {
-				Files.copy(in, path);
-			}
-			response.redirect("/");
-			return "OK";
+		path("/upload", () -> {
+			get("", UploadController::provideUploadForm);
+			post("", UploadController::uploadFile);
 		});
 
 		notFound(Controller::notFound);
@@ -110,7 +93,7 @@ public class Application {
 			Controller.notFound(request, response);
 		});
 
-		after(Filter::logResponse);
+		after(LoggingFilter::logResponse);
 
 		// Database.getConnectionSource().close();
 		server.stop();

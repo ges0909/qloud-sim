@@ -52,6 +52,7 @@ public class Controller {
 	}
 	
 	public static String notFound(Request request, Response response) {
+		log.severe("route not found");
 		return gson.toJson(status(Status.FAIL));
 	}
 	
