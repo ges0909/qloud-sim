@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "sensors")
+@DatabaseTable(tableName = "sensor")
 public class Sensor {
 	@NotNull
 	@DatabaseField(id = true)

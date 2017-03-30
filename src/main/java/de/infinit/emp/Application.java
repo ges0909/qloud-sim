@@ -53,7 +53,7 @@ public class Application {
 			path("/user", () -> {
 				get("", UserController::getUser, gson::toJson); // get user
 				post("", UserController::updateUser, gson::toJson); // update user
-				get("/invitation", UserController::getInvitationCodes, gson::toJson); // get user's invitations
+				get("/invitation", UserController::getUserInvitations, gson::toJson); // get user's invitations
 				post("/invitation", UserController::inviteUser, gson::toJson); // invite user
 				post("/link", UserController::acceptInvitation, gson::toJson); // accept invitation
 			});

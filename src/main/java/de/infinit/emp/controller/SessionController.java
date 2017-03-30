@@ -22,17 +22,17 @@ public class SessionController extends Controller {
 	}
 
 	public static Object loginToPartnerOrProxySession(Request request, Response response) {
-		LoginRequest body = gson.fromJson(request.body(), LoginRequest.class);
-		if (body.partner == null || body.key == null) {
+		LoginRequest req = gson.fromJson(request.body(), LoginRequest.class);
+		if (req.partner == null || req.key == null) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
-		if (!(config.partner().equals(body.partner) && config.key().equals(body.key))) {
+		if (!(config.partner().equals(req.partner) && config.key().equals(req.key))) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
 		Session session = request.session().attribute(QLOUD_SESSION);
-		session.setPartner(body.partner);
-		session.setKey(body.key);
-		session.setUserUuid(body.user);
+		session.setPartner(req.partner);
+		session.setKey(req.key);
+		session.setUserUuid(req.user);
 		return status(Status.OK);
 	}
 

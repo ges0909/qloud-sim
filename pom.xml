@@ -26,6 +26,7 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
+			<!--
 			<plugin>
 				<groupId>io.repaint.maven</groupId>
 				<artifactId>tiles-maven-plugin</artifactId>
@@ -38,6 +39,7 @@
 				</tiles>
 			</configuration>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 	
@@ -113,11 +115,13 @@
 			<version>3.0.1-b08</version>
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>io.ebean</groupId>
 			<artifactId>ebean</artifactId>
 			<version>10.2.1</version>
 		</dependency>
+		-->
 		
 	</dependencies>
 </project>

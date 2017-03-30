@@ -12,6 +12,7 @@ public class Status {
 	public static final String UNKNOWN_VERIFICATION = "unknown-verification";
 	public static final String WRONG_CODE = "wrong-code";
 	public static final String WRONG_CREDENTIALS = "wrong-credentials";
+	public static final String WRONG_INVITATION= "wrong-invitation";
 	public static final String WRONG_ORIGIN = "wrong-origin";
 	public static final String WRONG_SYNTAX = "wrong-syntax";
 	public static final String WRONG_USER = "wrong-user";

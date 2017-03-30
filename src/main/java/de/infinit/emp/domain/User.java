@@ -4,10 +4,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "users")
+@DatabaseTable(tableName = "user")
 public class User {
 	@NotNull
 	@DatabaseField(id = true)
@@ -50,6 +52,10 @@ public class User {
 	@DatabaseField(unique = true)
 	String tagAll;
 
+	// One-to-many
+	@ForeignCollectionField
+	private ForeignCollection<Invitation> invitations;
+	
 	public String getUuid() {
 		return uuid;
 	}
@@ -121,4 +127,8 @@ public class User {
 	public void setTagAll(String tagAll) {
 		this.tagAll = tagAll;
 	}
+	
+    public ForeignCollection<Invitation> getInvitations() {
+        return invitations;
+    }
 }
