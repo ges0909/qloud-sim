@@ -1,6 +1,7 @@
 package de.infinit.emp;
 
 public class Status {
+	public static final String ALREADY_EXIST = "already-exist";
 	public static final String DUPLICATE_CODE = "duplicate-code";
 	public static final String FAIL = "fail";
 	public static final String MISSING_ELEMENT = "missing-element";

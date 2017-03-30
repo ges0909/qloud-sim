@@ -52,11 +52,10 @@ public class Application {
 			});
 			path("/user", () -> {
 				get("", UserController::getUser, gson::toJson); // get user
-				post("", Controller::notImplemented, gson::toJson); // update user
-				get("/invitation", Controller::notImplemented, gson::toJson); // get invitation code
-				post("/invitation", Controller::notImplemented, gson::toJson); // invite user
-				post("/link", Controller::notImplemented, gson::toJson); // accept
-																			// invitation
+				post("", UserController::updateUser, gson::toJson); // update user
+				get("/invitation", UserController::getInvitationCodes, gson::toJson); // get user's invitations
+				post("/invitation", UserController::inviteUser, gson::toJson); // invite user
+				post("/link", UserController::acceptInvitation, gson::toJson); // accept invitation
 			});
 			path("/tag", () -> {
 				get("", Controller::notImplemented, gson::toJson); // get user tags

@@ -1,4 +1,4 @@
-package de.infinit.emp.test.utils;
+package de.infinit.emp.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

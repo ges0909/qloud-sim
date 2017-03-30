@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
 import de.infinit.emp.controller.PartnerController.UserDataResponse;
-import de.infinit.emp.entity.Sensor;
+import de.infinit.emp.domain.Sensor;
 import de.infinit.emp.model.SensorModel;
 import spark.Request;
 import spark.Response;

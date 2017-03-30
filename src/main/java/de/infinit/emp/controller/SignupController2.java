@@ -4,13 +4,13 @@ import java.util.List;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
-import de.infinit.emp.domain.User;
-import de.infinit.emp.model.UserModel;
+import de.infinit.emp.domain.User2;
+import de.infinit.emp.model.UserModel2;
 import spark.Request;
 import spark.Response;
 
-public class SignupController extends Controller {
-	static final UserModel userModel = new UserModel();
+public class SignupController2 extends Controller {
+	static final UserModel2 userModel = new UserModel2();
 	
 	class ReserveUserAccountRequest {
 		class Obj {
@@ -31,7 +31,7 @@ public class SignupController extends Controller {
 
 	public static Object reserveUserAccount(Request request, Response response) {
 		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
-		User user = new User();
+		User2 user = new User2();
 		user.setUuid(Uuid.get());
 		user.setVerification(Uuid.get());
 		if (userModel.create(user) == null) {
@@ -41,18 +41,17 @@ public class SignupController extends Controller {
 	}
 
 	public static Object addUserAccount(Request request, Response response) {
-		AddUserAccountRequest req = decode(request.body(), AddUserAccountRequest.class);
-		User user = userModel.findByVerification(req.verification);
+		AddUserAccountRequest body = decode(request.body(), AddUserAccountRequest.class);
+		User2 user = userModel.findByVerification(body.verification);
 		if (user == null) {
 			return status(Status.UNKNOWN_VERIFICATION);
 		}
-		user.setDisplayName(req.display_name);
-		user.setEmail(req.email);
-		user.setFirstName(req.firstname);
-		user.setLastName(req.lastname);
-		user.setPassword(req.password);
-		user.setUserName(req.username);
-		user.setTagAll(Uuid.get());
+		user.setDisplayName(body.display_name);
+		user.setEmail(body.email);
+		user.setFirstName(body.firstname);
+		user.setLastName(body.lastname);
+		user.setPassword(body.password);
+		user.setUserName(body.username);
 		if (userModel.update(user) == null) {
 			return status(Status.FAIL);
 		}

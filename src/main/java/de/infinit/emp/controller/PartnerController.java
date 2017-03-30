@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.entity.User;
+import de.infinit.emp.domain.User;
 import de.infinit.emp.model.UserModel;
 import spark.Request;
 import spark.Response;

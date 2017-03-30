@@ -4,7 +4,7 @@ import org.aeonbits.owner.Config;
 
 public interface ApplicationConfig extends Config {
 	@Key("db.url")
-	@DefaultValue("jdbc:h2:mem:test")
+	@DefaultValue("jdbc:h2:mem:tests")
 	String url();
 
 	@Key("db.username")

@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.infinit.emp.controller.SessionController;
-import de.infinit.emp.entity.Session;
+import de.infinit.emp.domain.Session;
 import de.infinit.emp.model.SessionModel;
 import spark.Request;
 import spark.Response;

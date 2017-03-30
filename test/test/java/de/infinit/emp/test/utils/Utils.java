@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.eclipse.jetty.http.HttpStatus;
 
+import de.infinit.emp.utils.Json;
+
 public class Utils {
 	public static String addUser(String sid, String server, Object... keyValuePairs) {
 		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));

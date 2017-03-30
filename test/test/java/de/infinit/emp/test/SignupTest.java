@@ -41,15 +41,15 @@ public class SignupTest {
 
 	@Test // login
 	public void testA() {
-		RestClient.Response resp = RestClient.GET("/api/session", null, "http://localhost:4567");
-		assertEquals(HttpStatus.OK_200, resp.status);
-		sid = (String) resp.body.get("sid");
-		server = (String) resp.body.get("server");
-		Map<String, Object> body = new HashMap<>();
-		body.put("partner", "brightone");
-		body.put("key", "abcdefghijklmnopqrstuvwxyz");
-		resp = RestClient.POST("/api/session", body, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
+		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
+		assertEquals(HttpStatus.OK_200, res.status);
+		sid = (String) res.body.get("sid");
+		server = (String) res.body.get("server");
+		Map<String, Object> req = new HashMap<>();
+		req.put("partner", "brightone");
+		req.put("key", "abcdefghijklmnopqrstuvwxyz");
+		res = RestClient.POST("/api/session", req, sid, server);
+		assertEquals(HttpStatus.OK_200, res.status);
 	}
 
 	@Test // initiate sign-up
@@ -58,29 +58,29 @@ public class SignupTest {
 		companyIds.add("12345");
 		Map<String, Object> obj = new HashMap<>();
 		obj.put("companyId", companyIds);
-		Map<String, Object> body = new HashMap<>();
-		body.put("info", obj);
-		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
-		assertNotNull(resp.body.get("uuid"));
-		assertNotNull(resp.body.get("verification"));
-		uuid = (String) resp.body.get("uuid");
-		verification = (String) resp.body.get("verification");
+		Map<String, Object> req = new HashMap<>();
+		req.put("info", obj);
+		RestClient.Response res = RestClient.POST("/api/signup/verification", req, sid, server);
+		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals("ok", res.body.get("status"));
+		assertNotNull(res.body.get("uuid"));
+		assertNotNull(res.body.get("verification"));
+		uuid = (String) res.body.get("uuid");
+		verification = (String) res.body.get("verification");
 	}
 
 	@Test // complete sign-up
 	public void testC() {
-		Map<String, Object> body = new HashMap<>();
-		body.put("email", "max.mustermann@infinit-services.de");
-		body.put("username", "max");
-		body.put("firstname", "max");
-		body.put("username", "mustermann");
-		body.put("displayname", "max.mustermann");
-		body.put("password", "geheim");
-		body.put("verification", verification);
-		RestClient.Response resp = RestClient.POST("/api/signup/user", body, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		Map<String, Object> req = new HashMap<>();
+		req.put("email", "max.mustermann@infinit-services.de");
+		req.put("username", "max");
+		req.put("firstname", "max");
+		req.put("username", "mustermann");
+		req.put("displayname", "max.mustermann");
+		req.put("password", "geheim");
+		req.put("verification", verification);
+		RestClient.Response res = RestClient.POST("/api/signup/user", req, sid, server);
+		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 }

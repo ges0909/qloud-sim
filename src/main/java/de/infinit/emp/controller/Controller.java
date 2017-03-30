@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 
 import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
-import de.infinit.emp.entity.Session;
+import de.infinit.emp.domain.Session;
 import spark.Request;
 import spark.Response;
 
@@ -44,11 +44,7 @@ public class Controller {
 
 	protected static boolean isPartnerSession(Request request) {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		if (!session.isPartnerSession()) {
-			log.severe("request for partner sessions allowed only");
-			return false;
-		}
-		return true;
+		return session.isPartnerSession();
 	}
 	
 	public static String notFound(Request request, Response response) {

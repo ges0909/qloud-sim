@@ -3,7 +3,7 @@ package de.infinit.emp.model;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-import de.infinit.emp.entity.Sensor;
+import de.infinit.emp.domain.Sensor;
 
 public class SensorModel extends Model<Sensor, String> {
 	static final Logger log = Logger.getLogger(SensorModel.class.getName());

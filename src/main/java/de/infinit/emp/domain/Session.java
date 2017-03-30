@@ -1,11 +1,11 @@
-package de.infinit.emp.entity;
+package de.infinit.emp.domain;
 
 public class Session {
 	String sid;
 	String server;
 	String partner;
 	String key;
-	String userUuid;
+	String uuid; // user uuid in case of proxy session; otherwise null
 
 	public String getSid() {
 		return sid;
@@ -40,14 +40,14 @@ public class Session {
 	}
 
 	public String getUserUuid() {
-		return userUuid;
+		return uuid;
 	}
 
 	public void setUserUuid(String userUuid) {
-		this.userUuid = userUuid;
+		this.uuid = userUuid;
 	}
 	
 	public boolean isPartnerSession() {
-		return userUuid == null;
+		return uuid == null;
 	}
 }

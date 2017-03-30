@@ -37,42 +37,42 @@ public class SensorTest {
 
 	@Test
 	public void testA_Login() {
-		RestClient.Response resp = RestClient.GET("/api/session", null, "http://localhost:4567");
-		assertEquals(200, resp.status);
-		sid = (String) resp.body.get("sid");
-		server = (String) resp.body.get("server");
-		Map<String, Object> body = new HashMap<>();
-		body.put("partner", "brightone");
-		body.put("key", "abcdefghijklmnopqrstuvwxyz");
-		resp = RestClient.POST("/api/session", body, sid, server);
-		assertEquals(200, resp.status);
+		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
+		assertEquals(200, res.status);
+		sid = (String) res.body.get("sid");
+		server = (String) res.body.get("server");
+		Map<String, Object> req = new HashMap<>();
+		req.put("partner", "brightone");
+		req.put("key", "abcdefghijklmnopqrstuvwxyz");
+		res = RestClient.POST("/api/session", req, sid, server);
+		assertEquals(200, res.status);
 	}
 
 	@Test
 	public void testB_Add_Sensor() {
-		Map<String, Object> body = new HashMap<>();
-		body.put("description", "Testsensor");
-		body.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
-		RestClient.Response resp = RestClient.POST("/api/sensor", body, sid, server);
-		assertEquals(200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
-		assertNotNull(resp.body.get("uuid"));
-		uuid = (String) resp.body.get("uuid");
+		Map<String, Object> req = new HashMap<>();
+		req.put("description", "Testsensor");
+		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
+		RestClient.Response res = RestClient.POST("/api/sensor", req, sid, server);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+		assertNotNull(res.body.get("uuid"));
+		uuid = (String) res.body.get("uuid");
 	}
 
 	@Test
 	public void testC_Get_Sensor() {
-		RestClient.Response resp = RestClient.GET("/api/sensor/" + uuid, sid, server);
-		assertEquals(200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		RestClient.Response res = RestClient.GET("/api/sensor/" + uuid, sid, server);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 		//Map<String, Object> sensor = (Map<String, Object>) resp.body.get("sensor");
 		//assertNotNull("description", sensor.get("description"));
 	}
 
 	@Test
 	public void testD_Delete_Sensor() {
-		RestClient.Response resp = RestClient.DELETE("/api/sensor/" + uuid, sid, server);
-		assertEquals(200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		RestClient.Response res = RestClient.DELETE("/api/sensor/" + uuid, sid, server);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 }

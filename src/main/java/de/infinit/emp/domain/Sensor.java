@@ -1,4 +1,4 @@
-package de.infinit.emp.entity;
+package de.infinit.emp.domain;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

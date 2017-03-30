@@ -1,10 +1,9 @@
 package de.infinit.emp.model;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import de.infinit.emp.entity.User;
+import de.infinit.emp.domain.User;
 
 public class UserModel extends Model<User, String> {
 	static final Logger log = Logger.getLogger(UserModel.class.getName());
@@ -34,14 +33,10 @@ public class UserModel extends Model<User, String> {
 	}
 	
 	public User findByVerification(String verification) {
-		try {
-			return super.dao.queryBuilder()
-					.where()
-					.eq("verification", verification)
-					.queryForFirst();
-		} catch (SQLException e) {
-			log.severe(e.toString());
-		}
-		return null;
+		return super.findByColumn(dao, "verification", verification);
+	}
+
+	public User findByEmail(String email) {
+		return super.findByColumn(dao, "email", email);
 	}
 }

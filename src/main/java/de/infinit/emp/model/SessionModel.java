@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import de.infinit.emp.entity.Session;
+import de.infinit.emp.domain.Session;
 
 public class SessionModel {
 	static Map<String, Session> sessions = new HashMap<>();

@@ -1,7 +1,7 @@
 package de.infinit.emp.controller;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.entity.Session;
+import de.infinit.emp.domain.Session;
 import de.infinit.emp.model.SessionModel;
 import spark.Request;
 import spark.Response;

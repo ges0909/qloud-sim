@@ -37,40 +37,40 @@ public class SessionTest {
 
 	@Test // get unauthorized session
 	public void testA() {
-		RestClient.Response resp = RestClient.GET("/api/session", null, "http://localhost:4567");
-		assertEquals(HttpStatus.OK_200, resp.status);
-		sid = (String) resp.body.get("sid");
-		server = (String) resp.body.get("server");
+		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
+		assertEquals(HttpStatus.OK_200, res.status);
+		sid = (String) res.body.get("sid");
+		server = (String) res.body.get("server");
 		assertNotNull(sid);
 		assertEquals("http://localhost:4567", server);
-		assertEquals("ok", resp.body.get("status"));
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test // partner login
 	public void testB() {
-		Map<String, Object> body = new HashMap<>();
-		body.put("partner", "brightone");
-		body.put("key", "abcdefghijklmnopqrstuvwxyz");
-		RestClient.Response resp = RestClient.POST("/api/session", body, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		Map<String, Object> req = new HashMap<>();
+		req.put("partner", "brightone");
+		req.put("key", "abcdefghijklmnopqrstuvwxyz");
+		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
+		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test // proxy login
 	public void testC() {
-		Map<String, Object> body = new HashMap<>();
-		body.put("partner", "brightone");
-		body.put("key", "abcdefghijklmnopqrstuvwxyz");
-		body.put("user", "sim-abcd");
-		RestClient.Response resp = RestClient.POST("/api/session", body, sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		Map<String, Object> req = new HashMap<>();
+		req.put("partner", "brightone");
+		req.put("key", "abcdefghijklmnopqrstuvwxyz");
+		req.put("user", "sim-abcd");
+		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
+		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test // delete session
 	public void testD() {
-		RestClient.Response resp = RestClient.DELETE("/api/session", sid, server);
-		assertEquals(HttpStatus.OK_200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		RestClient.Response res = RestClient.DELETE("/api/session", sid, server);
+		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 }

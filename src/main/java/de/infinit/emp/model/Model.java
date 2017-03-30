@@ -98,4 +98,16 @@ public class Model<T, U> {
 		}
 		return new ArrayList<>();
 	}
+	
+	public <V> T findByColumn(Dao<T, U> dao, String column, V value) {
+		try {
+			return dao.queryBuilder()
+					.where()
+					.eq(column, value)
+					.queryForFirst();
+		} catch (SQLException e) {
+			log.severe(e.toString());
+		}
+		return null;
+	}
 }
