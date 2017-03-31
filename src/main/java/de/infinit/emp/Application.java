@@ -70,7 +70,7 @@ public class Application {
 			path("/sensor", () -> {
 				post("", SensorController::addSensor, gson::toJson);
 				get("/:uuid", SensorController::getSensor, gson::toJson);
-				post("/:uuid", Controller::notImplemented, gson::toJson);
+				post("/:uuid", SensorController::updateSensor, gson::toJson);
 				delete("/:uuid", SensorController::deleteSensor, gson::toJson);
 				get("/:uuid/data", Controller::notImplemented, gson::toJson);
 				get("/:uuid/event", Controller::notImplemented, gson::toJson);

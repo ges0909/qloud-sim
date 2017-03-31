@@ -3,7 +3,6 @@ package de.infinit.emp.domain;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
@@ -33,7 +32,7 @@ public class Sensor {
 	String model;
 
 	@SerializedName("recv_interval")
-	@DatabaseField(defaultValue = "900")
+	@DatabaseField()
 	int recvInterval;
 
 	@DatabaseField
@@ -41,11 +40,13 @@ public class Sensor {
 	long recvTime;
 
 	@SerializedName("battery_ok")
-	@DatabaseField(defaultValue = "true")
+	@DatabaseField()
 	boolean batteryOk;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private transient User user;
+
 	// One-to-many
-	@Expose(serialize = false, deserialize = false)
 	@ForeignCollectionField
 	private transient ForeignCollection<Capability> capabilities;
 
@@ -113,6 +114,14 @@ public class Sensor {
 		this.batteryOk = batteryOk;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
 	public ForeignCollection<Capability> getCapabilities() {
 		return capabilities;
 	}

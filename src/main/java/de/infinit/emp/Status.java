@@ -3,6 +3,7 @@ package de.infinit.emp;
 public class Status {
 	public static final String ALREADY_EXIST = "already-exist";
 	public static final String DUPLICATE_CODE = "duplicate-code";
+	public static final String DUPLICATE_SENSOR = "duplicate-sensor";
 	public static final String FAIL = "fail";
 	public static final String MISSING_ELEMENT = "missing-element";
 	public static final String NO_AUTH = "no-auth";
@@ -14,6 +15,7 @@ public class Status {
 	public static final String WRONG_CREDENTIALS = "wrong-credentials";
 	public static final String WRONG_INVITATION= "wrong-invitation";
 	public static final String WRONG_ORIGIN = "wrong-origin";
+	public static final String WRONG_SENSOR = "wrong-sensor";
 	public static final String WRONG_SYNTAX = "wrong-syntax";
 	public static final String WRONG_USER = "wrong-user";
 }

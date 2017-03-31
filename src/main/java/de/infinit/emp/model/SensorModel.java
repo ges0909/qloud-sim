@@ -16,6 +16,10 @@ public class SensorModel extends Model<Sensor, String> {
 		return create(super.dao, sensor);
 	}
 
+	public Sensor update(Sensor sensor) {
+		return update(super.dao, sensor);
+	}
+
 	public int deleteByUuid(String uuid) {
 		return delete(super.dao, uuid);
 	}

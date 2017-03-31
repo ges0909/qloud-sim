@@ -54,6 +54,10 @@ public class User {
 
 	// One-to-many
 	@ForeignCollectionField
+	private ForeignCollection<Sensor> sensors;
+	
+	// One-to-many
+	@ForeignCollectionField
 	private ForeignCollection<Invitation> invitations;
 	
 	public String getUuid() {

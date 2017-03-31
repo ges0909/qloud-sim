@@ -1,44 +1,62 @@
 package de.infinit.emp.controller;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
 import de.infinit.emp.domain.Capability;
 import de.infinit.emp.domain.Sensor;
+import de.infinit.emp.domain.Session;
+import de.infinit.emp.domain.User;
 import de.infinit.emp.model.CapabilityModel;
 import de.infinit.emp.model.SensorModel;
+import de.infinit.emp.model.UserModel;
 import spark.Request;
 import spark.Response;
 
 public class SensorController extends Controller {
 	static SensorModel sensorModel = new SensorModel();
 	static CapabilityModel capabilityModel = new CapabilityModel();
+	static UserModel userModel = new UserModel();
 
-	class AddSensorRequest {
+	class AddOrUpdateSensorRequest {
 		String code;
 		String description;
 	}
 
 	class GetSensorResponse {
-		class ResponseCapability {
+		class Capability {
 			List<String> data;
 			List<String> action;
 		}
+		class State {
+			List<Integer> data;
+			List<Object> action;
+		}
+		String owner;
 		long time;
 		String description;
 		String model;
 		int recv_interval;
 		int recv_time;
 		boolean battery_ok;
-		ResponseCapability capabilities;
+		Capability capabilities;
+		State state;
 	}
-	
+
 	public static Object addSensor(Request request, Response response) {
-		AddSensorRequest req = decode(request.body(), AddSensorRequest.class);
+		if (!isProxySession(request)) {
+			status(Status.NO_AUTH);
+		}
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		User own = userModel.findById(session.getUserUuid());
+		if (own == null) {
+			return status(Status.FAIL);
+		}
+		AddOrUpdateSensorRequest req = decode(request.body(), AddOrUpdateSensorRequest.class);
 		if (req.code == null) {
 			return status(Status.WRONG_CODE);
 		}
@@ -51,7 +69,11 @@ public class SensorController extends Controller {
 		Sensor sensor = new Sensor();
 		sensor.setCode(req.code);
 		sensor.setDescription(req.description);
+		sensor.setRecvTime(Instant.now().getEpochSecond());
+		sensor.setRecvInterval(900);
+		sensor.setBatteryOk(true);
 		sensor.setUuid(Uuid.get());
+		sensor.setUser(own);
 		if (sensorModel.create(sensor) == null) {
 			return status(Status.FAIL);
 		}
@@ -75,14 +97,45 @@ public class SensorController extends Controller {
 		return result("uuid", sensor.getUuid());
 	}
 
+	public static Object updateSensor(Request request, Response response) {
+		if (!isProxySession(request)) {
+			status(Status.NO_AUTH);
+		}
+		String uuid = request.params(":uuid");
+		Sensor sensor = sensorModel.findByUuid(uuid);
+		if (sensor == null) {
+			return status(Status.WRONG_SENSOR);
+		}
+		AddOrUpdateSensorRequest req = decode(request.body(), AddOrUpdateSensorRequest.class);
+		if (req.code != null) {
+			if (!Pattern.matches(config.devicePattern(), req.code)) {
+				return status(Status.WRONG_CODE);
+			}
+			if (sensorModel.findByCode(req.code) != null) {
+				return status(Status.DUPLICATE_SENSOR);
+			}
+			sensor.setCode(req.code);
+		}
+		if (req.description != null) {
+			sensor.setDescription(req.description);
+		}
+		if (sensorModel.update(sensor) == null) {
+			return status(Status.FAIL);
+		}
+		return status(Status.OK);
+	}
 	public static Object getSensor(Request request, Response response) {
+		if (!isProxySession(request)) {
+			status(Status.NO_AUTH);
+		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.findByUuid(uuid);
 		if (sensor == null) {
 			return status(Status.FAIL);
 		}
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
-		res.capabilities = res.new ResponseCapability();
+		res.owner = sensor.getUser().getUuid();
+		res.capabilities = res.new Capability();
 		res.capabilities.data = sensor.getCapabilities()
 				.stream()
 				.filter(c -> c.getType().equals("data"))
@@ -93,10 +146,24 @@ public class SensorController extends Controller {
 				.filter(c -> c.getType().equals("action"))
 				.map(c -> c.getName())
 				.collect(Collectors.toList());
+		res.state = res.new State();
+		res.state.data = sensor.getCapabilities()
+				.stream()
+				.filter(c -> c.getType().equals("data"))
+				.map(c -> (Integer) null)
+				.collect(Collectors.toList());
+		res.state.action = sensor.getCapabilities()
+				.stream()
+				.filter(c -> c.getType().equals("action"))
+				.map(c -> null)
+				.collect(Collectors.toList());
 		return result("sensor", res);
 	}
-
+	
 	public static Object deleteSensor(Request request, Response response) {
+		if (!isProxySession(request)) {
+			status(Status.NO_AUTH);
+		}
 		String uuid = request.params(":uuid");
 		if (sensorModel.deleteByUuid(uuid) != 1) {
 			return status(Status.FAIL);
