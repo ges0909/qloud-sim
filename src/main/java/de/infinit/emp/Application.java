@@ -3,14 +3,9 @@ package de.infinit.emp;
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.delete;
-import static spark.Spark.exception;
 import static spark.Spark.get;
-import static spark.Spark.notFound;
 import static spark.Spark.path;
 import static spark.Spark.post;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 import com.google.gson.Gson;
 
@@ -27,12 +22,12 @@ import de.infinit.emp.filter.LoggingFilter;
 public class Application {
 	static final Gson gson = new Gson();
 
-	public static void main(String[] args) throws IOException, SQLException {
+	public static void main(String[] args) {
 //		Server server = Server.createTcpServer().start();
 
-		before(LoggingFilter::logRequest);
 		before(AuthenticationFilter::authenticateRequest);
-
+		before(LoggingFilter::logRequest);
+		
 		path("/api", () -> {
 			path("/session", () -> {
 				get("", SessionController::requestNonAuthorizedSession, gson::toJson);
@@ -80,19 +75,21 @@ public class Application {
 			path("/event", () -> {
 				get("", Controller::notImplemented, gson::toJson); 
 			});
+			after((request, response) -> { response.type("application/json"); });
 		});
-
+		
 		path("/upload", () -> {
 			get("", UploadController::provideUploadForm);
 			post("", UploadController::uploadFile);
+			after((request, response) -> { response.type("text/html"); });
 		});
-
-		notFound(Controller::notFound);
-		exception(Exception.class, (exception, request, response) -> {
-			Controller.notFound(request, response);
-		});
-
+		
 		after(LoggingFilter::logResponse);
+
+//		notFound(Controller::notFound);
+//		exception(Exception.class, (exception, request, response) -> {
+//			Controller.notFound(request, response);
+//		});
 
 //		Database.getConnectionSource().close();
 //		server.stop();

@@ -1,39 +1,39 @@
 package de.infinit.emp.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
-import javax.servlet.http.Part;
 
 import spark.Request;
 import spark.Response;
 
 public class UploadController extends Controller {
+	static final Logger log = Logger.getLogger(UploadController.class.getName());
+
 	public static Object provideUploadForm(Request request, Response response) {
-		return "<form method='post' enctype='multipart/form-data'>"
-				+ "  <input type='file' name='upload' accept='*'>"
-				+ "  <button>Upload</button>"
-				+ "</form>";
+		response.type("text/html");
+		return "<form method='post' enctype='multipart/form-data'>" + "  <input type='file' name='uploaded_file'>"
+				+ "  <button>Sensor upload</button>" + "</form>";
 	}
 
-	public static Object uploadFile(Request request, Response response) {
-		MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
+	public static Object uploadFile(Request request, Response response) throws IOException, ServletException {
+		MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/temp");
 		request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
-		try {
-			Part uploadedFile = request.raw().getPart("uploadedFile");
-			Path path = Paths.get("/tmp/meh");
-			try (InputStream in = uploadedFile.getInputStream()) {
-				Files.copy(in, path);
-			}
-		} catch (IOException | ServletException e) {
-			e.printStackTrace();
+		List<String> lines;
+		InputStream is = request.raw().getPart("uploaded_file").getInputStream();
+		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(is))) {
+			lines = buffer.lines().collect(Collectors.toList());
 		}
-		//response.redirect("/");
-		return "OK";
+		for (String line : lines) {
+			log.info(line);
+		}
+		return "File uploaded";
 	}
 }

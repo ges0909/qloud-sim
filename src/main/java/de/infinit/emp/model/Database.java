@@ -14,7 +14,7 @@ public class Database {
 
 	private Database() {
 	}
-
+	
 	public static ConnectionSource getConnectionSource() throws SQLException {
 		if (cs == null) {
 			ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
@@ -24,5 +24,4 @@ public class Database {
 		}
 		return cs;
 	}
-
 }
