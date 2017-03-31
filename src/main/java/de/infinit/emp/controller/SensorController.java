@@ -2,6 +2,7 @@ package de.infinit.emp.controller;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import de.infinit.emp.domain.User;
 import de.infinit.emp.model.CapabilityModel;
 import de.infinit.emp.model.SensorModel;
 import de.infinit.emp.model.UserModel;
+import de.infinit.emp.utils.Json;
 import spark.Request;
 import spark.Response;
 
@@ -124,6 +126,7 @@ public class SensorController extends Controller {
 		}
 		return status(Status.OK);
 	}
+	
 	public static Object getSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
@@ -169,5 +172,20 @@ public class SensorController extends Controller {
 			return status(Status.FAIL);
 		}
 		return status(Status.OK);
+	}
+	
+	public static Object getSensorData(Request request, Response response) {
+		if (!isProxySession(request)) {
+			status(Status.NO_AUTH);
+		}
+		String uuid = request.params(":uuid");
+		Sensor sensor = sensorModel.findByUuid(uuid);
+		if (sensor == null) {
+			return status(Status.FAIL);
+		}
+		String timestamp = Long.toString(Instant.now().getEpochSecond());
+		List<Integer> values = Json.arr(1234, 5678, 901234, 9961);
+		Map<String, Object> obj = Json.obj(timestamp, values);
+		return result("data", obj);
 	}
 }

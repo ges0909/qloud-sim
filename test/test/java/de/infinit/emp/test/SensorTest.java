@@ -111,7 +111,15 @@ public class SensorTest {
 	}
 
 	@Test
-	public void testG_Delete_Sensor() {
+	public void testG_Get_Sensor_Data() {
+		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/data", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+		assertNotNull(res.body.get("data"));
+	}
+	
+	@Test
+	public void testH_Delete_Sensor() {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));

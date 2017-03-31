@@ -72,7 +72,7 @@ public class Application {
 				get("/:uuid", SensorController::getSensor, gson::toJson);
 				post("/:uuid", SensorController::updateSensor, gson::toJson);
 				delete("/:uuid", SensorController::deleteSensor, gson::toJson);
-				get("/:uuid/data", Controller::notImplemented, gson::toJson);
+				get("/:uuid/data", SensorController::getSensorData, gson::toJson);
 				get("/:uuid/event", Controller::notImplemented, gson::toJson);
 				delete("/:uuid/event", Controller::notImplemented, gson::toJson);
 				post("/:uuid/action", Controller::notImplemented, gson::toJson);
