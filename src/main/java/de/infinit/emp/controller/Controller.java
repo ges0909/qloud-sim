@@ -59,4 +59,12 @@ public class Controller {
 	public static Map<String, Object> notImplemented(Request request, Response response) {
 		return status(Status.NOT_IMPLEMENTED);
 	}
+	
+	protected static Object ok() {
+		return status(Status.OK);
+	}
+	
+	protected static Object fail() {
+		return status(Status.FAIL);
+	}
 }

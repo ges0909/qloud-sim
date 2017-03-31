@@ -14,6 +14,7 @@ import de.infinit.emp.domain.Invitation;
 import de.infinit.emp.domain.Session;
 import de.infinit.emp.domain.User;
 import de.infinit.emp.model.InvitationModel;
+import de.infinit.emp.model.SensorModel;
 import de.infinit.emp.model.UserModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
@@ -23,6 +24,7 @@ public class UserController extends Controller {
 	static final Logger log = Logger.getLogger(UserController.class.getName());
 	static UserModel userModel = new UserModel();
 	static InvitationModel invitationModel = new InvitationModel();
+	static SensorModel sensorModel = new SensorModel();
 
 	class GetUserResponse {
 		String uuid;
@@ -60,7 +62,7 @@ public class UserController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.findById(session.getUserUuid());
 		if (own == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		GetUserResponse resp = convert(own, GetUserResponse.class);
 		resp.partner = config.partner();
@@ -74,7 +76,7 @@ public class UserController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.findById(session.getUserUuid());
 		if (own == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		User other = userModel.findByEmail(session.getUserUuid());
 		if (other != null) {
@@ -87,9 +89,9 @@ public class UserController extends Controller {
 		own.setPassword(req.password);
 		own.setEmail(req.email);
 		if (userModel.update(own) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
-		return status(Status.OK);
+		return ok();
 	}
 
 	public static Object getUserInvitations(Request request, Response response) {
@@ -99,7 +101,7 @@ public class UserController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.findById(session.getUserUuid());
 		if (own == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		Map<String, Object> invitation = new HashMap<>();
 		for (Invitation i : own.getInvitations()) {
@@ -115,7 +117,7 @@ public class UserController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.findById(session.getUserUuid());
 		if (own == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		InviteUserRequest req = decode(request.body(), InviteUserRequest.class);
 		for (String uuid : req.userUuids) {
@@ -127,10 +129,10 @@ public class UserController extends Controller {
 			invitation.setUuid(Uuid.get()); // create invitation code
 			invitation.setUser(other);
 			if (invitationModel.create(invitation) == null) {
-				return status(Status.FAIL);
+				return fail();
 			}
 		}
-		return status(Status.OK);
+		return ok();
 	}
 
 	public static Object acceptInvitation(Request request, Response response) {
@@ -140,7 +142,7 @@ public class UserController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.findById(session.getUserUuid());
 		if (own == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		ForeignCollection<Invitation> storedInvitations = own.getInvitations();
 		if (storedInvitations.isEmpty()) {
@@ -156,8 +158,8 @@ public class UserController extends Controller {
 			}
 		}
 		if (req.invitationsToAccept.size() != numberAccepted) {
-			return status(Status.FAIL);
+			return fail();
 		}
-		return status(Status.OK);
+		return ok();
 	}
 }

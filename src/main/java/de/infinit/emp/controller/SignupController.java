@@ -35,7 +35,7 @@ public class SignupController extends Controller {
 		user.setUuid(Uuid.get());
 		user.setVerification(Uuid.get());
 		if (userModel.create(user) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		return result("uuid", user.getUuid(), "verification", user.getVerification(), "info", body.info);
 	}
@@ -54,8 +54,8 @@ public class SignupController extends Controller {
 		user.setUserName(req.username);
 		user.setTagAll(Uuid.get());
 		if (userModel.update(user) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
-		return status(Status.OK);
+		return ok();
 	}
 }

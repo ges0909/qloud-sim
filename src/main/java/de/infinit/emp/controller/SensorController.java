@@ -56,7 +56,7 @@ public class SensorController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.findById(session.getUserUuid());
 		if (own == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		AddOrUpdateSensorRequest req = decode(request.body(), AddOrUpdateSensorRequest.class);
 		if (req.code == null) {
@@ -77,24 +77,24 @@ public class SensorController extends Controller {
 		sensor.setUuid(Uuid.get());
 		sensor.setUser(own);
 		if (sensorModel.create(sensor) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		Capability capability = null;
 		capability = new Capability(sensor, "binary_8bit", "data");
 		if (capabilityModel.create(capability) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		capability = new Capability(sensor, "binary_32bit", "data");
 		if (capabilityModel.create(capability) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		capability = new Capability(sensor, "binary_16bit", "data");
 		if (capabilityModel.create(capability) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		capability = new Capability(sensor, "binary_32bit", "data");
 		if (capabilityModel.create(capability) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		return result("uuid", sensor.getUuid());
 	}
@@ -122,9 +122,9 @@ public class SensorController extends Controller {
 			sensor.setDescription(req.description);
 		}
 		if (sensorModel.update(sensor) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
-		return status(Status.OK);
+		return ok();
 	}
 	
 	public static Object getSensor(Request request, Response response) {
@@ -134,7 +134,7 @@ public class SensorController extends Controller {
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.findByUuid(uuid);
 		if (sensor == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
 		res.owner = sensor.getUser().getUuid();
@@ -169,9 +169,9 @@ public class SensorController extends Controller {
 		}
 		String uuid = request.params(":uuid");
 		if (sensorModel.deleteByUuid(uuid) != 1) {
-			return status(Status.FAIL);
+			return fail();
 		}
-		return status(Status.OK);
+		return ok();
 	}
 	
 	public static Object getSensorData(Request request, Response response) {
@@ -181,11 +181,35 @@ public class SensorController extends Controller {
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.findByUuid(uuid);
 		if (sensor == null) {
-			return status(Status.FAIL);
+			return status(Status.WRONG_SENSOR);
 		}
 		String timestamp = Long.toString(Instant.now().getEpochSecond());
 		List<Integer> values = Json.arr(1234, 5678, 901234, 9961);
 		Map<String, Object> obj = Json.obj(timestamp, values);
 		return result("data", obj);
+	}
+	
+	public static Object susbcribeSensorForEvents(Request request, Response response) {
+		if (!isProxySession(request)) {
+			status(Status.NO_AUTH);
+		}
+		String uuid = request.params(":uuid");
+		Sensor sensor = sensorModel.findByUuid(uuid);
+		if (sensor == null) {
+			return status(Status.WRONG_SENSOR);
+		}
+		return ok();
+	}
+	
+	public static Object cancelSensorEventSubcription(Request request, Response response) {
+		if (!isProxySession(request)) {
+			status(Status.NO_AUTH);
+		}
+		String uuid = request.params(":uuid");
+		Sensor sensor = sensorModel.findByUuid(uuid);
+		if (sensor == null) {
+			return status(Status.WRONG_SENSOR);
+		}
+		return ok();
 	}
 }

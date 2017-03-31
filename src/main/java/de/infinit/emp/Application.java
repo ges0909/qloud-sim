@@ -73,8 +73,8 @@ public class Application {
 				post("/:uuid", SensorController::updateSensor, gson::toJson);
 				delete("/:uuid", SensorController::deleteSensor, gson::toJson);
 				get("/:uuid/data", SensorController::getSensorData, gson::toJson);
-				get("/:uuid/event", Controller::notImplemented, gson::toJson);
-				delete("/:uuid/event", Controller::notImplemented, gson::toJson);
+				get("/:uuid/event", SensorController::susbcribeSensorForEvents, gson::toJson);
+				delete("/:uuid/event", SensorController::cancelSensorEventSubcription, gson::toJson);
 				post("/:uuid/action", Controller::notImplemented, gson::toJson);
 			});
 			path("/event", () -> {

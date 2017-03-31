@@ -119,7 +119,21 @@ public class SensorTest {
 	}
 	
 	@Test
-	public void testH_Delete_Sensor() {
+	public void testH_Subscribe_For_Sensor_Events() {
+		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+	
+	@Test
+	public void testI_Cancel_Sensor_Event_Subcription() {
+		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+	
+	@Test
+	public void testJ_Delete_Sensor() {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));

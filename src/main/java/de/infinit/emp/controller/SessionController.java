@@ -33,14 +33,14 @@ public class SessionController extends Controller {
 		session.setPartner(req.partner);
 		session.setKey(req.key);
 		session.setUserUuid(req.user);
-		return status(Status.OK);
+		return ok();
 	}
 
 	public static Object logoutFromSession(Request request, Response response) {
 		Session session = request.session().attribute(QLOUD_SESSION);
 		if (sessionModel.deleteSession(session) == null) {
-			return status(Status.FAIL);
+			return fail();
 		}
-		return status(Status.OK);
+		return ok();
 	}
 }
