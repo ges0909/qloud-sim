@@ -16,7 +16,7 @@ import spark.utils.IOUtils;
 
 public class RestClient {
 	static final Gson GSON = new GsonBuilder().create();
-	
+
 	public static class Response {
 		public final int status;
 		public final Map<String, Object> body;

@@ -37,48 +37,50 @@ public class Application {
 
 		path("/api", () -> {
 			path("/session", () -> {
-				get("", SessionController::requestNonAuthorizedSession, gson::toJson); // get non-authorized session
-				post("", SessionController::loginToPartnerOrProxySession, gson::toJson); // login to partner/proxy session
-				delete("", SessionController::logoutFromSession, gson::toJson); // logout
+				get("", SessionController::requestNonAuthorizedSession, gson::toJson);
+				post("", SessionController::loginToPartnerOrProxySession, gson::toJson);
+				delete("", SessionController::logoutFromSession, gson::toJson);
 			});
 			path("/partner", () -> {
-				get("/user", PartnerController::getUsers, gson::toJson); // lists all partner related users
-				get("/user/:uuid", PartnerController::getUserData, gson::toJson); // partner related user: get user data
-				post("/user/:uuid", PartnerController::deleteUser, gson::toJson); // partner related user: delete user
+				path("/user", () -> {
+					get("", PartnerController::getUsers, gson::toJson);
+					get("/:uuid", PartnerController::getUserData, gson::toJson);
+					post("/:uuid", PartnerController::deleteUser, gson::toJson);
+				});
 			});
 			path("/signup", () -> {
-				post("/verification", SignupController::reserveUserAccount, gson::toJson); // reserve user account
-				post("/user", SignupController::addUserAccount, gson::toJson); // create user account
+				post("/verification", SignupController::reserveUserAccount, gson::toJson);
+				post("/user", SignupController::addUserAccount, gson::toJson);
 			});
 			path("/user", () -> {
-				get("", UserController::getUser, gson::toJson); // get user
-				post("", UserController::updateUser, gson::toJson); // update user
-				get("/invitation", UserController::getUserInvitations, gson::toJson); // get user's invitations
-				post("/invitation", UserController::inviteUser, gson::toJson); // invite user
-				post("/link", UserController::acceptInvitation, gson::toJson); // accept invitation
+				get("", UserController::getUser, gson::toJson);
+				post("", UserController::updateUser, gson::toJson);
+				get("/invitation", UserController::getUserInvitations, gson::toJson);
+				post("/invitation", UserController::inviteUser, gson::toJson);
+				post("/link", UserController::acceptInvitation, gson::toJson);
 			});
 			path("/tag", () -> {
-				get("", Controller::notImplemented, gson::toJson); // get user tags
-				get("/:uuid", Controller::notImplemented, gson::toJson); // get data of tag ':uuid'
-				post("", Controller::notImplemented, gson::toJson); // add tag
-				delete("/:uuid", Controller::notImplemented, gson::toJson); // delete tag
-				post("/:uuid", Controller::notImplemented, gson::toJson); // add/delete user to/from tag
+				get("", Controller::notImplemented, gson::toJson);
+				get("/:uuid", Controller::notImplemented, gson::toJson);
+				post("", Controller::notImplemented, gson::toJson);
+				delete("/:uuid", Controller::notImplemented, gson::toJson);
+				post("/:uuid", Controller::notImplemented, gson::toJson);
 			});
 			path("/object", () -> {
-				post("/:uuid/tag", Controller::notImplemented, gson::toJson); // attach tag to object
+				post("/:uuid/tag", Controller::notImplemented, gson::toJson);
 			});
 			path("/sensor", () -> {
-				post("", SensorController::addSensor, gson::toJson); // add sensor
-				get("/:uuid", SensorController::getSensor, gson::toJson); // get sensor
-				post("/:uuid", Controller::notImplemented, gson::toJson); // update sensor
-				delete("/:uuid", SensorController::deleteSensor, gson::toJson); // delete sensor
-				get("/:uuid/data", Controller::notImplemented, gson::toJson); // get sensor historic data
-				get("/:uuid/event", Controller::notImplemented, gson::toJson); // subscribe sensor events
-				delete("/:uuid/event", Controller::notImplemented, gson::toJson); // un-subscribe sensor events
-				post("/:uuid/action", Controller::notImplemented, gson::toJson); // sensor action
+				post("", SensorController::addSensor, gson::toJson);
+				get("/:uuid", SensorController::getSensor, gson::toJson);
+				post("/:uuid", Controller::notImplemented, gson::toJson);
+				delete("/:uuid", SensorController::deleteSensor, gson::toJson);
+				get("/:uuid/data", Controller::notImplemented, gson::toJson);
+				get("/:uuid/event", Controller::notImplemented, gson::toJson);
+				delete("/:uuid/event", Controller::notImplemented, gson::toJson);
+				post("/:uuid/action", Controller::notImplemented, gson::toJson);
 			});
 			path("/event", () -> {
-				get("", Controller::notImplemented, gson::toJson); // get events
+				get("", Controller::notImplemented, gson::toJson); 
 			});
 		});
 

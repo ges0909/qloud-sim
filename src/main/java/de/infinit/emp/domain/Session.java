@@ -46,8 +46,5 @@ public class Session {
 	public void setUserUuid(String userUuid) {
 		this.uuid = userUuid;
 	}
-	
-	public boolean isPartnerSession() {
-		return uuid == null;
-	}
+
 }

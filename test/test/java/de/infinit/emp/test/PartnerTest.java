@@ -1,6 +1,7 @@
 package de.infinit.emp.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -16,15 +17,14 @@ import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
 import de.infinit.emp.test.utils.RestClient;
-import de.infinit.emp.test.utils.Utils;
 import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PartnerTest {
-	static String sid;
-	static String server;
-	static String uuid;
+	static String partnerSid;
+	static String partnerServer;
+	static String userUuid;
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
@@ -37,34 +37,47 @@ public class PartnerTest {
 		Spark.stop();
 	}
 
-	@Test // login
-	public void testA() {
+	@Test
+	public void testA_Login_As_Partner() {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(HttpStatus.OK_200, res.status);
-		sid = (String) res.body.get("sid");
-		server = (String) res.body.get("server");
+		partnerSid = (String) res.body.get("sid");
+		partnerServer = (String) res.body.get("server");
 		Map<String, Object> body = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
-		res = RestClient.POST("/api/session", body, sid, server);
+		res = RestClient.POST("/api/session", body, partnerSid, partnerServer);
 		assertEquals(HttpStatus.OK_200, res.status);
 	}
 
-	@Test // list all partner related users: no users in database
-	public void testB() { // no users
-		RestClient.Response res = RestClient.GET("/api/partner/user", sid, server);
+	@Test
+	public void testB_List_All_Partner_Realted_Users() {
+		RestClient.Response res = RestClient.GET("/api/partner/user", partnerSid, partnerServer);
 		assertEquals(HttpStatus.OK_200, res.status);
 		assertEquals("ok", res.body.get("status"));
-		// Type type = new TypeToken<List<String>>(){}.getType();
-		// List<String> users = GSON.fromJson((String) resp.body.get("users"),
-		// type);
 		@SuppressWarnings("unchecked")
 		List<String> users = (List<String>) res.body.get("users");
 		assertEquals(0, users.size());
 	}
 
-	@Test // list all partner related users: one user in database
-	public void testC() {
-		Utils.addUser(sid, server, "email", "max.mustermann@test.de");
-		RestClient.Response res = RestClient.GET("/api/partner/user", sid, server);
+	@Test
+	public void testC_Add_User() {
+		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
+		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
+		assertEquals(200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
+		assertNotNull(resp.body.get("uuid"));
+		assertNotNull(resp.body.get("verification"));
+		userUuid = (String) resp.body.get("uuid");
+		String verification = (String) resp.body.get("verification");
+		body = Json.obj("email", "peter.pan@test.de", "firstname", "Peter", "lastname", "Pan", "display_name", "Peter Pan");
+		body.put("verification", verification);
+		resp = RestClient.POST("/api/signup/user", body, partnerSid, partnerServer);
+		assertEquals(200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
+	}
+
+	@Test
+	public void testD_List_All_Partner_Realted_Users() {
+		RestClient.Response res = RestClient.GET("/api/partner/user", partnerSid, partnerServer);
 		assertEquals(HttpStatus.OK_200, res.status);
 		assertEquals("ok", res.body.get("status"));
 		@SuppressWarnings("unchecked")
@@ -72,21 +85,9 @@ public class PartnerTest {
 		assertEquals(1, users.size());
 	}
 
-	@Test // list all partner related users: two users in database
-	public void testD() { // one users
-		Utils.addUser(sid, server, "email", "frieda.musterfrau@test.de");
-		RestClient.Response res = RestClient.GET("/api/partner/user", sid, server);
-		assertEquals(HttpStatus.OK_200, res.status);
-		assertEquals("ok", res.body.get("status"));
-		@SuppressWarnings("unchecked")
-		List<String> users = (List<String>) res.body.get("users");
-		assertEquals(2, users.size());
-	}
-
-	@Test // get user data
-	public void testE() {
-		String uuid = Utils.addUser(sid, server, "email", "peter.pan@test.de", "firstname", "Peter", "lastname", "Pan", "display_name", "Peter Pan");
-		RestClient.Response res = RestClient.GET("/api/partner/user/" + uuid, sid, server);
+	@Test
+	public void testE_Get_User_Data() {
+		RestClient.Response res = RestClient.GET("/api/partner/user/" + userUuid, partnerSid, partnerServer);
 		assertEquals(HttpStatus.OK_200, res.status);
 		assertEquals("ok", res.body.get("status"));
 		@SuppressWarnings("unchecked")
@@ -96,12 +97,12 @@ public class PartnerTest {
 		assertEquals("Pan", user.get("lastname"));
 		assertEquals("Peter Pan", user.get("display_name"));
 	}
-	
-	@Test // delete user
-	public void testF() {
-		String uuid = Utils.addUser(sid, server, "email", "angela.merkel@test.de");
-		RestClient.Response res = RestClient.POST("/api/partner/user/" + uuid, Json.obj("deleted", true), sid, server);
+
+	@Test
+	public void testF_Delete_User() {
+		RestClient.Response res =
+				RestClient.POST("/api/partner/user/" + userUuid, Json.obj("deleted", true), partnerSid, partnerServer);
 		assertEquals(HttpStatus.OK_200, res.status);
 		assertEquals("ok", res.body.get("status"));
-	}	
+	}
 }

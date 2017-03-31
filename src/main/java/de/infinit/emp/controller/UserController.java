@@ -45,12 +45,12 @@ public class UserController extends Controller {
 
 	class InviteUserRequest {
 		@SerializedName("invite")
-		List<String> invites;
+		List<String> userUuids;
 	}
 
 	class AcceptInvitationRequest {
 		@SerializedName("invitation")
-		List<String> invitations;
+		List<String> invitationsToAccept;
 	}
 	
 	public static Object getUser(Request request, Response response) {
@@ -118,16 +118,17 @@ public class UserController extends Controller {
 			return status(Status.FAIL);
 		}
 		InviteUserRequest req = decode(request.body(), InviteUserRequest.class);
-		for (String uuid : req.invites) {
+		for (String uuid : req.userUuids) {
 			User other = userModel.findById(uuid);
 			if (other == null) {
 				return status(Status.WRONG_USER);
 			}
-		}
-		Invitation invitation = new Invitation();
-		invitation.setUuid(Uuid.get());
-		if (invitationModel.create(invitation) == null) {
-			return status(Status.FAIL);
+			Invitation invitation = new Invitation();
+			invitation.setUuid(Uuid.get()); // create invitation code
+			invitation.setUser(other);
+			if (invitationModel.create(invitation) == null) {
+				return status(Status.FAIL);
+			}
 		}
 		return status(Status.OK);
 	}
@@ -141,15 +142,21 @@ public class UserController extends Controller {
 		if (own == null) {
 			return status(Status.FAIL);
 		}
-		ForeignCollection<Invitation> invitations = own.getInvitations();
-		if (invitations.isEmpty()) {
+		ForeignCollection<Invitation> storedInvitations = own.getInvitations();
+		if (storedInvitations.isEmpty()) {
 			return status(Status.WRONG_INVITATION);
 		}
 		AcceptInvitationRequest req = decode(request.body(), AcceptInvitationRequest.class);
-		for (Invitation i : invitations) {
-			if (!req.invitations.stream().anyMatch(uuid -> uuid.equals(i.getUuid()))) {
-				return status(Status.FAIL);
+		int numberAccepted = 0;
+		for (String uuid : req.invitationsToAccept) {
+			for (Invitation i : storedInvitations) {
+				if (uuid.equals(i.getUuid())) {
+					numberAccepted =+ 1;
+				}
 			}
+		}
+		if (req.invitationsToAccept.size() != numberAccepted) {
+			return status(Status.FAIL);
 		}
 		return status(Status.OK);
 	}

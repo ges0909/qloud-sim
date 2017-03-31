@@ -42,9 +42,13 @@ public class Controller {
 		return gson.fromJson(jsonString, to);
 	}
 
-	protected static boolean isPartnerSession(Request request) {
+	protected static boolean isProxySession(Request request) {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		return session.isPartnerSession();
+		return session.getUserUuid() != null;
+	}
+	
+	protected static boolean isPartnerSession(Request request) {
+		return !isProxySession(request);
 	}
 	
 	public static String notFound(Request request, Response response) {

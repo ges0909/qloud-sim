@@ -27,7 +27,7 @@ public class PartnerController extends Controller {
 	}
 
 	public static Object getUsers(Request request, Response response) {
-		if (!isPartnerSession(request)) {
+		if (isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		List<User> users = userModel.findAll();
@@ -36,7 +36,7 @@ public class PartnerController extends Controller {
 	}
 
 	public static Object getUserData(Request request, Response response) {
-		if (!isPartnerSession(request)) {
+		if (isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
@@ -48,7 +48,7 @@ public class PartnerController extends Controller {
 	}
 
 	public static Object deleteUser(Request request, Response response) {
-		if (!isPartnerSession(request)) {
+		if (isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		DeleteUserRequest req = decode(request.body(), DeleteUserRequest.class);
