@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -40,18 +39,18 @@ public class PartnerTest {
 	@Test
 	public void testA_Login_As_Partner() {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		partnerSid = (String) res.body.get("sid");
 		partnerServer = (String) res.body.get("server");
 		Map<String, Object> body = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
 		res = RestClient.POST("/api/session", body, partnerSid, partnerServer);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 	}
 
 	@Test
 	public void testB_List_All_Partner_Realted_Users() {
 		RestClient.Response res = RestClient.GET("/api/partner/user", partnerSid, partnerServer);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 		@SuppressWarnings("unchecked")
 		List<String> users = (List<String>) res.body.get("users");
@@ -76,9 +75,9 @@ public class PartnerTest {
 	}
 
 	@Test
-	public void testD_List_All_Partner_Realted_Users() {
+	public void testD_List_All_Partner_Related_Users() {
 		RestClient.Response res = RestClient.GET("/api/partner/user", partnerSid, partnerServer);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 		@SuppressWarnings("unchecked")
 		List<String> users = (List<String>) res.body.get("users");
@@ -88,7 +87,7 @@ public class PartnerTest {
 	@Test
 	public void testE_Get_User_Data() {
 		RestClient.Response res = RestClient.GET("/api/partner/user/" + userUuid, partnerSid, partnerServer);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 		@SuppressWarnings("unchecked")
 		Map<String, Object> user = (Map<String, Object>) res.body.get("user");
@@ -102,7 +101,7 @@ public class PartnerTest {
 	public void testF_Delete_User() {
 		RestClient.Response res =
 				RestClient.POST("/api/partner/user/" + userUuid, Json.obj("deleted", true), partnerSid, partnerServer);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 }

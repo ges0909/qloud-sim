@@ -3,25 +3,51 @@ package de.infinit.emp.domain;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "sensor")
+@DatabaseTable(tableName = "sensors")
 public class Sensor {
 	@NotNull
 	@DatabaseField(id = true)
-	private String uuid;
+	String uuid;
 
 	@NotNull
 	@Pattern(regexp = "^.{10,50}$")
 	@DatabaseField(unique = true, canBeNull = false)
-	private String code;
+	String code;
 
 	@Pattern(regexp = "^.{0,200}$")
 	@SerializedName("description")
 	@DatabaseField
-	private String description;
+	String description;
+
+	@DatabaseField
+	long time;
+
+	@DatabaseField(defaultValue = "EnergyCam")
+	String model;
+
+	@SerializedName("recv_interval")
+	@DatabaseField(defaultValue = "900")
+	int recvInterval;
+
+	@DatabaseField
+	@SerializedName("recv_time")
+	long recvTime;
+
+	@SerializedName("battery_ok")
+	@DatabaseField(defaultValue = "true")
+	boolean batteryOk;
+
+	// One-to-many
+	@Expose(serialize = false, deserialize = false)
+	@ForeignCollectionField
+	private transient ForeignCollection<Capability> capabilities;
 
 	public String getUuid() {
 		return uuid;
@@ -45,5 +71,53 @@ public class Sensor {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public int getRecvInterval() {
+		return recvInterval;
+	}
+
+	public void setRecvInterval(int recvInterval) {
+		this.recvInterval = recvInterval;
+	}
+
+	public long getRecvTime() {
+		return recvTime;
+	}
+
+	public void setRecvTime(long recvTime) {
+		this.recvTime = recvTime;
+	}
+
+	public boolean isBatteryOk() {
+		return batteryOk;
+	}
+
+	public void setBatteryOk(boolean batteryOk) {
+		this.batteryOk = batteryOk;
+	}
+
+	public ForeignCollection<Capability> getCapabilities() {
+		return capabilities;
+	}
+
+	public void setCapabilities(ForeignCollection<Capability> capabilities) {
+		this.capabilities = capabilities;
 	}
 }

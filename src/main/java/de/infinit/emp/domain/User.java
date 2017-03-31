@@ -9,7 +9,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "user")
+@DatabaseTable(tableName = "users")
 public class User {
 	@NotNull
 	@DatabaseField(id = true)

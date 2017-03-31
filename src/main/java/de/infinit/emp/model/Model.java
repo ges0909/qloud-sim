@@ -18,14 +18,14 @@ import com.j256.ormlite.table.TableUtils;
 public class Model<T, U> {
 	static final Logger log = Logger.getLogger(Model.class.getName());
 	static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-	ConnectionSource connectionSource = null;
+	ConnectionSource cs = null;
 	Dao<T, U> dao = null;
 
 	public Model(Class<T> bean) {
 		try {
-			connectionSource = Database.getConnectionSource();
-			dao = DaoManager.createDao(connectionSource, bean);
-			TableUtils.createTableIfNotExists(connectionSource, bean);
+			cs = Database.getConnectionSource();
+			dao = DaoManager.createDao(cs, bean);
+			TableUtils.createTableIfNotExists(cs, bean);
 		} catch (SQLException e) {
 			log.severe(log.toString());
 		}

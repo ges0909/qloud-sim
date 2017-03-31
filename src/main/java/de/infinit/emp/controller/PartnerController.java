@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.domain.User;
+import de.infinit.emp.model.InvitationModel;
 import de.infinit.emp.model.UserModel;
 import spark.Request;
 import spark.Response;
@@ -13,6 +14,7 @@ import spark.Response;
 public class PartnerController extends Controller {
 	static final Logger log = Logger.getLogger(PartnerController.class.getName());
 	static UserModel userModel = new UserModel();
+	static InvitationModel invitationModel = new InvitationModel();
 
 	class UserDataResponse {
 		String email;

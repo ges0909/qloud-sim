@@ -21,8 +21,8 @@ import spark.Response;
 
 public class UserController extends Controller {
 	static final Logger log = Logger.getLogger(UserController.class.getName());
-	static InvitationModel invitationModel = new InvitationModel();
 	static UserModel userModel = new UserModel();
+	static InvitationModel invitationModel = new InvitationModel();
 
 	class GetUserResponse {
 		String uuid;

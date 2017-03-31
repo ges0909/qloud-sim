@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "invitation")
+@DatabaseTable(tableName = "invitations")
 public class Invitation {
 	@NotNull
 	@DatabaseField(id = true)

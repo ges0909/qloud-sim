@@ -10,18 +10,19 @@ import com.j256.ormlite.support.ConnectionSource;
 import de.infinit.emp.ApplicationConfig;
 
 public class Database {
-	static ConnectionSource connectionSource = null;
+	static ConnectionSource cs = null;
 
 	private Database() {
 	}
 
 	public static ConnectionSource getConnectionSource() throws SQLException {
-		if (connectionSource == null) {
+		if (cs == null) {
 			ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
-			connectionSource = new JdbcConnectionSource(config.url());
-			((JdbcConnectionSource) connectionSource).setUsername(config.username());
-			((JdbcConnectionSource) connectionSource).setPassword(config.password());
+			cs = new JdbcConnectionSource(config.url());
+			((JdbcConnectionSource) cs).setUsername(config.username());
+			((JdbcConnectionSource) cs).setPassword(config.password());
 		}
-		return connectionSource;
+		return cs;
 	}
+
 }

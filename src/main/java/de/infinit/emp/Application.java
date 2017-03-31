@@ -12,8 +12,6 @@ import static spark.Spark.post;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import org.h2.tools.Server;
-
 import com.google.gson.Gson;
 
 import de.infinit.emp.controller.Controller;
@@ -30,7 +28,7 @@ public class Application {
 	static final Gson gson = new Gson();
 
 	public static void main(String[] args) throws IOException, SQLException {
-		Server server = Server.createTcpServer().start();
+//		Server server = Server.createTcpServer().start();
 
 		before(LoggingFilter::logRequest);
 		before(AuthenticationFilter::authenticateRequest);
@@ -96,7 +94,7 @@ public class Application {
 
 		after(LoggingFilter::logResponse);
 
-		// Database.getConnectionSource().close();
-		server.stop();
+//		Database.getConnectionSource().close();
+//		server.stop();
 	}
 }
