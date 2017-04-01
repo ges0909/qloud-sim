@@ -15,15 +15,27 @@ import spark.Request;
 import spark.Response;
 
 public class UploadController extends Controller {
+	private static UploadController instance = null;
 	static final Logger log = Logger.getLogger(UploadController.class.getName());
 
-	public static Object provideUploadForm(Request request, Response response) {
+	private UploadController() {
+		super();
+	}
+
+	public static UploadController instance() {
+		if (instance == null) {
+			instance = new UploadController();
+		}
+		return instance;
+	}
+	
+	public Object provideUploadForm(Request request, Response response) {
 		response.type("text/html");
 		return "<form method='post' enctype='multipart/form-data'>" + "  <input type='file' name='uploaded_file'>"
 				+ "  <button>Sensor upload</button>" + "</form>";
 	}
 
-	public static Object uploadFile(Request request, Response response) throws IOException, ServletException {
+	public Object uploadFile(Request request, Response response) throws IOException, ServletException {
 		MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/temp");
 		request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
 		List<String> lines;

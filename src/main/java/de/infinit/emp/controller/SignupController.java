@@ -10,7 +10,19 @@ import spark.Request;
 import spark.Response;
 
 public class SignupController extends Controller {
+	private static SignupController instance = null;
 	static final UserModel userModel = new UserModel();
+	
+	private SignupController() {
+		super();
+	}
+
+	public static SignupController instance() {
+		if (instance == null) {
+			instance = new SignupController();
+		}
+		return instance;
+	}
 	
 	class ReserveUserAccountRequest {
 		class Obj {
@@ -29,7 +41,7 @@ public class SignupController extends Controller {
 		String verification;
 	}
 
-	public static Object reserveUserAccount(Request request, Response response) {
+	public Object reserveUserAccount(Request request, Response response) {
 		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
 		user.setUuid(Uuid.next());
@@ -40,7 +52,7 @@ public class SignupController extends Controller {
 		return result("uuid", user.getUuid(), "verification", user.getVerification(), "info", body.info);
 	}
 
-	public static Object addUserAccount(Request request, Response response) {
+	public Object addUserAccount(Request request, Response response) {
 		AddUserAccountRequest req = decode(request.body(), AddUserAccountRequest.class);
 		User user = userModel.findByColumn("verification", req.verification);
 		if (user == null) {

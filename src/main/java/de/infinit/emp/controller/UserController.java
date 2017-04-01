@@ -21,11 +21,23 @@ import spark.Request;
 import spark.Response;
 
 public class UserController extends Controller {
+	private static UserController instance = null;
 	static final Logger log = Logger.getLogger(UserController.class.getName());
 	static UserModel userModel = new UserModel();
 	static InvitationModel invitationModel = new InvitationModel();
 	static SensorModel sensorModel = new SensorModel();
 
+	private UserController() {
+		super();
+	}
+
+	public static UserController instance() {
+		if (instance == null) {
+			instance = new UserController();
+		}
+		return instance;
+	}
+	
 	class GetUserResponse {
 		String uuid;
 		String username;
@@ -55,7 +67,7 @@ public class UserController extends Controller {
 		List<String> invitationsToAccept;
 	}
 	
-	public static Object getUser(Request request, Response response) {
+	public Object getUser(Request request, Response response) {
 		if (isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -69,7 +81,7 @@ public class UserController extends Controller {
 		return result("user", resp);
 	}
 
-	public static Object updateUser(Request request, Response response) {
+	public Object updateUser(Request request, Response response) {
 		if (isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -94,7 +106,7 @@ public class UserController extends Controller {
 		return ok();
 	}
 
-	public static Object getUserInvitations(Request request, Response response) {
+	public Object getUserInvitations(Request request, Response response) {
 		if (isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -110,7 +122,7 @@ public class UserController extends Controller {
 		return result("invitation", invitation);
 	}
 
-	public static Object inviteUser(Request request, Response response) {
+	public Object inviteUser(Request request, Response response) {
 		if (isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -135,7 +147,7 @@ public class UserController extends Controller {
 		return ok();
 	}
 
-	public static Object acceptInvitation(Request request, Response response) {
+	public Object acceptInvitation(Request request, Response response) {
 		if (isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}

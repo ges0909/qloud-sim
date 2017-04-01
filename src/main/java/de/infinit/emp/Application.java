@@ -4,9 +4,9 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
+import static spark.Spark.notFound;
 import static spark.Spark.path;
 import static spark.Spark.post;
-import static spark.Spark.notFound;
 
 import com.google.gson.Gson;
 
@@ -24,76 +24,85 @@ public class Application {
 	static final Gson gson = new Gson();
 
 	public static void main(String[] args) {
-//		Server server = Server.createTcpServer().start();
+		// Server server = Server.createTcpServer().start();
 
 		before(AuthenticationFilter::authenticateRequest);
 		before(LoggingFilter::logRequest);
-		
+
+		apiEndpoints();
+		uploadEndpoints();
+
+		notFound(Controller.instance()::notFound);
+		after(LoggingFilter::logResponse);
+
+		// exception(Exception.class, (exception, request, response) -> {
+		// Controller.instance()::notFound });
+
+		// Persistence.getConnectionSource().close();
+		// server.stop();
+	}
+
+	static void apiEndpoints() {
 		path("/api", () -> {
 			path("/session", () -> {
-				get("", SessionController::requestNonAuthorizedSession, gson::toJson);
-				post("", SessionController::loginToPartnerOrProxySession, gson::toJson);
-				delete("", SessionController::logoutFromSession, gson::toJson);
+				get("", SessionController.instance()::requestNonAuthorizedSession, gson::toJson);
+				post("", SessionController.instance()::loginToPartnerOrProxySession, gson::toJson);
+				delete("", SessionController.instance()::logoutFromSession, gson::toJson);
 			});
 			path("/partner", () -> {
 				path("/user", () -> {
-					get("", PartnerController::getUsers, gson::toJson);
-					get("/:uuid", PartnerController::getUserData, gson::toJson);
-					post("/:uuid", PartnerController::deleteUser, gson::toJson);
+					get("", PartnerController.instance()::getUsers, gson::toJson);
+					get("/:uuid", PartnerController.instance()::getUserData, gson::toJson);
+					post("/:uuid", PartnerController.instance()::deleteUser, gson::toJson);
 				});
 			});
 			path("/signup", () -> {
-				post("/verification", SignupController::reserveUserAccount, gson::toJson);
-				post("/user", SignupController::addUserAccount, gson::toJson);
+				post("/verification", SignupController.instance()::reserveUserAccount, gson::toJson);
+				post("/user", SignupController.instance()::addUserAccount, gson::toJson);
 			});
 			path("/user", () -> {
-				get("", UserController::getUser, gson::toJson);
-				post("", UserController::updateUser, gson::toJson);
-				get("/invitation", UserController::getUserInvitations, gson::toJson);
-				post("/invitation", UserController::inviteUser, gson::toJson);
-				post("/link", UserController::acceptInvitation, gson::toJson);
+				get("", UserController.instance()::getUser, gson::toJson);
+				post("", UserController.instance()::updateUser, gson::toJson);
+				get("/invitation", UserController.instance()::getUserInvitations, gson::toJson);
+				post("/invitation", UserController.instance()::inviteUser, gson::toJson);
+				post("/link", UserController.instance()::acceptInvitation, gson::toJson);
 			});
 			path("/tag", () -> {
-				get("", Controller::notImplemented, gson::toJson);
-				get("/:uuid", Controller::notImplemented, gson::toJson);
-				post("", Controller::notImplemented, gson::toJson);
-				delete("/:uuid", Controller::notImplemented, gson::toJson);
-				post("/:uuid", Controller::notImplemented, gson::toJson);
+				get("", Controller.instance()::notImplemented, gson::toJson);
+				get("/:uuid", Controller.instance()::notImplemented, gson::toJson);
+				post("", Controller.instance()::notImplemented, gson::toJson);
+				delete("/:uuid", Controller.instance()::notImplemented, gson::toJson);
+				post("/:uuid", Controller.instance()::notImplemented, gson::toJson);
 			});
 			path("/object", () -> {
-				post("/:uuid/tag", Controller::notImplemented, gson::toJson);
+				post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson);
 			});
 			path("/sensor", () -> {
-				post("", SensorController::addSensor, gson::toJson);
-				get("/:uuid", SensorController::getSensor, gson::toJson);
-				post("/:uuid", SensorController::updateSensor, gson::toJson);
-				delete("/:uuid", SensorController::deleteSensor, gson::toJson);
-				get("/:uuid/data", SensorController::getSensorData, gson::toJson);
-				get("/:uuid/event", SensorController::susbcribeSensorForEvents, gson::toJson);
-				delete("/:uuid/event", SensorController::cancelSensorEventSubcription, gson::toJson);
-				post("/:uuid/action", Controller::notImplemented, gson::toJson);
+				post("", SensorController.instance()::addSensor, gson::toJson);
+				get("/:uuid", SensorController.instance()::getSensor, gson::toJson);
+				post("/:uuid", SensorController.instance()::updateSensor, gson::toJson);
+				delete("/:uuid", SensorController.instance()::deleteSensor, gson::toJson);
+				get("/:uuid/data", SensorController.instance()::getSensorData, gson::toJson);
+				get("/:uuid/event", SensorController.instance()::susbcribeSensorForEvents, gson::toJson);
+				delete("/:uuid/event", SensorController.instance()::cancelSensorEventSubcription, gson::toJson);
+				post("/:uuid/action", Controller.instance()::notImplemented, gson::toJson);
 			});
 			path("/event", () -> {
-				get("", Controller::notImplemented, gson::toJson); 
+				get("", Controller.instance()::notImplemented, gson::toJson);
 			});
-			after((request, response) -> { response.type("application/json"); });
+			after((request, response) -> {
+				response.type("application/json");
+			});
 		});
-		
+	}
+
+	static void uploadEndpoints() {
 		path("/upload", () -> {
-			get("", UploadController::provideUploadForm);
-			post("", UploadController::uploadFile);
-			after((request, response) -> { response.type("text/html"); });
+			get("", UploadController.instance()::provideUploadForm);
+			post("", UploadController.instance()::uploadFile);
+			after((request, response) -> {
+				response.type("text/html");
+			});
 		});
-		
-		notFound(Controller::notFound);
-		
-		after(LoggingFilter::logResponse);
-
-//		exception(Exception.class, (exception, request, response) -> {
-//			Controller.notFound(request, response);
-//		});
-
-//		Database.getConnectionSource().close();
-//		server.stop();
 	}
 }

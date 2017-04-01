@@ -8,16 +8,28 @@ import spark.Request;
 import spark.Response;
 
 public class SessionController extends Controller {
+	private static SessionController instance = null;
 	public static final String QLOUD_SESSION = "session";
 	static final SessionModel sessionModel = new SessionModel();
 
+	private SessionController() {
+		super();
+	}
+
+	public static SessionController instance() {
+		if (instance == null) {
+			instance = new SessionController();
+		}
+		return instance;
+	}
+	
 	class LoginRequest {
 		String partner;
 		String key;
 		String user;
 	}
 
-	public static Object requestNonAuthorizedSession(Request request, Response response) {
+	public Object requestNonAuthorizedSession(Request request, Response response) {
 		Session session = new Session();
 		String sid = Uuid.next();
 		String server = request.scheme() + "://" + request.host();
@@ -29,7 +41,7 @@ public class SessionController extends Controller {
 		return result("sid", sid, "server", server);
 	}
 
-	public static Object loginToPartnerOrProxySession(Request request, Response response) {
+	public Object loginToPartnerOrProxySession(Request request, Response response) {
 		LoginRequest req = gson.fromJson(request.body(), LoginRequest.class);
 		if (req.partner == null || req.key == null) {
 			return status(Status.WRONG_CREDENTIALS);
@@ -50,7 +62,7 @@ public class SessionController extends Controller {
 		return ok();
 	}
 
-	public static Object logoutFromSession(Request request, Response response) {
+	public Object logoutFromSession(Request request, Response response) {
 		Session session = request.session().attribute(QLOUD_SESSION);
 		if (session == null) {
 			return fail();

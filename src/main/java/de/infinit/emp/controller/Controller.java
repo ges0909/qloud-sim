@@ -15,17 +15,28 @@ import spark.Request;
 import spark.Response;
 
 public class Controller {
+	private static Controller instance = null;
 	static final Logger log = Logger.getLogger(UserController.class.getName());
 	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static final Gson gson = new Gson();
 
-	protected static Map<String, Object> status(String value) {
+	protected Controller() {
+	}
+
+	public static Controller instance() {
+		if (instance == null) {
+			instance = new Controller();
+		}
+		return instance;
+	}
+	
+	protected Map<String, Object> status(String value) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", value);
 		return map;
 	}
 
-	protected static Map<String, Object> result(Object... keyValuePairs) {
+	protected Map<String, Object> result(Object... keyValuePairs) {
 		Map<String, Object> map = status(Status.OK);
 		for (int i = 0; i < keyValuePairs.length; i = i + 2) {
 			map.put((String) keyValuePairs[i], keyValuePairs[i + 1]);
@@ -33,37 +44,37 @@ public class Controller {
 		return map;
 	}
 
-	protected static <U> U decode(String jsonString, Class<U> to) {
+	protected <U> U decode(String jsonString, Class<U> to) {
 		return gson.fromJson(jsonString, to);
 	}
 
-	protected static <T, U> U convert(T from, Class<U> to) {
+	protected <T, U> U convert(T from, Class<U> to) {
 		String jsonString = gson.toJson(from);
 		return gson.fromJson(jsonString, to);
 	}
 
-	protected static boolean isProxySession(Request request) {
+	protected boolean isProxySession(Request request) {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		return session.getUser() != null;
 	}
 	
-	protected static boolean isPartnerSession(Request request) {
+	protected boolean isPartnerSession(Request request) {
 		return !isProxySession(request);
 	}
 	
-	public static String notFound(Request request, Response response) {
+	public String notFound(Request request, Response response) {
 		return gson.toJson(fail());
 	}
 	
-	public static Map<String, Object> notImplemented(Request request, Response response) {
+	public Map<String, Object> notImplemented(Request request, Response response) {
 		return status(Status.NOT_IMPLEMENTED);
 	}
 	
-	protected static Object ok() {
+	protected Object ok() {
 		return status(Status.OK);
 	}
 	
-	protected static Object fail() {
+	protected Object fail() {
 		return status(Status.FAIL);
 	}
 }

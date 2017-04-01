@@ -20,10 +20,22 @@ import spark.Request;
 import spark.Response;
 
 public class SensorController extends Controller {
+	private static SensorController instance = null;
 	static SensorModel sensorModel = new SensorModel();
 	static CapabilityModel capabilityModel = new CapabilityModel();
 	static UserModel userModel = new UserModel();
 
+	private SensorController() {
+		super();
+	}
+
+	public static SensorController instance() {
+		if (instance == null) {
+			instance = new SensorController();
+		}
+		return instance;
+	}
+	
 	class AddOrUpdateSensorRequest {
 		String code;
 		String description;
@@ -49,7 +61,7 @@ public class SensorController extends Controller {
 		State state;
 	}
 
-	public static Object addSensor(Request request, Response response) {
+	public Object addSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
@@ -99,7 +111,7 @@ public class SensorController extends Controller {
 		return result("uuid", sensor.getUuid());
 	}
 
-	public static Object updateSensor(Request request, Response response) {
+	public Object updateSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
@@ -127,7 +139,7 @@ public class SensorController extends Controller {
 		return ok();
 	}
 	
-	public static Object getSensor(Request request, Response response) {
+	public Object getSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
@@ -163,7 +175,7 @@ public class SensorController extends Controller {
 		return result("sensor", res);
 	}
 	
-	public static Object deleteSensor(Request request, Response response) {
+	public Object deleteSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
@@ -174,7 +186,7 @@ public class SensorController extends Controller {
 		return ok();
 	}
 	
-	public static Object getSensorData(Request request, Response response) {
+	public Object getSensorData(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
@@ -189,7 +201,7 @@ public class SensorController extends Controller {
 		return result("data", obj);
 	}
 	
-	public static Object susbcribeSensorForEvents(Request request, Response response) {
+	public Object susbcribeSensorForEvents(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
@@ -201,7 +213,7 @@ public class SensorController extends Controller {
 		return ok();
 	}
 	
-	public static Object cancelSensorEventSubcription(Request request, Response response) {
+	public Object cancelSensorEventSubcription(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}

@@ -13,10 +13,22 @@ import spark.Request;
 import spark.Response;
 
 public class PartnerController extends Controller {
+	private static PartnerController instance = null;
 	static final Logger log = Logger.getLogger(PartnerController.class.getName());
 	static UserModel userModel = new UserModel();
 	static InvitationModel invitationModel = new InvitationModel();
 	static SensorModel sensorModel = new SensorModel();
+
+	private PartnerController() {
+		super();
+	}
+
+	public static PartnerController instance() {
+		if (instance == null) {
+			instance = new PartnerController();
+		}
+		return instance;
+	}
 
 	class UserDataResponse {
 		String email;
@@ -30,7 +42,7 @@ public class PartnerController extends Controller {
 		boolean deleted;
 	}
 
-	public static Object getUsers(Request request, Response response) {
+	public Object getUsers(Request request, Response response) {
 		if (isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -39,7 +51,7 @@ public class PartnerController extends Controller {
 		return result("users", uuids);
 	}
 
-	public static Object getUserData(Request request, Response response) {
+	public Object getUserData(Request request, Response response) {
 		if (isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -51,7 +63,7 @@ public class PartnerController extends Controller {
 		return result("user", convert(user, UserDataResponse.class));
 	}
 
-	public static Object deleteUser(Request request, Response response) {
+	public Object deleteUser(Request request, Response response) {
 		if (isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
