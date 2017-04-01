@@ -16,8 +16,8 @@ import spark.Response;
 
 public class Controller {
 	static final Logger log = Logger.getLogger(UserController.class.getName());
-	static ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
-	static Gson gson = new Gson();
+	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
+	static final Gson gson = new Gson();
 
 	protected static Map<String, Object> status(String value) {
 		Map<String, Object> map = new HashMap<>();

@@ -13,7 +13,6 @@ import javax.validation.Validator;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 
 public class Model<T, U> {
 	static final Logger log = Logger.getLogger(Model.class.getName());
@@ -23,9 +22,8 @@ public class Model<T, U> {
 
 	public Model(Class<T> bean) {
 		try {
-			cs = Database.getConnectionSource();
+			cs = Persistence.getConnectionSource();
 			dao = DaoManager.createDao(cs, bean);
-			TableUtils.createTableIfNotExists(cs, bean);
 		} catch (SQLException e) {
 			log.severe(log.toString());
 		}
