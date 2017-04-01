@@ -20,7 +20,7 @@ import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SensorTest {
+public class SensorTests {
 	static String partnerSid;
 	static String partnerServer;
 	static String userSid;
@@ -75,8 +75,8 @@ public class SensorTest {
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
 		userServer = (String) res.body.get("server");
-		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user",
-				userUuid);
+		Map<String, Object> req =
+				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", userUuid);
 		res = RestClient.POST("/api/session", req, userSid, userServer);
 		assertEquals(200, res.status);
 	}

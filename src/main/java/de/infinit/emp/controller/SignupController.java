@@ -32,8 +32,8 @@ public class SignupController extends Controller {
 	public static Object reserveUserAccount(Request request, Response response) {
 		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
-		user.setUuid(Uuid.get());
-		user.setVerification(Uuid.get());
+		user.setUuid(Uuid.next());
+		user.setVerification(Uuid.next());
 		if (userModel.create(user) == null) {
 			return fail();
 		}
@@ -52,7 +52,7 @@ public class SignupController extends Controller {
 		user.setLastName(req.lastname);
 		user.setPassword(req.password);
 		user.setUserName(req.username);
-		user.setTagAll(Uuid.get());
+		user.setTagAll(Uuid.next());
 		if (userModel.update(user) == null) {
 			return fail();
 		}

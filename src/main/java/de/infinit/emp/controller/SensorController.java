@@ -74,7 +74,7 @@ public class SensorController extends Controller {
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
-		sensor.setUuid(Uuid.get());
+		sensor.setUuid(Uuid.next());
 		sensor.setUser(own);
 		if (sensorModel.create(sensor) == null) {
 			return fail();

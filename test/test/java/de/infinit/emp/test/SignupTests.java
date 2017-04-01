@@ -19,10 +19,11 @@ import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
 import de.infinit.emp.test.utils.RestClient;
+import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SignupTest {
+public class SignupTests {
 	static String partnerSid;
 	static String partnerServer;
 	static String uuid;
@@ -71,14 +72,9 @@ public class SignupTest {
 
 	@Test
 	public void testC_Complete_Signup() {
-		Map<String, Object> req = new HashMap<>();
-		req.put("email", "max.mustermann@infinit-services.de");
-		req.put("username", "max");
-		req.put("firstname", "max");
-		req.put("username", "mustermann");
-		req.put("displayname", "max.mustermann");
-		req.put("password", "geheim");
-		req.put("verification", verification);
+		Map<String, Object> req = Json.obj("email", "max.mustermann@infinit-services.de", "username", "max",
+				"firstname", "max", "username", "mustermann", "displayname", "max.mustermann", "password", "geheim",
+				"verification", verification);
 		RestClient.Response res = RestClient.POST("/api/signup/user", req, partnerSid, partnerServer);
 		assertEquals(HttpStatus.OK_200, res.status);
 		assertEquals("ok", res.body.get("status"));

@@ -126,7 +126,7 @@ public class UserController extends Controller {
 				return status(Status.WRONG_USER);
 			}
 			Invitation invitation = new Invitation();
-			invitation.setUuid(Uuid.get()); // create invitation code
+			invitation.setUuid(Uuid.next()); // create invitation code
 			invitation.setUser(other);
 			if (invitationModel.create(invitation) == null) {
 				return fail();

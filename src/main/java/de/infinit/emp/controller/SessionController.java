@@ -19,7 +19,7 @@ public class SessionController extends Controller {
 
 	public static Object requestNonAuthorizedSession(Request request, Response response) {
 		Session session = new Session();
-		String sid = Uuid.get();
+		String sid = Uuid.next();
 		String server = request.scheme() + "://" + request.host();
 		session.setSid(sid);
 		session.setServer(server);

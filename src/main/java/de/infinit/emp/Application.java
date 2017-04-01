@@ -6,6 +6,7 @@ import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.path;
 import static spark.Spark.post;
+import static spark.Spark.notFound;
 
 import com.google.gson.Gson;
 
@@ -84,9 +85,10 @@ public class Application {
 			after((request, response) -> { response.type("text/html"); });
 		});
 		
+		notFound(Controller::notFound);
+		
 		after(LoggingFilter::logResponse);
 
-//		notFound(Controller::notFound);
 //		exception(Exception.class, (exception, request, response) -> {
 //			Controller.notFound(request, response);
 //		});

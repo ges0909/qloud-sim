@@ -20,7 +20,7 @@ import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PartnerTest {
+public class PartnerTests {
 	static String partnerSid;
 	static String partnerServer;
 	static String userUuid;
@@ -42,8 +42,8 @@ public class PartnerTest {
 		assertEquals(200, res.status);
 		partnerSid = (String) res.body.get("sid");
 		partnerServer = (String) res.body.get("server");
-		Map<String, Object> body = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
-		res = RestClient.POST("/api/session", body, partnerSid, partnerServer);
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
+		res = RestClient.POST("/api/session", req, partnerSid, partnerServer);
 		assertEquals(200, res.status);
 	}
 
@@ -59,17 +59,17 @@ public class PartnerTest {
 
 	@Test
 	public void testC_Add_User() {
-		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
-		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
+		Map<String, Object> req = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
+		RestClient.Response resp = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 		assertNotNull(resp.body.get("uuid"));
 		assertNotNull(resp.body.get("verification"));
 		userUuid = (String) resp.body.get("uuid");
 		String verification = (String) resp.body.get("verification");
-		body = Json.obj("email", "peter.pan@test.de", "firstname", "Peter", "lastname", "Pan", "display_name", "Peter Pan");
-		body.put("verification", verification);
-		resp = RestClient.POST("/api/signup/user", body, partnerSid, partnerServer);
+		req = Json.obj("email", "peter.pan@test.de", "firstname", "Peter", "lastname", "Pan", "display_name", "Peter Pan");
+		req.put("verification", verification);
+		resp = RestClient.POST("/api/signup/user", req, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
 	}

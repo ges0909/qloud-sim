@@ -19,7 +19,7 @@ import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserTest {
+public class UserTests {
 	static String partnerSid;
 	static String partnerServer;
 	static String userSid;

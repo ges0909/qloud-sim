@@ -5,10 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -16,11 +14,13 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.Uuid;
 import de.infinit.emp.test.utils.RestClient;
+import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SessionTest {
+public class SessionTests {
 	static String sid;
 	static String server;
 
@@ -35,10 +35,10 @@ public class SessionTest {
 		Spark.stop();
 	}
 
-	@Test // get unauthorized session
-	public void testA() {
+	@Test
+	public void testA_Get_NonAuthorized_Session() {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		sid = (String) res.body.get("sid");
 		server = (String) res.body.get("server");
 		assertNotNull(sid);
@@ -46,31 +46,28 @@ public class SessionTest {
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	@Test // partner login
-	public void testB() {
-		Map<String, Object> req = new HashMap<>();
-		req.put("partner", "brightone");
-		req.put("key", "abcdefghijklmnopqrstuvwxyz");
+	@Test
+	public void testB_Login_As_Partner() {
+		Map<String, Object> req =
+				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
 		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	@Test // proxy login
-	public void testC() {
-		Map<String, Object> req = new HashMap<>();
-		req.put("partner", "brightone");
-		req.put("key", "abcdefghijklmnopqrstuvwxyz");
-		req.put("user", "sim-abcd");
+	@Test
+	public void testC_Login_as_Proxy() {
+		Map<String, Object> req =
+				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", Uuid.next());
 		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	@Test // delete session
-	public void testD() {
+	@Test
+	public void testD_Logout_From_Session() {
 		RestClient.Response res = RestClient.DELETE("/api/session", sid, server);
-		assertEquals(HttpStatus.OK_200, res.status);
+		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 }
