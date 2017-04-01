@@ -1,11 +1,28 @@
 package de.infinit.emp.domain;
 
+import javax.validation.constraints.NotNull;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable(tableName = "sessions")
 public class Session {
+	@NotNull
+	@DatabaseField(id = true)
 	String sid;
+
+	@NotNull
+	@DatabaseField(canBeNull = false)
 	String server;
+
+	@DatabaseField
 	String partner;
+
+	@DatabaseField
 	String key;
-	String uuid; // user uuid in case of proxy session; otherwise null
+
+	@DatabaseField
+	String user; // user uuid in case of proxy session; otherwise null
 
 	public String getSid() {
 		return sid;
@@ -39,12 +56,11 @@ public class Session {
 		this.key = key;
 	}
 
-	public String getUserUuid() {
-		return uuid;
+	public String getUser() {
+		return user;
 	}
 
-	public void setUserUuid(String userUuid) {
-		this.uuid = userUuid;
+	public void setUser(String user) {
+		this.user = user;
 	}
-
 }

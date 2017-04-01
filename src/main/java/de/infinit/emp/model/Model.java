@@ -18,8 +18,8 @@ import com.j256.ormlite.table.TableUtils;
 public class Model<T, U> {
 	static final Logger log = Logger.getLogger(Model.class.getName());
 	static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-	ConnectionSource cs = null;
-	Dao<T, U> dao = null;
+	ConnectionSource cs ;
+	Dao<T, U> dao;
 
 	public Model(Class<T> bean) {
 		try {
@@ -36,15 +36,15 @@ public class Model<T, U> {
 		if (violations.isEmpty())
 			return true;
 		for (ConstraintViolation<T> v : violations) {
-			log.warning("constraint violation: " 
-					+ v.getPropertyPath().toString() + "=" 
+			log.warning("constraint violation: "
+					+ v.getPropertyPath().toString() + "="
 					+ v.getInvalidValue() + ": "
 					+ v.getMessage());
 		}
 		return false;
 	}
 
-	public T create(Dao<T, U> dao, T bean) {
+	public T create(T bean) {
 		if (!isValid(bean)) {
 			return null;
 		}
@@ -58,7 +58,7 @@ public class Model<T, U> {
 		return null;
 	}
 
-	public T update(Dao<T, U> dao, T bean) {
+	public T update(T bean) {
 		if (!isValid(bean)) {
 			return null;
 		}
@@ -71,8 +71,8 @@ public class Model<T, U> {
 		}
 		return null;
 	}
-	
-	public int delete(Dao<T, U> dao, U id) {
+
+	public int delete(U id) {
 		try {
 			return dao.deleteById(id);
 		} catch (SQLException e) {
@@ -80,8 +80,8 @@ public class Model<T, U> {
 		}
 		return 0;
 	}
-	
-	public T queryForId(Dao<T, U> dao, U id) {
+
+	public T queryForId(U id) {
 		try {
 			return dao.queryForId(id);
 		} catch (SQLException e) {
@@ -90,7 +90,7 @@ public class Model<T, U> {
 		return null;
 	}
 
-	public List<T> queryForAll(Dao<T, U> dao) {
+	public List<T> queryForAll() {
 		try {
 			return dao.queryForAll();
 		} catch (SQLException e) {
@@ -98,8 +98,8 @@ public class Model<T, U> {
 		}
 		return new ArrayList<>();
 	}
-	
-	public <V> T findByColumn(Dao<T, U> dao, String column, V value) {
+
+	public <V> T findByColumn(String column, V value) {
 		try {
 			return dao.queryBuilder()
 					.where()

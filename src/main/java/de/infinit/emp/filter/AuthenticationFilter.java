@@ -45,7 +45,7 @@ public class AuthenticationFilter {
 		if (sid == null) {
 			halt(STATUS_NO_AUTH);
 		}
-		Session session = sessionService.findSessionBySid(sid);
+		Session session = sessionService.queryForId(sid);
 		if (session == null) {
 			log.log(Level.SEVERE, "Authorization header: sid {0}: unknow session", sid);
 			halt(STATUS_NO_SESSION);

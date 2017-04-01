@@ -34,7 +34,7 @@ public class PartnerController extends Controller {
 		if (isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
-		List<User> users = userModel.findAll();
+		List<User> users = userModel.queryForAll();
 		List<String> uuids = users.stream().map(User::getUuid).collect(Collectors.toList());
 		return result("users", uuids);
 	}
@@ -44,7 +44,7 @@ public class PartnerController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		User user = userModel.findById(uuid);
+		User user = userModel.queryForId(uuid);
 		if (user == null) {
 			return status(Status.WRONG_USER);
 		}

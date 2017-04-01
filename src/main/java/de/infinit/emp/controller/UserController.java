@@ -60,7 +60,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.findById(session.getUserUuid());
+		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
 			return fail();
 		}
@@ -74,11 +74,11 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.findById(session.getUserUuid());
+		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
 			return fail();
 		}
-		User other = userModel.findByEmail(session.getUserUuid());
+		User other = userModel.findByColumn("email", session.getUser());
 		if (other != null) {
 			return status(Status.ALREADY_EXIST);
 		}
@@ -99,7 +99,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.findById(session.getUserUuid());
+		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
 			return fail();
 		}
@@ -115,13 +115,13 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.findById(session.getUserUuid());
+		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
 			return fail();
 		}
 		InviteUserRequest req = decode(request.body(), InviteUserRequest.class);
 		for (String uuid : req.userUuids) {
-			User other = userModel.findById(uuid);
+			User other = userModel.queryForId(uuid);
 			if (other == null) {
 				return status(Status.WRONG_USER);
 			}
@@ -140,7 +140,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.findById(session.getUserUuid());
+		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
 			return fail();
 		}

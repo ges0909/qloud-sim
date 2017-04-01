@@ -1,6 +1,7 @@
 package de.infinit.emp.controller;
 
 import de.infinit.emp.Status;
+import de.infinit.emp.Uuid;
 import de.infinit.emp.domain.Session;
 import de.infinit.emp.model.SessionModel;
 import spark.Request;
@@ -17,8 +18,15 @@ public class SessionController extends Controller {
 	}
 
 	public static Object requestNonAuthorizedSession(Request request, Response response) {
-		Session session = sessionModel.createSession(request.scheme(), request.host());
-		return result("server", session.getServer(), "sid", session.getSid());
+		Session session = new Session();
+		String sid = Uuid.get();
+		String server = request.scheme() + "://" + request.host();
+		session.setSid(sid);
+		session.setServer(server);
+		if (sessionModel.create(session) == null) {
+			return fail();
+		}
+		return result("sid", sid, "server", server);
 	}
 
 	public static Object loginToPartnerOrProxySession(Request request, Response response) {
@@ -30,15 +38,24 @@ public class SessionController extends Controller {
 			return status(Status.WRONG_CREDENTIALS);
 		}
 		Session session = request.session().attribute(QLOUD_SESSION);
+		if (session == null) {
+			return fail();
+		}
 		session.setPartner(req.partner);
 		session.setKey(req.key);
-		session.setUserUuid(req.user);
+		session.setUser(req.user);
+		if (sessionModel.update(session) == null) {
+			return fail();
+		}
 		return ok();
 	}
 
 	public static Object logoutFromSession(Request request, Response response) {
 		Session session = request.session().attribute(QLOUD_SESSION);
-		if (sessionModel.deleteSession(session) == null) {
+		if (session == null) {
+			return fail();
+		}
+		if (sessionModel.delete(session.getSid()) != 1) {
 			return fail();
 		}
 		return ok();

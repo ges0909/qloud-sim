@@ -44,7 +44,7 @@ public class Controller {
 
 	protected static boolean isProxySession(Request request) {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		return session.getUserUuid() != null;
+		return session.getUser() != null;
 	}
 	
 	protected static boolean isPartnerSession(Request request) {

@@ -54,7 +54,7 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.findById(session.getUserUuid());
+		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
 			return fail();
 		}
@@ -65,7 +65,7 @@ public class SensorController extends Controller {
 		if (!Pattern.matches(config.devicePattern(), req.code)) {
 			return status(Status.WRONG_CODE);
 		}
-		if (sensorModel.findByCode(req.code) != null) {
+		if (sensorModel.findByColumn("code", req.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
 		Sensor sensor = new Sensor();
@@ -104,7 +104,7 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		Sensor sensor = sensorModel.findByUuid(uuid);
+		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}
@@ -113,7 +113,7 @@ public class SensorController extends Controller {
 			if (!Pattern.matches(config.devicePattern(), req.code)) {
 				return status(Status.WRONG_CODE);
 			}
-			if (sensorModel.findByCode(req.code) != null) {
+			if (sensorModel.findByColumn("code", req.code) != null) {
 				return status(Status.DUPLICATE_SENSOR);
 			}
 			sensor.setCode(req.code);
@@ -132,7 +132,7 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		Sensor sensor = sensorModel.findByUuid(uuid);
+		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return fail();
 		}
@@ -168,7 +168,7 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		if (sensorModel.deleteByUuid(uuid) != 1) {
+		if (sensorModel.delete(uuid) != 1) {
 			return fail();
 		}
 		return ok();
@@ -179,7 +179,7 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		Sensor sensor = sensorModel.findByUuid(uuid);
+		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}
@@ -194,7 +194,7 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		Sensor sensor = sensorModel.findByUuid(uuid);
+		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}
@@ -206,7 +206,7 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		Sensor sensor = sensorModel.findByUuid(uuid);
+		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}

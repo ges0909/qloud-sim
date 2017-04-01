@@ -42,7 +42,7 @@ public class SignupController extends Controller {
 
 	public static Object addUserAccount(Request request, Response response) {
 		AddUserAccountRequest req = decode(request.body(), AddUserAccountRequest.class);
-		User user = userModel.findByVerification(req.verification);
+		User user = userModel.findByColumn("verification", req.verification);
 		if (user == null) {
 			return status(Status.UNKNOWN_VERIFICATION);
 		}
