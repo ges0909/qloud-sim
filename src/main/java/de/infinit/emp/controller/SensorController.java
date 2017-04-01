@@ -21,9 +21,9 @@ import spark.Response;
 
 public class SensorController extends Controller {
 	private static SensorController instance = null;
-	static SensorModel sensorModel = new SensorModel();
-	static CapabilityModel capabilityModel = new CapabilityModel();
-	static UserModel userModel = new UserModel();
+	final SensorModel sensorModel = SensorModel.instance();
+	final CapabilityModel capabilityModel = CapabilityModel.instance();
+	final UserModel userModel = UserModel.instance();
 
 	private SensorController() {
 		super();
@@ -35,7 +35,7 @@ public class SensorController extends Controller {
 		}
 		return instance;
 	}
-	
+
 	class AddOrUpdateSensorRequest {
 		String code;
 		String description;
@@ -46,10 +46,12 @@ public class SensorController extends Controller {
 			List<String> data;
 			List<String> action;
 		}
+
 		class State {
 			List<Integer> data;
 			List<Object> action;
 		}
+
 		String owner;
 		long time;
 		String description;
@@ -138,7 +140,7 @@ public class SensorController extends Controller {
 		}
 		return ok();
 	}
-	
+
 	public Object getSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
@@ -151,30 +153,18 @@ public class SensorController extends Controller {
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
 		res.owner = sensor.getUser().getUuid();
 		res.capabilities = res.new Capability();
-		res.capabilities.data = sensor.getCapabilities()
-				.stream()
-				.filter(c -> c.getType().equals("data"))
-				.map(c -> c.getName())
-				.collect(Collectors.toList());
-		res.capabilities.action = sensor.getCapabilities()
-				.stream()
-				.filter(c -> c.getType().equals("action"))
-				.map(c -> c.getName())
-				.collect(Collectors.toList());
+		res.capabilities.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
+				.map(c -> c.getName()).collect(Collectors.toList());
+		res.capabilities.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action"))
+				.map(c -> c.getName()).collect(Collectors.toList());
 		res.state = res.new State();
-		res.state.data = sensor.getCapabilities()
-				.stream()
-				.filter(c -> c.getType().equals("data"))
-				.map(c -> (Integer) null)
-				.collect(Collectors.toList());
-		res.state.action = sensor.getCapabilities()
-				.stream()
-				.filter(c -> c.getType().equals("action"))
-				.map(c -> null)
+		res.state.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
+				.map(c -> (Integer) null).collect(Collectors.toList());
+		res.state.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(c -> null)
 				.collect(Collectors.toList());
 		return result("sensor", res);
 	}
-	
+
 	public Object deleteSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
@@ -185,7 +175,7 @@ public class SensorController extends Controller {
 		}
 		return ok();
 	}
-	
+
 	public Object getSensorData(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
@@ -200,7 +190,7 @@ public class SensorController extends Controller {
 		Map<String, Object> obj = Json.obj(timestamp, values);
 		return result("data", obj);
 	}
-	
+
 	public Object susbcribeSensorForEvents(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
@@ -212,7 +202,7 @@ public class SensorController extends Controller {
 		}
 		return ok();
 	}
-	
+
 	public Object cancelSensorEventSubcription(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);

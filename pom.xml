@@ -5,7 +5,7 @@
 	<groupId>de.infintit.emp</groupId>
 	<artifactId>qloud-simulator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	
+
 	<properties>
 		<java.version>1.8</java.version>
 		<gson.version>2.8.0</gson.version>
@@ -14,7 +14,7 @@
 		<ormlite.jdbc.version>5.0</ormlite.jdbc.version>
 		<ebean-maven-plugin.args>debug=2</ebean-maven-plugin.args>
 	</properties>
-	
+
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
@@ -26,53 +26,53 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
-			<!--
-			<plugin>
-				<groupId>io.repaint.maven</groupId>
-				<artifactId>tiles-maven-plugin</artifactId>
-				<version>2.8</version>
-				<extensions>true</extensions>
-				<configuration>
-				<tiles>
-					<tile>org.avaje.tile:java-compile:1.1</tile>
-					<tile>io.ebean.tile:enhancement:2.6</tile>
-				</tiles>
-			</configuration>
-			</plugin>
-			-->
 		</plugins>
 	</build>
-	
+
 	<dependencies>
 
+		<!-- web service -->
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-core</artifactId>
 			<version>${spark.core.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.21</version>
+			<groupId>com.sparkjava</groupId>
+			<artifactId>spark-template-freemarker</artifactId>
+			<version>2.5.5</version>
 		</dependency>
+
+		<!-- json -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>${gson.version}</version>
 		</dependency>
 
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+
+		<!-- property handling -->
+		<dependency>
+			<groupId>org.aeonbits.owner</groupId>
+			<artifactId>owner-java8</artifactId>
+			<version>1.0.9</version>
+		</dependency>
+
+		<!-- testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 		</dependency>
 
-		<dependency>
-    		<groupId>org.hibernate.javax.persistence</groupId>
-    		<artifactId>hibernate-jpa-2.1-api</artifactId>
-    		<version>1.0.0.Final</version>
-		</dependency>
-
+		<!-- orm -->
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-core</artifactId>
@@ -84,27 +84,14 @@
 			<version>${ormlite.jdbc.version}</version>
 		</dependency>
 
+		<!-- database -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.194</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.aeonbits.owner</groupId>
-			<artifactId>owner-java8</artifactId>
-			<version>1.0.9</version>
-		</dependency>
-
-		<!--
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.16.16</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-		
+		<!-- bean validation -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -121,13 +108,12 @@
 			<version>3.0.1-b08</version>
 		</dependency>
 
-		<!--
+		<!-- templates -->
 		<dependency>
-			<groupId>io.ebean</groupId>
-			<artifactId>ebean</artifactId>
-			<version>10.2.1</version>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.26-incubating</version>
 		</dependency>
-		-->
-		
+
 	</dependencies>
 </project>

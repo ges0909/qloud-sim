@@ -13,7 +13,7 @@ import spark.Response;
 
 public class AuthenticationFilter {
 	static final Logger log = Logger.getLogger(AuthenticationFilter.class.getName());
-	static final SessionModel sessionService = new SessionModel();
+	static final SessionModel sessionModel = SessionModel.instance();
 
 	static final String STATUS_NO_AUTH = "{\"status\":\"no-auth\"}";
 	static final String STATUS_NO_SESSION = "{\"status\":\"no-session\"}";
@@ -45,7 +45,7 @@ public class AuthenticationFilter {
 		if (sid == null) {
 			halt(STATUS_NO_AUTH);
 		}
-		Session session = sessionService.queryForId(sid);
+		Session session = sessionModel.queryForId(sid);
 		if (session == null) {
 			log.log(Level.SEVERE, "Authorization header: sid {0}: unknow session", sid);
 			halt(STATUS_NO_SESSION);

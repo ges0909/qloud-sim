@@ -23,9 +23,9 @@ import spark.Response;
 public class UserController extends Controller {
 	private static UserController instance = null;
 	static final Logger log = Logger.getLogger(UserController.class.getName());
-	static UserModel userModel = new UserModel();
-	static InvitationModel invitationModel = new InvitationModel();
-	static SensorModel sensorModel = new SensorModel();
+	final UserModel userModel = UserModel.instance();
+	final InvitationModel invitationModel = InvitationModel.instance();
+	final SensorModel sensorModel = SensorModel.instance();
 
 	private UserController() {
 		super();
@@ -37,7 +37,7 @@ public class UserController extends Controller {
 		}
 		return instance;
 	}
-	
+
 	class GetUserResponse {
 		String uuid;
 		String username;
@@ -66,7 +66,7 @@ public class UserController extends Controller {
 		@SerializedName("invitation")
 		List<String> invitationsToAccept;
 	}
-	
+
 	public Object getUser(Request request, Response response) {
 		if (isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
@@ -165,7 +165,7 @@ public class UserController extends Controller {
 		for (String uuid : req.invitationsToAccept) {
 			for (Invitation i : storedInvitations) {
 				if (uuid.equals(i.getUuid())) {
-					numberAccepted =+ 1;
+					numberAccepted = +1;
 				}
 			}
 		}

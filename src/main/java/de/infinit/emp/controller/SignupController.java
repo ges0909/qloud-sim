@@ -11,8 +11,8 @@ import spark.Response;
 
 public class SignupController extends Controller {
 	private static SignupController instance = null;
-	static final UserModel userModel = new UserModel();
-	
+	final UserModel userModel = UserModel.instance();
+
 	private SignupController() {
 		super();
 	}
@@ -23,11 +23,12 @@ public class SignupController extends Controller {
 		}
 		return instance;
 	}
-	
+
 	class ReserveUserAccountRequest {
 		class Obj {
 			List<String> companyId;
 		}
+
 		Obj info;
 	}
 

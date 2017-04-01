@@ -15,9 +15,9 @@ import spark.Response;
 public class PartnerController extends Controller {
 	private static PartnerController instance = null;
 	static final Logger log = Logger.getLogger(PartnerController.class.getName());
-	static UserModel userModel = new UserModel();
-	static InvitationModel invitationModel = new InvitationModel();
-	static SensorModel sensorModel = new SensorModel();
+	final UserModel userModel = UserModel.instance();
+	final InvitationModel invitationModel = InvitationModel.instance();
+	final SensorModel sensorModel = SensorModel.instance();
 
 	private PartnerController() {
 		super();

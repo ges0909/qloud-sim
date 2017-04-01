@@ -4,13 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 
+import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
@@ -28,14 +31,14 @@ public class UploadController extends Controller {
 		}
 		return instance;
 	}
-	
-	public Object provideUploadForm(Request request, Response response) {
-		response.type("text/html");
-		return "<form method='post' enctype='multipart/form-data'>" + "  <input type='file' name='uploaded_file'>"
-				+ "  <button>Sensor upload</button>" + "</form>";
+
+	public ModelAndView provideUploadForm(Request request, Response response) {
+		Map<String, Object> model = new HashMap<>();
+		model.put("action", "Hochladen");
+		return new ModelAndView(model, "upload.ftl");
 	}
 
-	public Object uploadFile(Request request, Response response) throws IOException, ServletException {
+	public ModelAndView uploadFile(Request request, Response response) throws IOException, ServletException {
 		MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/temp");
 		request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
 		List<String> lines;
@@ -46,6 +49,6 @@ public class UploadController extends Controller {
 		for (String line : lines) {
 			log.info(line);
 		}
-		return "File uploaded";
+		return new ModelAndView(null, "result.ftl");
 	}
 }

@@ -8,9 +8,9 @@ import spark.Request;
 import spark.Response;
 
 public class SessionController extends Controller {
-	private static SessionController instance = null;
 	public static final String QLOUD_SESSION = "session";
-	static final SessionModel sessionModel = new SessionModel();
+	private static SessionController instance = null;
+	final SessionModel sessionModel = SessionModel.instance();
 
 	private SessionController() {
 		super();
