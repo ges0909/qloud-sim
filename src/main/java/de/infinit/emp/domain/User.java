@@ -59,7 +59,7 @@ public class User {
 	// One-to-many
 	@ForeignCollectionField
 	private ForeignCollection<Invitation> invitations;
-	
+
 	public String getUuid() {
 		return uuid;
 	}
@@ -123,7 +123,7 @@ public class User {
 	public void setVerification(String verification) {
 		this.verification = verification;
 	}
-	
+
 	public String getTagAll() {
 		return tagAll;
 	}
@@ -131,8 +131,20 @@ public class User {
 	public void setTagAll(String tagAll) {
 		this.tagAll = tagAll;
 	}
-	
-    public ForeignCollection<Invitation> getInvitations() {
-        return invitations;
-    }
+
+	public ForeignCollection<Sensor> getSensors() {
+		return sensors;
+	}
+
+	public void setSensors(ForeignCollection<Sensor> sensors) {
+		this.sensors = sensors;
+	}
+
+	public ForeignCollection<Invitation> getInvitations() {
+		return invitations;
+	}
+
+	public void setInvitations(ForeignCollection<Invitation> invitations) {
+		this.invitations = invitations;
+	}
 }

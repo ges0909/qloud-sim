@@ -121,7 +121,7 @@ public class Sensor {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
 	public ForeignCollection<Capability> getCapabilities() {
 		return capabilities;
 	}

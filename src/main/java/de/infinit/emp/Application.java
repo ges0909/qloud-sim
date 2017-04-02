@@ -19,19 +19,13 @@ import de.infinit.emp.controller.UploadController;
 import de.infinit.emp.controller.UserController;
 import de.infinit.emp.filter.AuthenticationFilter;
 import de.infinit.emp.filter.LoggingFilter;
-import freemarker.template.Configuration;
-import freemarker.template.Version;
 import spark.template.freemarker.FreeMarkerEngine;
 
 public class Application {
 	static final Gson gson = new Gson();
-	static FreeMarkerEngine freeMarkerEngine;
+	static final FreeMarkerEngine freeMarkerTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
 	public static void main(String[] args) {
-		Configuration configuration = new Configuration(new Version(2, 3, 23));
-		configuration.setClassForTemplateLoading(Application.class, "/templates");
-		freeMarkerEngine = new FreeMarkerEngine(configuration);
-
 		// Server server = Server.createTcpServer().start();
 
 		before(AuthenticationFilter::authenticateRequest);
@@ -106,8 +100,8 @@ public class Application {
 
 	static void uploadEndpoints() {
 		path("/upload", () -> {
-			get("", UploadController.instance()::provideUploadForm, freeMarkerEngine);
-			post("", UploadController.instance()::uploadFile, freeMarkerEngine);
+			get("", UploadController.instance()::provideUploadForm, freeMarkerTransformer);
+			post("", UploadController.instance()::uploadFile, freeMarkerTransformer);
 			after((request, response) -> {
 				response.type("text/html");
 			});
