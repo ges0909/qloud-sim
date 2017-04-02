@@ -26,22 +26,24 @@ public class Application {
 	static final FreeMarkerEngine freeMarkerTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
 	public static void main(String[] args) {
-		// Server server = Server.createTcpServer().start();
+		// Server server;
+		try {
+			// server = Server.createTcpServer().start();
 
-		before(AuthenticationFilter::authenticateRequest);
-		before(LoggingFilter::logRequest);
+			before(AuthenticationFilter::authenticateRequest);
+			before(LoggingFilter::logRequest);
 
-		apiEndpoints();
-		uploadEndpoints();
+			apiEndpoints();
+			uploadEndpoints();
 
-		notFound(Controller.instance()::notFound);
-		after(LoggingFilter::logResponse);
+			notFound(Controller.instance()::notFound);
+			after(LoggingFilter::logResponse);
 
-		// exception(Exception.class, (exception, request, response) -> {
-		// Controller.instance()::notFound });
-
-		// Persistence.getConnectionSource().close();
-		// server.stop();
+			// exception(Exception.class, (exception, request, response) -> {});
+		} finally {
+			// Persistence.getConnectionSource().close();
+			// server.stop();
+		}
 	}
 
 	static void apiEndpoints() {
