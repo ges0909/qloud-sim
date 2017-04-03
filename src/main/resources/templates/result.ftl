@@ -1,4 +1,4 @@
-<#include "/page.ftl" />
-<@page title="Sensor upload">
-	Erfolgreich hochgeladen
+<#include "page.ftl" />
+<@page>
+	${result}
 </@page>

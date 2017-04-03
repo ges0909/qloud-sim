@@ -1,14 +1,14 @@
-package de.infinit.emp.controller;
+package de.infinit.emp.api.controller;
 
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.domain.User;
-import de.infinit.emp.model.InvitationModel;
-import de.infinit.emp.model.SensorModel;
-import de.infinit.emp.model.UserModel;
+import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.model.InvitationModel;
+import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.UserModel;
 import spark.Request;
 import spark.Response;
 

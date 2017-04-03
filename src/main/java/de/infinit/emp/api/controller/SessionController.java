@@ -1,9 +1,9 @@
-package de.infinit.emp.controller;
+package de.infinit.emp.api.controller;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
-import de.infinit.emp.domain.Session;
-import de.infinit.emp.model.SessionModel;
+import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.model.SessionModel;
 import spark.Request;
 import spark.Response;
 

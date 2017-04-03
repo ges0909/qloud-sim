@@ -1,6 +1,6 @@
-package de.infinit.emp.model;
+package de.infinit.emp.api.model;
 
-import de.infinit.emp.domain.Capability;
+import de.infinit.emp.api.domain.Capability;
 
 public class CapabilityModel extends Model<Capability, String> {
 	private static CapabilityModel instance = null;

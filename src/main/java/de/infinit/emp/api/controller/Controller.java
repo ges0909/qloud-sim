@@ -1,4 +1,4 @@
-package de.infinit.emp.controller;
+package de.infinit.emp.api.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 
 import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
-import de.infinit.emp.domain.Session;
+import de.infinit.emp.api.domain.Session;
 import spark.Request;
 import spark.Response;
 
@@ -57,11 +57,11 @@ public class Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		return session.getUser() != null;
 	}
-	
+
 	protected boolean isPartnerSession(Request request) {
 		return !isProxySession(request);
 	}
-	
+
 	public String notFound(Request request, Response response) {
 		return gson.toJson(fail());
 	}

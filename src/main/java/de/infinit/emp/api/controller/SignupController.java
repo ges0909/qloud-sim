@@ -1,11 +1,11 @@
-package de.infinit.emp.controller;
+package de.infinit.emp.api.controller;
 
 import java.util.List;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
-import de.infinit.emp.domain.User;
-import de.infinit.emp.model.UserModel;
+import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.model.UserModel;
 import spark.Request;
 import spark.Response;
 
@@ -55,7 +55,7 @@ public class SignupController extends Controller {
 
 	public Object addUserAccount(Request request, Response response) {
 		AddUserAccountRequest req = decode(request.body(), AddUserAccountRequest.class);
-		User user = userModel.findByColumn("verification", req.verification);
+		User user = userModel.findFirstByColumn("verification", req.verification);
 		if (user == null) {
 			return status(Status.UNKNOWN_VERIFICATION);
 		}

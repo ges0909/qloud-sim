@@ -54,19 +54,19 @@ public class UserTests {
 
 	@Test
 	public void testB_Add_User() {
-		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
-		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
-		assertEquals(200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
-		assertNotNull(resp.body.get("uuid"));
-		assertNotNull(resp.body.get("verification"));
-		userUuid = (String) resp.body.get("uuid");
-		String verification = (String) resp.body.get("verification");
-		body = Json.obj("email", "max.mustermann@mail.de", "firstname", "Max", "lastname", "Mustermann");
-		body.put("verification", verification);
-		resp = RestClient.POST("/api/signup/user", body, partnerSid, partnerServer);
-		assertEquals(200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		Map<String, Object> req = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
+		RestClient.Response res = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+		assertNotNull(res.body.get("uuid"));
+		assertNotNull(res.body.get("verification"));
+		userUuid = (String) res.body.get("uuid");
+		String verification = (String) res.body.get("verification");
+		req = Json.obj("email", "max.mustermann@mail.de", "firstname", "Max", "lastname", "Mustermann");
+		req.put("verification", verification);
+		res = RestClient.POST("/api/signup/user", req, partnerSid, partnerServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test

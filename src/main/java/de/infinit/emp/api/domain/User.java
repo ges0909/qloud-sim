@@ -1,4 +1,4 @@
-package de.infinit.emp.domain;
+package de.infinit.emp.api.domain;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -60,6 +60,10 @@ public class User {
 	@ForeignCollectionField
 	private ForeignCollection<Invitation> invitations;
 
+	public User() {
+		// ORMLite needs a no-arg constructor
+	}
+	
 	public String getUuid() {
 		return uuid;
 	}

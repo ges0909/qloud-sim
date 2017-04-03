@@ -5,9 +5,9 @@ import static spark.Spark.halt;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.infinit.emp.controller.SessionController;
-import de.infinit.emp.domain.Session;
-import de.infinit.emp.model.SessionModel;
+import de.infinit.emp.api.controller.SessionController;
+import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.model.SessionModel;
 import spark.Request;
 import spark.Response;
 
@@ -19,13 +19,13 @@ public class AuthenticationFilter {
 	static final String STATUS_NO_SESSION = "{\"status\":\"no-session\"}";
 
 	public static void authenticateRequest(Request request, Response response) {
-		String method = request.requestMethod();
 		String path = request.pathInfo();
+		if (path.startsWith("/config")) {
+			return;
+		}
+		String method = request.requestMethod();
 		if (method.equals("GET") && path.equals("/api/session")) {
 			return; // new session requested => bypass authorization check
-		}
-		if (path.equals("/upload") || path.equals("/favicon.ico")) {
-			return; // upload requested => bypass authorization check
 		}
 		String authorization = request.headers("Authorization");
 		if (authorization == null) {

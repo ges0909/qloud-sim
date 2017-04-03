@@ -1,6 +1,6 @@
-package de.infinit.emp.model;
+package de.infinit.emp.api.model;
 
-import de.infinit.emp.domain.Invitation;
+import de.infinit.emp.api.domain.Invitation;
 
 public class InvitationModel extends Model<Invitation, String> {
 	private static InvitationModel instance = null;

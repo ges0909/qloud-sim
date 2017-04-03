@@ -1,4 +1,4 @@
-package de.infinit.emp.model;
+package de.infinit.emp.api.model;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class Model<T, U> {
 		return new ArrayList<>();
 	}
 
-	public <V> T findByColumn(String column, V value) {
+	public <V> T findFirstByColumn(String column, V value) {
 		try {
 			return dao.queryBuilder()
 					.where()
@@ -107,5 +107,17 @@ public class Model<T, U> {
 			log.severe(e.toString());
 		}
 		return null;
+	}
+	
+	public <V> List<T> findByColumn(String column, V value) {
+		try {
+			return dao.queryBuilder()
+					.where()
+					.eq(column, value)
+					.query();
+		} catch (SQLException e) {
+			log.severe(e.toString());
+		}
+		return new ArrayList<>();
 	}
 }

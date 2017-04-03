@@ -1,4 +1,4 @@
-package de.infinit.emp.controller;
+package de.infinit.emp.api.controller;
 
 import java.time.Instant;
 import java.util.List;
@@ -6,15 +6,17 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.google.gson.annotations.SerializedName;
+
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
-import de.infinit.emp.domain.Capability;
-import de.infinit.emp.domain.Sensor;
-import de.infinit.emp.domain.Session;
-import de.infinit.emp.domain.User;
-import de.infinit.emp.model.CapabilityModel;
-import de.infinit.emp.model.SensorModel;
-import de.infinit.emp.model.UserModel;
+import de.infinit.emp.api.domain.Capability;
+import de.infinit.emp.api.domain.Sensor;
+import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.model.CapabilityModel;
+import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
 import spark.Response;
@@ -36,7 +38,7 @@ public class SensorController extends Controller {
 		return instance;
 	}
 
-	class AddOrUpdateSensorRequest {
+	class CreateOrUpdateSensorRequest {
 		String code;
 		String description;
 	}
@@ -56,14 +58,17 @@ public class SensorController extends Controller {
 		long time;
 		String description;
 		String model;
-		int recv_interval;
-		int recv_time;
-		boolean battery_ok;
+		@SerializedName("recv_interval")
+		int recvInterval;
+		@SerializedName("recv_time")
+		int recvTime;
+		@SerializedName("battery_ok")
+		boolean batteryOk;
 		Capability capabilities;
 		State state;
 	}
 
-	public Object addSensor(Request request, Response response) {
+	public Object createSensor(Request request, Response response) {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
@@ -72,14 +77,11 @@ public class SensorController extends Controller {
 		if (own == null) {
 			return fail();
 		}
-		AddOrUpdateSensorRequest req = decode(request.body(), AddOrUpdateSensorRequest.class);
-		if (req.code == null) {
+		CreateOrUpdateSensorRequest req = decode(request.body(), CreateOrUpdateSensorRequest.class);
+		if (req.code == null || !Pattern.matches(config.devicePattern(), req.code)) {
 			return status(Status.WRONG_CODE);
 		}
-		if (!Pattern.matches(config.devicePattern(), req.code)) {
-			return status(Status.WRONG_CODE);
-		}
-		if (sensorModel.findByColumn("code", req.code) != null) {
+		if (sensorModel.findFirstByColumn("code", req.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
 		Sensor sensor = new Sensor();
@@ -93,8 +95,7 @@ public class SensorController extends Controller {
 		if (sensorModel.create(sensor) == null) {
 			return fail();
 		}
-		Capability capability = null;
-		capability = new Capability(sensor, "binary_8bit", "data");
+		Capability capability = new Capability(sensor, "binary_8bit", "data");
 		if (capabilityModel.create(capability) == null) {
 			return fail();
 		}
@@ -122,19 +123,17 @@ public class SensorController extends Controller {
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}
-		AddOrUpdateSensorRequest req = decode(request.body(), AddOrUpdateSensorRequest.class);
+		CreateOrUpdateSensorRequest req = decode(request.body(), CreateOrUpdateSensorRequest.class);
 		if (req.code != null) {
 			if (!Pattern.matches(config.devicePattern(), req.code)) {
 				return status(Status.WRONG_CODE);
 			}
-			if (sensorModel.findByColumn("code", req.code) != null) {
+			if (sensorModel.findFirstByColumn("code", req.code) != null) {
 				return status(Status.DUPLICATE_SENSOR);
 			}
 			sensor.setCode(req.code);
 		}
-		if (req.description != null) {
-			sensor.setDescription(req.description);
-		}
+		sensor.setDescription(req.description);
 		if (sensorModel.update(sensor) == null) {
 			return fail();
 		}

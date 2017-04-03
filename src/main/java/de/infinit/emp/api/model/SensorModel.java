@@ -1,6 +1,6 @@
-package de.infinit.emp.model;
+package de.infinit.emp.api.model;
 
-import de.infinit.emp.domain.Sensor;
+import de.infinit.emp.api.domain.Sensor;
 
 public class SensorModel extends Model<Sensor, String> {
 	private static SensorModel instance = null;

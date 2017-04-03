@@ -1,4 +1,4 @@
-package de.infinit.emp.domain;
+package de.infinit.emp.api.domain;
 
 import javax.validation.constraints.NotNull;
 
@@ -24,6 +24,10 @@ public class Session {
 	@DatabaseField
 	String user; // user uuid in case of proxy session; otherwise null
 
+	public Session() {
+		// ORMLite needs a no-arg constructor
+	}
+	
 	public String getSid() {
 		return sid;
 	}

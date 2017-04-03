@@ -1,4 +1,4 @@
-package de.infinit.emp.controller;
+package de.infinit.emp.admin.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
-public class UploadController extends Controller {
+public class UploadController {
 	private static UploadController instance = null;
 	static final Logger log = Logger.getLogger(UploadController.class.getName());
 
@@ -49,6 +49,8 @@ public class UploadController extends Controller {
 		for (String line : lines) {
 			log.info(line);
 		}
-		return new ModelAndView(null, "result.ftl");
+		Map<String, Object> model = new HashMap<>();
+		model.put("result", "Erfolgreich");
+		return new ModelAndView(model, "result.ftl");
 	}
 }

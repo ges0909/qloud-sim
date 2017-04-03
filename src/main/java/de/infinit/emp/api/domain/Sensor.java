@@ -1,4 +1,4 @@
-package de.infinit.emp.domain;
+package de.infinit.emp.api.domain;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -49,6 +49,10 @@ public class Sensor {
 	// One-to-many
 	@ForeignCollectionField
 	private transient ForeignCollection<Capability> capabilities;
+
+	public Sensor() {
+		// ORMLite needs a no-arg constructor
+	}
 
 	public String getUuid() {
 		return uuid;

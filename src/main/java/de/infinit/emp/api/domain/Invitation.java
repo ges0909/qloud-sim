@@ -1,4 +1,4 @@
-package de.infinit.emp.domain;
+package de.infinit.emp.api.domain;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,6 +13,10 @@ public class Invitation {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User user;
+
+	public Invitation() {
+		// ORMLite needs a no-arg constructor
+	}
 
 	public String getUuid() {
 		return uuid;

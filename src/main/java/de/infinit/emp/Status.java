@@ -18,4 +18,6 @@ public class Status {
 	public static final String WRONG_SENSOR = "wrong-sensor";
 	public static final String WRONG_SYNTAX = "wrong-syntax";
 	public static final String WRONG_USER = "wrong-user";
+	public static final String WRONG_TAG = "wrong-tag";
+	public static final String ACCESS_DENIED = "access-denied";
 }

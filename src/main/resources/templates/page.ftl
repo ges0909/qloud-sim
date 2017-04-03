@@ -4,18 +4,20 @@
 <head>
     <title>${title}</title>
     <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<link rel="stylesheet" type="text/css" href="css/335.css" />
+	<link href="css/page.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 	<div id="wrapper">
-    <#include "header.ftl">
-    <#include "menu.ftl">
-    <div id="contentliquid"><div id="contentwrap">
-    <div id="content">
-    	<#nested />
-    </div
-    <#-- <#include "footer.ftl"> -->
-    </div>
+		<#include "header.ftl">
+    	<div id="contentliquid">
+    		<div id="contentwrap">
+    			<div id="content">
+    				<p><#nested /></p>
+    			</div>
+    		</div>
+ 		</div>
+    	<#include "menu.ftl">
+ 		<#-- <#include "footer.ftl"> -->
 </body>
 </html>
 </#macro>

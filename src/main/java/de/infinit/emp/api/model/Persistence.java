@@ -1,4 +1,4 @@
-package de.infinit.emp.model;
+package de.infinit.emp.api.model;
 
 import java.sql.SQLException;
 
@@ -9,11 +9,13 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import de.infinit.emp.ApplicationConfig;
-import de.infinit.emp.domain.Capability;
-import de.infinit.emp.domain.Invitation;
-import de.infinit.emp.domain.Sensor;
-import de.infinit.emp.domain.Session;
-import de.infinit.emp.domain.User;
+import de.infinit.emp.api.domain.Capability;
+import de.infinit.emp.api.domain.Invitation;
+import de.infinit.emp.api.domain.Policy;
+import de.infinit.emp.api.domain.Sensor;
+import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.Tag;
+import de.infinit.emp.api.domain.User;
 
 public class Persistence {
 	static ConnectionSource cs = null;
@@ -38,5 +40,7 @@ public class Persistence {
 		TableUtils.createTableIfNotExists(cs, Invitation.class);
 		TableUtils.createTableIfNotExists(cs, Sensor.class);
 		TableUtils.createTableIfNotExists(cs, Capability.class);
+		TableUtils.createTableIfNotExists(cs, Tag.class);
+		TableUtils.createTableIfNotExists(cs, Policy.class);
 	}
 }

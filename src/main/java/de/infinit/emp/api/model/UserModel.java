@@ -1,6 +1,6 @@
-package de.infinit.emp.model;
+package de.infinit.emp.api.model;
 
-import de.infinit.emp.domain.User;
+import de.infinit.emp.api.domain.User;
 
 public class UserModel extends Model<User, String> {
 	private static UserModel instance = null;

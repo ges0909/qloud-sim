@@ -1,4 +1,4 @@
-package de.infinit.emp.controller;
+package de.infinit.emp.api.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,12 +10,12 @@ import com.j256.ormlite.dao.ForeignCollection;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
-import de.infinit.emp.domain.Invitation;
-import de.infinit.emp.domain.Session;
-import de.infinit.emp.domain.User;
-import de.infinit.emp.model.InvitationModel;
-import de.infinit.emp.model.SensorModel;
-import de.infinit.emp.model.UserModel;
+import de.infinit.emp.api.domain.Invitation;
+import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.model.InvitationModel;
+import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
 import spark.Response;
@@ -67,8 +67,9 @@ public class UserController extends Controller {
 		List<String> invitationsToAccept;
 	}
 
+	// GET /api/user
 	public Object getUser(Request request, Response response) {
-		if (isPartnerSession(request)) {
+		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
@@ -82,7 +83,7 @@ public class UserController extends Controller {
 	}
 
 	public Object updateUser(Request request, Response response) {
-		if (isPartnerSession(request)) {
+		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
@@ -90,7 +91,7 @@ public class UserController extends Controller {
 		if (own == null) {
 			return fail();
 		}
-		User other = userModel.findByColumn("email", session.getUser());
+		User other = userModel.findFirstByColumn("email", session.getUser());
 		if (other != null) {
 			return status(Status.ALREADY_EXIST);
 		}
@@ -107,7 +108,7 @@ public class UserController extends Controller {
 	}
 
 	public Object getUserInvitations(Request request, Response response) {
-		if (isPartnerSession(request)) {
+		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
@@ -123,7 +124,7 @@ public class UserController extends Controller {
 	}
 
 	public Object inviteUser(Request request, Response response) {
-		if (isPartnerSession(request)) {
+		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
@@ -148,7 +149,7 @@ public class UserController extends Controller {
 	}
 
 	public Object acceptInvitation(Request request, Response response) {
-		if (isPartnerSession(request)) {
+		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);

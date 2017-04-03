@@ -7,38 +7,37 @@ import static spark.Spark.get;
 import static spark.Spark.notFound;
 import static spark.Spark.path;
 import static spark.Spark.post;
+import static spark.Spark.staticFileLocation;
 
 import com.google.gson.Gson;
 
-import de.infinit.emp.controller.Controller;
-import de.infinit.emp.controller.PartnerController;
-import de.infinit.emp.controller.SensorController;
-import de.infinit.emp.controller.SessionController;
-import de.infinit.emp.controller.SignupController;
-import de.infinit.emp.controller.UploadController;
-import de.infinit.emp.controller.UserController;
+import de.infinit.emp.admin.controller.ConfigController;
+import de.infinit.emp.admin.controller.UploadController;
+import de.infinit.emp.api.controller.Controller;
+import de.infinit.emp.api.controller.PartnerController;
+import de.infinit.emp.api.controller.SensorController;
+import de.infinit.emp.api.controller.SessionController;
+import de.infinit.emp.api.controller.SignupController;
+import de.infinit.emp.api.controller.TagController;
+import de.infinit.emp.api.controller.UserController;
 import de.infinit.emp.filter.AuthenticationFilter;
 import de.infinit.emp.filter.LoggingFilter;
 import spark.template.freemarker.FreeMarkerEngine;
 
 public class Application {
 	static final Gson gson = new Gson();
-	static final FreeMarkerEngine freeMarkerTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
+	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
 	public static void main(String[] args) {
 		// Server server;
+		staticFileLocation("/public"); // to server css, js, ...
 		try {
 			// server = Server.createTcpServer().start();
 
-			before(AuthenticationFilter::authenticateRequest);
-			before(LoggingFilter::logRequest);
-
 			apiEndpoints();
-			uploadEndpoints();
-
+			adminEndpoints();
 			notFound(Controller.instance()::notFound);
-			after(LoggingFilter::logResponse);
-
+			
 			// exception(Exception.class, (exception, request, response) -> {});
 		} finally {
 			// Persistence.getConnectionSource().close();
@@ -47,19 +46,20 @@ public class Application {
 	}
 
 	static void apiEndpoints() {
+		before(LoggingFilter::logRequest);
+		before(AuthenticationFilter::authenticateRequest);
+
 		path("/api", () -> {
 			path("/session", () -> {
 				get("", SessionController.instance()::requestNonAuthorizedSession, gson::toJson);
 				post("", SessionController.instance()::loginToPartnerOrProxySession, gson::toJson);
 				delete("", SessionController.instance()::logoutFromSession, gson::toJson);
 			});
-			path("/partner", () -> {
-				path("/user", () -> {
-					get("", PartnerController.instance()::getUsers, gson::toJson);
-					get("/:uuid", PartnerController.instance()::getUserData, gson::toJson);
-					post("/:uuid", PartnerController.instance()::deleteUser, gson::toJson);
-				});
-			});
+			path("/partner", () -> path("/user", () -> {
+				get("", PartnerController.instance()::getUsers, gson::toJson);
+				get("/:uuid", PartnerController.instance()::getUserData, gson::toJson);
+				post("/:uuid", PartnerController.instance()::deleteUser, gson::toJson);
+			}));
 			path("/signup", () -> {
 				post("/verification", SignupController.instance()::reserveUserAccount, gson::toJson);
 				post("/user", SignupController.instance()::addUserAccount, gson::toJson);
@@ -72,17 +72,15 @@ public class Application {
 				post("/link", UserController.instance()::acceptInvitation, gson::toJson);
 			});
 			path("/tag", () -> {
-				get("", Controller.instance()::notImplemented, gson::toJson);
-				get("/:uuid", Controller.instance()::notImplemented, gson::toJson);
-				post("", Controller.instance()::notImplemented, gson::toJson);
-				delete("/:uuid", Controller.instance()::notImplemented, gson::toJson);
-				post("/:uuid", Controller.instance()::notImplemented, gson::toJson);
+				get("", TagController.instance()::getTags, gson::toJson);
+				get("/:uuid", TagController.instance()::getTag, gson::toJson);
+				post("", TagController.instance()::createTag, gson::toJson);
+				delete("/:uuid", TagController.instance()::deleteTag, gson::toJson);
+				post("/:uuid", TagController.instance()::updateTag, gson::toJson);
 			});
-			path("/object", () -> {
-				post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson);
-			});
+			path("/object", () -> post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson));
 			path("/sensor", () -> {
-				post("", SensorController.instance()::addSensor, gson::toJson);
+				post("", SensorController.instance()::createSensor, gson::toJson);
 				get("/:uuid", SensorController.instance()::getSensor, gson::toJson);
 				post("/:uuid", SensorController.instance()::updateSensor, gson::toJson);
 				delete("/:uuid", SensorController.instance()::deleteSensor, gson::toJson);
@@ -91,22 +89,22 @@ public class Application {
 				delete("/:uuid/event", SensorController.instance()::cancelSensorEventSubcription, gson::toJson);
 				post("/:uuid/action", Controller.instance()::notImplemented, gson::toJson);
 			});
-			path("/event", () -> {
-				get("", Controller.instance()::notImplemented, gson::toJson);
-			});
-			after((request, response) -> {
-				response.type("application/json");
-			});
+			path("/event", () -> get("", Controller.instance()::notImplemented, gson::toJson));
 		});
+
+		after((request, response) -> response.type("application/json"));
+		after(LoggingFilter::logResponse);
 	}
 
-	static void uploadEndpoints() {
-		path("/upload", () -> {
-			get("", UploadController.instance()::provideUploadForm, freeMarkerTransformer);
-			post("", UploadController.instance()::uploadFile, freeMarkerTransformer);
-			after((request, response) -> {
-				response.type("text/html");
-			});
+	static void adminEndpoints() {
+		path("/config", () -> {
+			get("", ConfigController.instance()::displayConfigurationForm, fmTransformer);
+			post("", ConfigController.instance()::configureSimulator, fmTransformer);
 		});
+		path("/upload", () -> {
+			get("", UploadController.instance()::provideUploadForm, fmTransformer);
+			post("", UploadController.instance()::uploadFile, fmTransformer);
+		});
+		after((request, response) -> response.type("text/html"));
 	}
 }
