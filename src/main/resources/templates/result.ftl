@@ -1,1 +1,4 @@
-<h1>Erfolgreich hochgeladen</h1>
+<#include "/page.ftl" />
+<@page title="Sensor upload">
+	Erfolgreich hochgeladen
+</@page>
