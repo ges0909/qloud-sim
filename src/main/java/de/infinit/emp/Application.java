@@ -34,10 +34,14 @@ public class Application {
 		try {
 			// server = Server.createTcpServer().start();
 
+			before(LoggingFilter::logRequest);
+
 			apiEndpoints();
 			adminEndpoints();
 			notFound(Controller.instance()::notFound);
-			
+
+			after(LoggingFilter::logResponse);
+
 			// exception(Exception.class, (exception, request, response) -> {});
 		} finally {
 			// Persistence.getConnectionSource().close();
@@ -46,9 +50,7 @@ public class Application {
 	}
 
 	static void apiEndpoints() {
-		before(LoggingFilter::logRequest);
 		before(AuthenticationFilter::authenticateRequest);
-
 		path("/api", () -> {
 			path("/session", () -> {
 				get("", SessionController.instance()::requestNonAuthorizedSession, gson::toJson);
@@ -91,20 +93,20 @@ public class Application {
 			});
 			path("/event", () -> get("", Controller.instance()::notImplemented, gson::toJson));
 		});
-
 		after((request, response) -> response.type("application/json"));
-		after(LoggingFilter::logResponse);
 	}
 
 	static void adminEndpoints() {
-		path("/config", () -> {
-			get("", ConfigController.instance()::displayConfigurationForm, fmTransformer);
-			post("", ConfigController.instance()::configureSimulator, fmTransformer);
+		path("/admin", () -> {
+			path("/config", () -> {
+				get("", ConfigController.instance()::displayConfigurationForm, fmTransformer);
+				post("", ConfigController.instance()::configureSimulator, fmTransformer);
+			});
+			path("/upload", () -> {
+				get("", UploadController.instance()::provideUploadForm, fmTransformer);
+				post("", UploadController.instance()::uploadFile, fmTransformer);
+			});
+			after((request, response) -> response.type("text/html"));
 		});
-		path("/upload", () -> {
-			get("", UploadController.instance()::provideUploadForm, fmTransformer);
-			post("", UploadController.instance()::uploadFile, fmTransformer);
-		});
-		after((request, response) -> response.type("text/html"));
 	}
 }
