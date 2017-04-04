@@ -1,6 +1,6 @@
 <div id="leftcolumnwrap">
 	<div id="leftcolumn">
-		<p><a href="http:/admin">Konfiguration</a>
-		<p><a href="http:/upload">Sensoren</a></p>
+		<p><a href="${configurl}">Konfiguration</a>
+		<p><a href="${uploadurl}">Sensoren</a></p>
 	</div>
 </div>

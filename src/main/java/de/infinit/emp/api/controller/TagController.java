@@ -237,7 +237,7 @@ public class TagController extends Controller {
 		String filter = request.queryParams("filter");
 		if (filter != null && !filter.equals("sensor")) {
 			log.warning("query parameter 'filter': value '" + filter + "' not supported");
-			return ok();
+			return fail();
 		}
 		String count = request.queryParams("count");
 		if (count != null) {

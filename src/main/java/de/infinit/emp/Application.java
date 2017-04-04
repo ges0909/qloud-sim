@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import com.google.gson.Gson;
+
 import de.infinit.emp.admin.controller.ConfigController;
 import de.infinit.emp.admin.controller.UploadController;
 import de.infinit.emp.api.controller.Controller;
@@ -35,21 +36,22 @@ public class Application {
 		staticFileLocation("/public"); // to serve css, js, ...
 		// server = Server.createTcpServer().start();
 
+		before(AuthenticationFilter::authenticateRequest);
 		before(LoggingFilter::logRequest);
 
 		apiEndpoints();
 		adminEndpoints();
+
 		notFound(Controller.instance()::notFound);
+//		exception(Exception.class, (exception, request, response) -> Controller.instance()::except);
 
 		after(LoggingFilter::logResponse);
 
-		// exception(Exception.class, (exception, request, response) -> {});
 		// Persistence.close();
 		// server.stop();
 	}
 
 	static void apiEndpoints() {
-		before(AuthenticationFilter::authenticateRequest);
 		path("/api", () -> {
 			path("/session", () -> {
 				get("", SessionController.instance()::requestNonAuthorizedSession, gson::toJson);
@@ -92,12 +94,13 @@ public class Application {
 				post("/:uuid/action", Controller.instance()::notImplemented, gson::toJson);
 			});
 			path("/event", () -> get("", Controller.instance()::notImplemented, gson::toJson));
+			after((request, response) -> response.type("application/json"));
 		});
-		after((request, response) -> response.type("application/json"));
 	}
 
 	static void adminEndpoints() {
 		path("/admin", () -> {
+			get("", ConfigController.instance()::displayConfigurationForm, fmTransformer);
 			path("/config", () -> {
 				get("", ConfigController.instance()::displayConfigurationForm, fmTransformer);
 				post("", ConfigController.instance()::configureSimulator, fmTransformer);

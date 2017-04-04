@@ -24,7 +24,10 @@ public class ConfigController {
 	}
 
 	public ModelAndView displayConfigurationForm(Request request, Response response) {
-		return new ModelAndView(null, "config.ftl");
+		Map<String, Object> model = new HashMap<>();
+		model.put("configurl", request.url() + "/config");
+		model.put("uploadurl", request.url() + "/upload");
+		return new ModelAndView(model, "config.ftl");
 	}
 	
 	public ModelAndView configureSimulator(Request request, Response response) {

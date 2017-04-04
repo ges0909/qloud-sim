@@ -63,9 +63,15 @@ public class Controller {
 	}
 
 	public String notFound(Request request, Response response) {
+		response.type("application/json");
 		return gson.toJson(fail());
 	}
 	
+//	public String except(Exception e, Request request, Response response) {
+//		response.type("application/json");
+//		return gson.toJson(fail());
+//	}
+
 	public Map<String, Object> notImplemented(Request request, Response response) {
 		return status(Status.NOT_IMPLEMENTED);
 	}
