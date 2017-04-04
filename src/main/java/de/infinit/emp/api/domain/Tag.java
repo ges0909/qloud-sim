@@ -9,6 +9,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import de.infinit.emp.Uuid;
+
 @DatabaseTable(tableName = "tags")
 public class Tag {
 	@NotNull
@@ -23,24 +25,29 @@ public class Tag {
 	String label;
 
 	@DatabaseField(defaultValue = "true")
-	boolean foreignUse;
+	Boolean foreignUse;
 	
 	@ForeignCollectionField
 	private Collection<Policy> policies;
 
 	public Tag() {
-		policies = new ArrayList<>();
 		// ORMLite needs a no-arg constructor
+		this.uuid = Uuid.next();
+		this.policies = new ArrayList<>();
+	}
+	
+	public Tag(String owner, String label, Boolean foreignUse) {
+		this();
+		this.owner = owner;
+		this.label = label;
+		this.foreignUse = foreignUse;
+		this.policies.add(new Policy(this, owner, 4/* owner */));
 	}
 	
 	public String getUuid() {
 		return uuid;
 	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-
+	
 	public String getOwner() {
 		return owner;
 	}

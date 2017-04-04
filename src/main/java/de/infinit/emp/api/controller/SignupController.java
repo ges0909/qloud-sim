@@ -2,9 +2,13 @@ package de.infinit.emp.api.controller;
 
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
+import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.UserModel;
 import spark.Request;
 import spark.Response;
@@ -12,6 +16,7 @@ import spark.Response;
 public class SignupController extends Controller {
 	private static SignupController instance = null;
 	final UserModel userModel = UserModel.instance();
+	final TagModel tagModel = TagModel.instance();
 
 	private SignupController() {
 		super();
@@ -37,7 +42,8 @@ public class SignupController extends Controller {
 		String username;
 		String firstname;
 		String lastname;
-		String display_name;
+		@SerializedName("display_name")
+		String displayName;
 		String password;
 		String verification;
 	}
@@ -45,7 +51,6 @@ public class SignupController extends Controller {
 	public Object reserveUserAccount(Request request, Response response) {
 		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
-		user.setUuid(Uuid.next());
 		user.setVerification(Uuid.next());
 		if (userModel.create(user) == null) {
 			return fail();
@@ -59,13 +64,18 @@ public class SignupController extends Controller {
 		if (user == null) {
 			return status(Status.UNKNOWN_VERIFICATION);
 		}
-		user.setDisplayName(req.display_name);
+		user.setDisplayName(req.displayName);
 		user.setEmail(req.email);
 		user.setFirstName(req.firstname);
 		user.setLastName(req.lastname);
 		user.setPassword(req.password);
 		user.setUserName(req.username);
-		user.setTagAll(Uuid.next());
+		user.setPartner(config.partner());
+		Tag tag = new Tag(user.getUuid(), null, null);
+		if (tagModel.create(tag) == null) {
+			return fail();
+		}
+		user.setTagAll(tag);
 		if (userModel.update(user) == null) {
 			return fail();
 		}

@@ -11,6 +11,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import de.infinit.emp.Uuid;
+
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
 	@NotNull
@@ -54,15 +56,12 @@ public class Sensor {
 
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
-		capabilities = new ArrayList<>();
+		this.uuid = Uuid.next();
+		this.capabilities = new ArrayList<>();
 	}
 
 	public String getUuid() {
 		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getCode() {

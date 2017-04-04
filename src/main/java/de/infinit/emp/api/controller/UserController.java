@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.Uuid;
 import de.infinit.emp.api.domain.Invitation;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.User;
@@ -38,17 +37,6 @@ public class UserController extends Controller {
 		return instance;
 	}
 
-	class GetUserResponse {
-		String uuid;
-		String username;
-		String firstname;
-		String lastname;
-		String display_name;
-		String email;
-		String partner;
-		String tag_all;
-	}
-
 	class UpdateUserRequest {
 		String firstname;
 		String lastname;
@@ -74,7 +62,7 @@ public class UserController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
-			return fail();
+			return status(Status.WRONG_USER);
 		}
 		User other = userModel.findFirstByColumn("email", session.getUser());
 		if (other != null) {
@@ -102,11 +90,12 @@ public class UserController extends Controller {
 		if (own == null) {
 			return fail();
 		}
-		GetUserResponse resp = convert(own, GetUserResponse.class);
-		resp.partner = config.partner();
-		return result("user", resp);
+		return result("user",
+				Json.obj("uuid", own.getUuid(), "username", own.getUserName(), "firstname", own.getFirstName(),
+						"lastname", own.getLastName(), "display_name", own.getDisplayName(), "email", own.getEmail(),
+						"partner", own.getPartner(), "tag_all", own.getTagAll().getUuid()));
 	}
-	
+
 	public Object getUserInvitations(Request request, Response response) {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
@@ -138,9 +127,10 @@ public class UserController extends Controller {
 			if (other == null) {
 				return status(Status.WRONG_USER);
 			}
-			Invitation invitation = new Invitation(other, Uuid.next()); // create invitation code
+			Invitation invitation = new Invitation(other); // create invitation
 			other.getInvitations().add(invitation);
-			if (userModel.update(other) == null) { // update because of added invitation
+			// update because of added invitation
+			if (userModel.update(other) == null) {
 				return fail();
 			}
 		}

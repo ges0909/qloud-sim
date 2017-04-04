@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.Uuid;
 import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
@@ -74,7 +73,7 @@ public class SensorController extends Controller {
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
 		User own = userModel.queryForId(session.getUser());
 		if (own == null) {
-			return fail();
+			return status(Status.WRONG_USER);
 		}
 		CreateOrUpdateSensorRequest req = decode(request.body(), CreateOrUpdateSensorRequest.class);
 		if (req.code == null || !Pattern.matches(config.devicePattern(), req.code)) {
@@ -90,7 +89,6 @@ public class SensorController extends Controller {
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
-		sensor.setUuid(Uuid.next());
 		sensor.setUser(own);
 		Collection<Capability> capabilities = sensor.getCapabilities();
 		capabilities.add(new Capability(sensor, "binary_8bit", "data"));

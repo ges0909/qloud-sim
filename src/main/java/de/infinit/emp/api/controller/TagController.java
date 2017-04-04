@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.Uuid;
 import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
@@ -78,13 +77,8 @@ public class TagController extends Controller {
 			return fail();
 		}
 		CreateTagRequest req = decode(request.body(), CreateTagRequest.class);
-		Tag tag = new Tag();
-		tag.setUuid(Uuid.next());
-		tag.setOwner(own.getUuid());
-		tag.setLabel(req.label);
-		tag.setForeignUse(req.foreignUse);
+		Tag tag = new Tag(own.getUuid(), req.label, req.foreignUse);
 		Collection<Policy> policies = tag.getPolicies();
-		policies.add(new Policy(tag, own.getUuid(), 4/* owner */));
 		for (String uuid : req.policies.keySet()) {
 			policies.add(new Policy(tag, uuid, req.policies.get(uuid)));
 		}
@@ -128,6 +122,8 @@ public class TagController extends Controller {
 		return ok();
 	}
 
+	// GET /api/tag
+	// Get list of tags associated with current user.
 	public Object getTag(Request request, Response response) {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
@@ -187,6 +183,34 @@ public class TagController extends Controller {
 		if (tagModel.delete(uuid) != 1) {
 			return fail();
 		}
+		return ok();
+	}
+
+	// GET /api/tag/:uuid/object
+	public Object getTaggedObjects(Request request, Response response) {
+		if (!isProxySession(request)) {
+			return status(Status.NO_AUTH);
+		}
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		User own = userModel.queryForId(session.getUser());
+		if (own == null) {
+			return status(Status.WRONG_USER);
+		}
+		String uuid = request.params(":uuid");
+		Tag tag = tagModel.queryForId(uuid);
+		if (tag == null) {
+			return status(Status.WRONG_TAG);
+		}
+		String filter = request.queryParams("filter");
+		if (filter != null && !filter.equals("sensor")) {
+			log.warning("query parameter 'filter': value '" + filter + "' not supported");
+			return ok();
+		}
+		String count = request.queryParams("count");
+		if (count != null) {
+			log.warning("query parameter 'count': ignored");
+		}
+		Tag tagAll = own.getTagAll();
 		return ok();
 	}
 }

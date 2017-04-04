@@ -23,9 +23,8 @@ public class Policy {
 	}
 
 	public Policy(Tag tag, @NotNull String uuid, @NotNull int policy) {
-		super();
-		this.tag = tag;
 		this.uuid = uuid;
+		this.tag = tag;
 		this.policy = policy;
 	}
 

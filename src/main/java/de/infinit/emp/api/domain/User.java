@@ -11,6 +11,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import de.infinit.emp.Uuid;
+
 @DatabaseTable(tableName = "users")
 public class User {
 	@NotNull
@@ -50,9 +52,11 @@ public class User {
 	@DatabaseField
 	String verification;
 
-	@SerializedName("tag_all")
-	@DatabaseField(unique = true)
-	String tagAll;
+	@DatabaseField
+	String partner;
+	
+	@DatabaseField(foreign = true, foreignAutoCreate = true,foreignAutoRefresh = true)
+	Tag tagAll;
 
 	// One-to-many
 	@ForeignCollectionField
@@ -64,16 +68,13 @@ public class User {
 
 	public User() {
 		// ORMLite needs a no-arg constructor
-		sensors = new ArrayList<>();
-		invitations = new ArrayList<>();
+		this.uuid = Uuid.next();
+		this.sensors = new ArrayList<>();
+		this.invitations = new ArrayList<>();
 	}
 
 	public String getUuid() {
 		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getEmail() {
@@ -131,12 +132,20 @@ public class User {
 	public void setVerification(String verification) {
 		this.verification = verification;
 	}
+	
+	public String getPartner() {
+		return partner;
+	}
 
-	public String getTagAll() {
+	public void setPartner(String partner) {
+		this.partner = partner;
+	}
+	
+	public Tag getTagAll() {
 		return tagAll;
 	}
 
-	public void setTagAll(String tagAll) {
+	public void setTagAll(Tag tagAll) {
 		this.tagAll = tagAll;
 	}
 

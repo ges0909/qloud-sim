@@ -78,8 +78,9 @@ public class Application {
 				post("", TagController.instance()::createTag, gson::toJson);
 				delete("/:uuid", TagController.instance()::deleteTag, gson::toJson);
 				post("/:uuid", TagController.instance()::updateTag, gson::toJson);
+				get("/:uuid/object", TagController.instance()::getTaggedObjects, gson::toJson);
 			});
-			path("/object", () -> post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson));
+			path("/object", () ->  post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson));
 			path("/sensor", () -> {
 				post("", SensorController.instance()::createSensor, gson::toJson);
 				get("/:uuid", SensorController.instance()::getSensor, gson::toJson);
