@@ -18,7 +18,6 @@ public class UserModel extends Model<User, String> {
 
 	public int delete(User user) {
 		user.getInvitations().clear();
-		user.getSensors().clear();
 		return super.delete(user.getUuid());
 	}
 }

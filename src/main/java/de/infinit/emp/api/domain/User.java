@@ -54,13 +54,9 @@ public class User {
 
 	@DatabaseField
 	String partner;
-	
-	@DatabaseField(foreign = true, foreignAutoCreate = true,foreignAutoRefresh = true)
-	Tag tagAll;
 
-	// One-to-many
-	@ForeignCollectionField
-	private Collection<Sensor> sensors;
+	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	Tag tagAll;
 
 	// One-to-many
 	@ForeignCollectionField
@@ -69,7 +65,6 @@ public class User {
 	public User() {
 		// ORMLite needs a no-arg constructor
 		this.uuid = Uuid.next();
-		this.sensors = new ArrayList<>();
 		this.invitations = new ArrayList<>();
 	}
 
@@ -132,7 +127,7 @@ public class User {
 	public void setVerification(String verification) {
 		this.verification = verification;
 	}
-	
+
 	public String getPartner() {
 		return partner;
 	}
@@ -140,21 +135,13 @@ public class User {
 	public void setPartner(String partner) {
 		this.partner = partner;
 	}
-	
+
 	public Tag getTagAll() {
 		return tagAll;
 	}
 
 	public void setTagAll(Tag tagAll) {
 		this.tagAll = tagAll;
-	}
-
-	public Collection<Sensor> getSensors() {
-		return sensors;
-	}
-
-	public void setSensors(Collection<Sensor> sensors) {
-		this.sensors = sensors;
 	}
 
 	public Collection<Invitation> getInvitations() {

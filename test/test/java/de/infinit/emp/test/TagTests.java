@@ -51,7 +51,7 @@ public class TagTests {
 	}
 
 	@Test
-	public void testB_Add_User() {
+	public void testB_Create_User_Account() {
 		Map<String, Object> req = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response res = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
 		assertEquals(200, res.status);

@@ -43,7 +43,7 @@ public class PartnerController extends Controller {
 		Boolean deleted;
 	}
 
-	public Object getUsers(Request request, Response response) {
+	public Object getAccounts(Request request, Response response) {
 		if (!isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -52,7 +52,7 @@ public class PartnerController extends Controller {
 		return result("users", uuids);
 	}
 
-	public Object getUserData(Request request, Response response) {
+	public Object getAccount(Request request, Response response) {
 		if (!isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
@@ -64,7 +64,7 @@ public class PartnerController extends Controller {
 		return result("user", convert(user, UserDataResponse.class));
 	}
 
-	public Object deleteUser(Request request, Response response) {
+	public Object deleteAccount(Request request, Response response) {
 		if (!isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}

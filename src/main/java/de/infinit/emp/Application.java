@@ -57,13 +57,13 @@ public class Application {
 				delete("", SessionController.instance()::logoutFromSession, gson::toJson);
 			});
 			path("/partner", () -> path("/user", () -> {
-				get("", PartnerController.instance()::getUsers, gson::toJson);
-				get("/:uuid", PartnerController.instance()::getUserData, gson::toJson);
-				post("/:uuid", PartnerController.instance()::deleteUser, gson::toJson);
+				get("", PartnerController.instance()::getAccounts, gson::toJson);
+				get("/:uuid", PartnerController.instance()::getAccount, gson::toJson);
+				post("/:uuid", PartnerController.instance()::deleteAccount, gson::toJson);
 			}));
 			path("/signup", () -> {
-				post("/verification", SignupController.instance()::reserveUserAccount, gson::toJson);
-				post("/user", SignupController.instance()::addUserAccount, gson::toJson);
+				post("/verification", SignupController.instance()::reserveAccount, gson::toJson);
+				post("/user", SignupController.instance()::addAccount, gson::toJson);
 			});
 			path("/user", () -> {
 				get("", UserController.instance()::getUser, gson::toJson);

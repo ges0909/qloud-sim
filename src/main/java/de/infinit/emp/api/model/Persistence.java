@@ -2,6 +2,7 @@ package de.infinit.emp.api.model;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import org.aeonbits.owner.ConfigCache;
 
@@ -19,18 +20,24 @@ import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 
 public class Persistence {
+	static final Logger log = Logger.getLogger(Persistence.class.getName());
 	static ConnectionSource cs = null;
 	static ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 
 	private Persistence() {
 	}
 
-	public static ConnectionSource getConnectionSource() throws SQLException {
+	public static ConnectionSource getConnectionSource() {
 		if (cs == null) {
-			cs = new JdbcConnectionSource(config.url());
-			((JdbcConnectionSource) cs).setUsername(config.username());
-			((JdbcConnectionSource) cs).setPassword(config.password());
-			createTabelsIfNotExists();
+			try {
+				cs = new JdbcConnectionSource(config.url());
+				((JdbcConnectionSource) cs).setUsername(config.username());
+				((JdbcConnectionSource) cs).setPassword(config.password());
+				createTabelsIfNotExists();
+			} catch (SQLException e) {
+				log.severe(e.toString());
+				System.exit(0);
+			}
 		}
 		return cs;
 	}
@@ -40,7 +47,7 @@ public class Persistence {
 			cs.close();
 		}
 	}
-	
+
 	private static void createTabelsIfNotExists() throws SQLException {
 		TableUtils.createTableIfNotExists(cs, Session.class);
 		TableUtils.createTableIfNotExists(cs, User.class);
@@ -50,4 +57,5 @@ public class Persistence {
 		TableUtils.createTableIfNotExists(cs, Tag.class);
 		TableUtils.createTableIfNotExists(cs, Policy.class);
 	}
+	
 }

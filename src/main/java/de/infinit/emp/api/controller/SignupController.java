@@ -48,7 +48,7 @@ public class SignupController extends Controller {
 		String verification;
 	}
 
-	public Object reserveUserAccount(Request request, Response response) {
+	public Object reserveAccount(Request request, Response response) {
 		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
 		user.setVerification(Uuid.next());
@@ -58,7 +58,7 @@ public class SignupController extends Controller {
 		return result("uuid", user.getUuid(), "verification", user.getVerification(), "info", body.info);
 	}
 
-	public Object addUserAccount(Request request, Response response) {
+	public Object addAccount(Request request, Response response) {
 		AddUserAccountRequest req = decode(request.body(), AddUserAccountRequest.class);
 		User user = userModel.findFirstByColumn("verification", req.verification);
 		if (user == null) {

@@ -26,6 +26,7 @@ public class SensorTests {
 	static String userSid;
 	static String userServer;
 	static String userUuid;
+	static String tagAllUuid;
 	static String sensorUuid;
 
 	@BeforeClass
@@ -53,7 +54,7 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testB_Add_User() {
+	public void testB_Create_User_Account() {
 		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
@@ -80,9 +81,22 @@ public class SensorTests {
 		res = RestClient.POST("/api/session", req, userSid, userServer);
 		assertEquals(200, res.status);
 	}
-
 	@Test
-	public void testD_Add_Sensor() {
+	public void testD_Get_User_Data() {
+		RestClient.Response res = RestClient.GET("/api/user", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+		@SuppressWarnings("unchecked")
+		Map<String, Object> user = (Map<String, Object>) res.body.get("user");
+		assertEquals("max.mustermann@mail.de", user.get("email"));
+		assertEquals("Max", user.get("firstname"));
+		assertEquals("Mustermann", user.get("lastname"));
+		assertNotNull(user.get("tag_all"));
+		tagAllUuid = (String) user.get("tag_all");
+	}
+	
+	@Test
+	public void testE_Add_Sensor() {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor");
 		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
@@ -94,7 +108,7 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testE_Update_Sensor() {
+	public void testF_Update_Sensor() {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor 2");
 		// req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
@@ -104,14 +118,14 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testF_Get_Sensor() {
+	public void testG_Get_Sensor() {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testG_Get_Sensor_Data() {
+	public void testH_Get_Sensor_Data() {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/data", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -119,21 +133,28 @@ public class SensorTests {
 	}
 	
 	@Test
-	public void testH_Subscribe_For_Sensor_Events() {
+	public void testI_Get_All_User_Sensor_Uuid() {
+		RestClient.Response res = RestClient.GET("/api/tag/" + tagAllUuid + "/object", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+	
+	@Test
+	public void testJ_Subscribe_For_Sensor_Events() {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 	
 	@Test
-	public void testI_Cancel_Sensor_Event_Subcription() {
+	public void testK_Cancel_Sensor_Event_Subcription() {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 	
 	@Test
-	public void testJ_Delete_Sensor() {
+	public void testL_Delete_Sensor() {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));

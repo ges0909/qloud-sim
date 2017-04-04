@@ -10,10 +10,12 @@ import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Policy;
+import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.PolicyModel;
+import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
@@ -26,6 +28,7 @@ public class TagController extends Controller {
 	final TagModel tagModel = TagModel.instance();
 	final UserModel userModel = UserModel.instance();
 	final PolicyModel policyModel = PolicyModel.instance();
+	final SensorModel sensorModel = SensorModel.instance();
 
 	private TagController() {
 		super();
@@ -211,6 +214,13 @@ public class TagController extends Controller {
 			log.warning("query parameter 'count': ignored");
 		}
 		Tag tagAll = own.getTagAll();
-		return ok();
+		List <Sensor> sensors = sensorModel.queryForAll();
+		Map<String, Object> objects = new HashMap<>();
+		for (Sensor sensor: sensors) {
+			if (sensor.getTag().getUuid().equals(tagAll.getUuid())) { // take only sensors tagged with 'tagAll'
+				objects.put(sensor.getUuid(), Json.obj());
+			}
+		}
+		return result("object", objects);
 	}
 }

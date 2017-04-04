@@ -48,7 +48,7 @@ public class Sensor {
 	boolean batteryOk;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private transient User user;
+	private transient Tag tag;
 
 	// One-to-many
 	@ForeignCollectionField
@@ -120,12 +120,12 @@ public class Sensor {
 		this.batteryOk = batteryOk;
 	}
 
-	public User getUser() {
-		return user;
+	public Tag getTag() {
+		return tag;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setTag(Tag tag) {
+		this.tag = tag;
 	}
 
 	public Collection<Capability> getCapabilities() {

@@ -48,7 +48,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testB_List_All_Partner_Realted_Users() {
+	public void testB_Get_All_Partner_Related_Users() {
 		RestClient.Response res = RestClient.GET("/api/partner/user", partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -58,7 +58,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testC_Add_User() {
+	public void testC_Create_User_Account() {
 		Map<String, Object> req = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response resp = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
@@ -85,7 +85,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testE_Get_User_Data() {
+	public void testE_Get_User_Account_Data() {
 		RestClient.Response res = RestClient.GET("/api/partner/user/" + userUuid, partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -98,7 +98,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testF_Delete_User() {
+	public void testF_Delete_User_Account() {
 		RestClient.Response res =
 				RestClient.POST("/api/partner/user/" + userUuid, Json.obj("deleted", true), partnerSid, partnerServer);
 		assertEquals(200, res.status);
