@@ -32,9 +32,10 @@ public class UploadController {
 		return instance;
 	}
 
-	public ModelAndView provideUploadForm(Request request, Response response) {
+	public ModelAndView displayUploadForm(Request request, Response response) {
 		Map<String, Object> model = new HashMap<>();
-		model.put("action", "Hochladen");
+		model.put("configurl", request.scheme() + "://" + request.host() + "/config");
+		model.put("uploadurl", request.scheme() + "://" + request.host()+ "/upload");
 		return new ModelAndView(model, "upload.ftl");
 	}
 

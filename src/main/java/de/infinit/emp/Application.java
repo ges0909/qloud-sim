@@ -43,7 +43,8 @@ public class Application {
 		adminEndpoints();
 
 		notFound(Controller.instance()::notFound);
-//		exception(Exception.class, (exception, request, response) -> Controller.instance()::except);
+		// exception(Exception.class, (exception, request, response) ->
+		// Controller.instance()::except);
 
 		after(LoggingFilter::logResponse);
 
@@ -82,7 +83,7 @@ public class Application {
 				post("/:uuid", TagController.instance()::updateTag, gson::toJson);
 				get("/:uuid/object", TagController.instance()::getTaggedObjects, gson::toJson);
 			});
-			path("/object", () ->  post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson));
+			path("/object", () -> post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson));
 			path("/sensor", () -> {
 				post("", SensorController.instance()::createSensor, gson::toJson);
 				get("/:uuid", SensorController.instance()::getSensor, gson::toJson);
@@ -99,16 +100,14 @@ public class Application {
 	}
 
 	static void adminEndpoints() {
-		path("/admin", () -> {
-			get("", ConfigController.instance()::displayConfigurationForm, fmTransformer);
-			path("/config", () -> {
-				get("", ConfigController.instance()::displayConfigurationForm, fmTransformer);
-				post("", ConfigController.instance()::configureSimulator, fmTransformer);
-			});
-			path("/upload", () -> {
-				get("", UploadController.instance()::provideUploadForm, fmTransformer);
-				post("", UploadController.instance()::uploadFile, fmTransformer);
-			});
+		path("/config", () -> {
+			get("", ConfigController.instance()::displayConfigForm, fmTransformer);
+			post("", ConfigController.instance()::doConfiguration, fmTransformer);
+			after((request, response) -> response.type("text/html"));
+		});
+		path("/upload", () -> {
+			get("", UploadController.instance()::displayUploadForm, fmTransformer);
+			post("", UploadController.instance()::uploadFile, fmTransformer);
 			after((request, response) -> response.type("text/html"));
 		});
 	}

@@ -20,7 +20,7 @@ public class AuthenticationFilter {
 
 	public static void authenticateRequest(Request request, Response response) {
 		String path = request.pathInfo();
-		if (path.startsWith("/admin")) {
+		if (path.startsWith("/config") || path.startsWith("/upload")) {
 			return;
 		}
 		String method = request.requestMethod();

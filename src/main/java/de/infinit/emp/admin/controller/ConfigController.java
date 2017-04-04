@@ -22,15 +22,15 @@ public class ConfigController {
 		}
 		return instance;
 	}
-
-	public ModelAndView displayConfigurationForm(Request request, Response response) {
+	
+	public ModelAndView displayConfigForm(Request request, Response response) {
 		Map<String, Object> model = new HashMap<>();
-		model.put("configurl", request.url() + "/config");
-		model.put("uploadurl", request.url() + "/upload");
+		model.put("configurl", request.scheme() + "://" + request.host() + "/config");
+		model.put("uploadurl", request.scheme() + "://" + request.host() + "/upload");
 		return new ModelAndView(model, "config.ftl");
 	}
 	
-	public ModelAndView configureSimulator(Request request, Response response) {
+	public ModelAndView doConfiguration(Request request, Response response) {
 		Map<String, Object> model = new HashMap<>();
 		model.put("result", "Erfolgreich");
 		return new ModelAndView(model, "result.ftl");
