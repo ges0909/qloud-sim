@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -40,7 +41,8 @@ public class UserController extends Controller {
 	class UpdateUserRequest {
 		String firstname;
 		String lastname;
-		String display_name;
+		@SerializedName("display_name")
+		String displayName;
 		String password;
 		String email;
 	}
@@ -71,7 +73,7 @@ public class UserController extends Controller {
 		UpdateUserRequest req = decode(request.body(), UpdateUserRequest.class);
 		own.setFirstName(req.firstname);
 		own.setLastName(req.lastname);
-		own.setDisplayName(req.display_name);
+		own.setDisplayName(req.displayName);
 		own.setPassword(req.password);
 		own.setEmail(req.email);
 		if (userModel.update(own) == null) {
@@ -105,11 +107,8 @@ public class UserController extends Controller {
 		if (own == null) {
 			return fail();
 		}
-		Map<String, Object> invitation = new HashMap<>();
-		for (Invitation i : own.getInvitations()) {
-			invitation.put(i.getUuid(), Json.obj("description", "Simulator generated description for invitations."));
-		}
-		return result("invitation", invitation);
+		List<String> invitations = own.getInvitations().stream().map(Invitation::getUuid).collect(Collectors.toList());
+		return result("in", invitations);
 	}
 
 	public Object inviteUser(Request request, Response response) {

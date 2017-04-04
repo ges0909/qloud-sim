@@ -32,7 +32,7 @@ public class Application {
 
 	public static void main(String[] args) throws IOException, SQLException {
 		// Server server;
-		staticFileLocation("/public"); // to server css, js, ...
+		staticFileLocation("/public"); // to serve css, js, ...
 		// server = Server.createTcpServer().start();
 
 		before(LoggingFilter::logRequest);

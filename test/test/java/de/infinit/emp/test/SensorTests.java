@@ -99,7 +99,8 @@ public class SensorTests {
 	public void testE_Add_Sensor() {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor");
-		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
+//		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
+		req.put("code", "58XL4-UZX86-VCS9A-42SF9");
 		RestClient.Response res = RestClient.POST("/api/sensor", req, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));

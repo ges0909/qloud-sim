@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
@@ -75,7 +76,8 @@ public class UserTests {
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
 		userServer = (String) res.body.get("server");
-		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", userUuid);
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user",
+				userUuid);
 		res = RestClient.POST("/api/session", req, userSid, userServer);
 		assertEquals(200, res.status);
 	}
@@ -132,7 +134,8 @@ public class UserTests {
 		assertEquals(200, res.status);
 		otherUserSid = (String) res.body.get("sid");
 		otherUserServer = (String) res.body.get("server");
-		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", otherUserUuid);
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user",
+				otherUserUuid);
 		res = RestClient.POST("/api/session", req, otherUserSid, otherUserServer);
 		assertEquals(200, res.status);
 	}
@@ -142,10 +145,10 @@ public class UserTests {
 		RestClient.Response res = RestClient.GET("/api/user/invitation", otherUserSid, otherUserServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
-		assertNotNull(res.body.get("invitation"));
+		assertNotNull(res.body.get("in"));
 		@SuppressWarnings("unchecked")
-		Map<String, Object> invitations = (Map<String, Object>) res.body.get("invitation");
-		invitationUuid = (String) invitations.keySet().toArray()[0];
+		List<String> invitations = (List<String>) res.body.get("in");
+		invitationUuid = (String) invitations.get(0);
 	}
 
 	@Test

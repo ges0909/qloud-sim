@@ -24,6 +24,6 @@ public interface ApplicationConfig extends Config {
 	String key();
 
 	@Key("device.pattern")
-	@DefaultValue("SIMUL-.*")
+	@DefaultValue("[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}")
 	String devicePattern();
 }
