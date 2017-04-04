@@ -1,8 +1,10 @@
 package de.infinit.emp.api.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.validation.constraints.NotNull;
 
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -24,9 +26,10 @@ public class Tag {
 	boolean foreignUse;
 	
 	@ForeignCollectionField
-	private ForeignCollection<Policy> policies;
+	private Collection<Policy> policies;
 
 	public Tag() {
+		policies = new ArrayList<>();
 		// ORMLite needs a no-arg constructor
 	}
 	
@@ -62,11 +65,11 @@ public class Tag {
 		this.foreignUse = foreignUse;
 	}
 
-	public ForeignCollection<Policy> getPolicies() {
+	public Collection<Policy> getPolicies() {
 		return policies;
 	}
 
-	public void setPolicies(ForeignCollection<Policy> policies) {
+	public void setPolicies(Collection<Policy> policies) {
 		this.policies = policies;
 	}
 }

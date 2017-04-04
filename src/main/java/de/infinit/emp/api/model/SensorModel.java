@@ -15,4 +15,9 @@ public class SensorModel extends Model<Sensor, String> {
 		}
 		return instance;
 	}
+	
+	public int delete(Sensor sensor) {
+		sensor.getCapabilities().clear();
+		return super.delete(sensor.getUuid());
+	}
 }

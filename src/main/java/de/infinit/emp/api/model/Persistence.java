@@ -1,5 +1,6 @@
 package de.infinit.emp.api.model;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import org.aeonbits.owner.ConfigCache;
@@ -34,6 +35,12 @@ public class Persistence {
 		return cs;
 	}
 
+	public static void close() throws IOException {
+		if (cs != null) {
+			cs.close();
+		}
+	}
+	
 	private static void createTabelsIfNotExists() throws SQLException {
 		TableUtils.createTableIfNotExists(cs, Session.class);
 		TableUtils.createTableIfNotExists(cs, User.class);

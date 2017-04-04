@@ -1,10 +1,12 @@
 package de.infinit.emp.api.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.google.gson.annotations.SerializedName;
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -47,23 +49,25 @@ public class User {
 	@Pattern(regexp = "^[a-zA-Z0-9-]{1,50}$")
 	@DatabaseField
 	String verification;
-	
+
 	@SerializedName("tag_all")
 	@DatabaseField(unique = true)
 	String tagAll;
 
 	// One-to-many
 	@ForeignCollectionField
-	private ForeignCollection<Sensor> sensors;
-	
+	private Collection<Sensor> sensors;
+
 	// One-to-many
 	@ForeignCollectionField
-	private ForeignCollection<Invitation> invitations;
+	private Collection<Invitation> invitations;
 
 	public User() {
 		// ORMLite needs a no-arg constructor
+		sensors = new ArrayList<>();
+		invitations = new ArrayList<>();
 	}
-	
+
 	public String getUuid() {
 		return uuid;
 	}
@@ -136,19 +140,19 @@ public class User {
 		this.tagAll = tagAll;
 	}
 
-	public ForeignCollection<Sensor> getSensors() {
+	public Collection<Sensor> getSensors() {
 		return sensors;
 	}
 
-	public void setSensors(ForeignCollection<Sensor> sensors) {
+	public void setSensors(Collection<Sensor> sensors) {
 		this.sensors = sensors;
 	}
 
-	public ForeignCollection<Invitation> getInvitations() {
+	public Collection<Invitation> getInvitations() {
 		return invitations;
 	}
 
-	public void setInvitations(ForeignCollection<Invitation> invitations) {
+	public void setInvitations(Collection<Invitation> invitations) {
 		this.invitations = invitations;
 	}
 }

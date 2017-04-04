@@ -1,5 +1,6 @@
 package de.infinit.emp.api.controller;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,17 +47,17 @@ public class TagController extends Controller {
 		Map<String, Integer> policies;
 	}
 
-	class UpdateDeletePolicy {
-		Map<String, Integer> update;
-		List<String> delete;
-	}
-
 	class UpdateTagRequest {
+		class Policy {
+			Map<String, Integer> update;
+			List<String> delete;
+		}
+
 		String label;
 		@SerializedName("foreign_use")
 		boolean foreignUse;
 		@SerializedName("policy")
-		UpdateDeletePolicy policies;
+		Policy policies;
 	}
 
 	private Map<String, Integer> getPolicies(Tag tag) {
@@ -82,18 +83,14 @@ public class TagController extends Controller {
 		tag.setOwner(own.getUuid());
 		tag.setLabel(req.label);
 		tag.setForeignUse(req.foreignUse);
+		Collection<Policy> policies = tag.getPolicies();
+		policies.add(new Policy(tag, own.getUuid(), 4/* owner */));
+		for (String uuid : req.policies.keySet()) {
+			policies.add(new Policy(tag, uuid, req.policies.get(uuid)));
+		}
+		tag.setPolicies(policies);
 		if (tagModel.create(tag) == null) {
 			return fail();
-		}
-		Policy policy = new Policy(tag, own.getUuid(), 4/* owner */);
-		if (policyModel.create(policy) == null) {
-			return fail();
-		}
-		for (String uuid : req.policies.keySet()) {
-			policy = new Policy(tag, uuid, req.policies.get(uuid));
-			if (policyModel.create(policy) == null) {
-				return fail();
-			}
 		}
 		return result("uuid", tag.getUuid());
 	}
@@ -169,7 +166,7 @@ public class TagController extends Controller {
 		}
 		return result("tag", tags);
 	}
-	
+
 	public Object deleteTag(Request request, Response response) {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);

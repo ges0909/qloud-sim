@@ -1,10 +1,12 @@
 package de.infinit.emp.api.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.google.gson.annotations.SerializedName;
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -48,10 +50,11 @@ public class Sensor {
 
 	// One-to-many
 	@ForeignCollectionField
-	private transient ForeignCollection<Capability> capabilities;
+	private transient Collection<Capability> capabilities;
 
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
+		capabilities = new ArrayList<>();
 	}
 
 	public String getUuid() {
@@ -126,11 +129,11 @@ public class Sensor {
 		this.user = user;
 	}
 
-	public ForeignCollection<Capability> getCapabilities() {
+	public Collection<Capability> getCapabilities() {
 		return capabilities;
 	}
 
-	public void setCapabilities(ForeignCollection<Capability> capabilities) {
+	public void setCapabilities(Collection<Capability> capabilities) {
 		this.capabilities = capabilities;
 	}
 }

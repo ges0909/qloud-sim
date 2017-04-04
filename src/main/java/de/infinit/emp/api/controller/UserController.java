@@ -1,12 +1,12 @@
 package de.infinit.emp.api.controller;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.gson.annotations.SerializedName;
-import com.j256.ormlite.dao.ForeignCollection;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
@@ -67,21 +67,6 @@ public class UserController extends Controller {
 		List<String> invitationsToAccept;
 	}
 
-	// GET /api/user
-	public Object getUser(Request request, Response response) {
-		if (!isProxySession(request)) {
-			return status(Status.NO_AUTH);
-		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
-		if (own == null) {
-			return fail();
-		}
-		GetUserResponse resp = convert(own, GetUserResponse.class);
-		resp.partner = config.partner();
-		return result("user", resp);
-	}
-
 	public Object updateUser(Request request, Response response) {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
@@ -107,6 +92,21 @@ public class UserController extends Controller {
 		return ok();
 	}
 
+	// GET /api/user
+	public Object getUser(Request request, Response response) {
+		if (!isProxySession(request)) {
+			return status(Status.NO_AUTH);
+		}
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		User own = userModel.queryForId(session.getUser());
+		if (own == null) {
+			return fail();
+		}
+		GetUserResponse resp = convert(own, GetUserResponse.class);
+		resp.partner = config.partner();
+		return result("user", resp);
+	}
+	
 	public Object getUserInvitations(Request request, Response response) {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
@@ -138,10 +138,9 @@ public class UserController extends Controller {
 			if (other == null) {
 				return status(Status.WRONG_USER);
 			}
-			Invitation invitation = new Invitation();
-			invitation.setUuid(Uuid.next()); // create invitation code
-			invitation.setUser(other);
-			if (invitationModel.create(invitation) == null) {
+			Invitation invitation = new Invitation(other, Uuid.next()); // create invitation code
+			other.getInvitations().add(invitation);
+			if (userModel.update(other) == null) { // update because of added invitation
 				return fail();
 			}
 		}
@@ -157,18 +156,22 @@ public class UserController extends Controller {
 		if (own == null) {
 			return fail();
 		}
-		ForeignCollection<Invitation> storedInvitations = own.getInvitations();
+		Collection<Invitation> storedInvitations = own.getInvitations();
 		if (storedInvitations.isEmpty()) {
 			return status(Status.WRONG_INVITATION);
 		}
 		AcceptInvitationRequest req = decode(request.body(), AcceptInvitationRequest.class);
 		int numberAccepted = 0;
 		for (String uuid : req.invitationsToAccept) {
-			for (Invitation i : storedInvitations) {
-				if (uuid.equals(i.getUuid())) {
+			for (Invitation invitation : storedInvitations) {
+				if (uuid.equals(invitation.getUuid())) {
 					numberAccepted = +1;
+					storedInvitations.remove(invitation);
 				}
 			}
+		}
+		if (numberAccepted > 0) {
+			userModel.update(own); // update because of removed invitations
 		}
 		if (req.invitationsToAccept.size() != numberAccepted) {
 			return fail();

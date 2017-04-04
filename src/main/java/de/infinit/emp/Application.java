@@ -9,8 +9,10 @@ import static spark.Spark.path;
 import static spark.Spark.post;
 import static spark.Spark.staticFileLocation;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.sql.SQLException;
 
+import com.google.gson.Gson;
 import de.infinit.emp.admin.controller.ConfigController;
 import de.infinit.emp.admin.controller.UploadController;
 import de.infinit.emp.api.controller.Controller;
@@ -28,25 +30,22 @@ public class Application {
 	static final Gson gson = new Gson();
 	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, SQLException {
 		// Server server;
 		staticFileLocation("/public"); // to server css, js, ...
-		try {
-			// server = Server.createTcpServer().start();
+		// server = Server.createTcpServer().start();
 
-			before(LoggingFilter::logRequest);
+		before(LoggingFilter::logRequest);
 
-			apiEndpoints();
-			adminEndpoints();
-			notFound(Controller.instance()::notFound);
+		apiEndpoints();
+		adminEndpoints();
+		notFound(Controller.instance()::notFound);
 
-			after(LoggingFilter::logResponse);
+		after(LoggingFilter::logResponse);
 
-			// exception(Exception.class, (exception, request, response) -> {});
-		} finally {
-			// Persistence.getConnectionSource().close();
-			// server.stop();
-		}
+		// exception(Exception.class, (exception, request, response) -> {});
+		// Persistence.close();
+		// server.stop();
 	}
 
 	static void apiEndpoints() {

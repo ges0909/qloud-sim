@@ -15,4 +15,9 @@ public class TagModel extends Model<Tag, String> {
 		}
 		return instance;
 	}
+
+	public int delete(Tag tag) {
+		tag.getPolicies().clear();
+		return super.delete(tag.getUuid());
+	}
 }

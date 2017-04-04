@@ -39,11 +39,12 @@ public class PartnerController extends Controller {
 	}
 
 	class DeleteUserRequest {
-		boolean deleted;
+		Boolean disabled;
+		Boolean deleted;
 	}
 
 	public Object getUsers(Request request, Response response) {
-		if (isProxySession(request)) {
+		if (!isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		List<User> users = userModel.queryForAll();
@@ -52,7 +53,7 @@ public class PartnerController extends Controller {
 	}
 
 	public Object getUserData(Request request, Response response) {
-		if (isProxySession(request)) {
+		if (!isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
@@ -64,15 +65,23 @@ public class PartnerController extends Controller {
 	}
 
 	public Object deleteUser(Request request, Response response) {
-		if (isProxySession(request)) {
+		if (!isPartnerSession(request)) {
 			return status(Status.NO_AUTH);
 		}
 		DeleteUserRequest req = decode(request.body(), DeleteUserRequest.class);
-		if (req.deleted) {
-			String uuid = request.params(":uuid");
-			if (userModel.delete(uuid) == 0) {
-				return status(Status.WRONG_USER);
-			}
+		if (req.deleted == null) {
+			return status(Status.NOT_IMPLEMENTED);
+		}
+		if (!req.deleted) {
+			return ok();
+		}
+		String uuid = request.params(":uuid");
+		User user = userModel.queryForId(uuid);
+		if (user == null) {
+			return status(Status.WRONG_USER);
+		}
+		if (userModel.delete(user) != 1) { // incl. sensors assigned to user and pending invitations
+			return fail();
 		}
 		return ok();
 	}

@@ -1,6 +1,7 @@
 package de.infinit.emp.api.controller;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -48,12 +49,10 @@ public class SensorController extends Controller {
 			List<String> data;
 			List<String> action;
 		}
-
 		class State {
 			List<Integer> data;
 			List<Object> action;
 		}
-
 		String owner;
 		long time;
 		String description;
@@ -84,6 +83,7 @@ public class SensorController extends Controller {
 		if (sensorModel.findFirstByColumn("code", req.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
+		// create sensor
 		Sensor sensor = new Sensor();
 		sensor.setCode(req.code);
 		sensor.setDescription(req.description);
@@ -92,25 +92,20 @@ public class SensorController extends Controller {
 		sensor.setBatteryOk(true);
 		sensor.setUuid(Uuid.next());
 		sensor.setUser(own);
+		Collection<Capability> capabilities = sensor.getCapabilities();
+		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
+		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
+		capabilities.add(new Capability(sensor, "binary_16bit", "data"));
+		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
+		sensor.setCapabilities(capabilities);
 		if (sensorModel.create(sensor) == null) {
 			return fail();
 		}
-		Capability capability = new Capability(sensor, "binary_8bit", "data");
-		if (capabilityModel.create(capability) == null) {
-			return fail();
-		}
-		capability = new Capability(sensor, "binary_32bit", "data");
-		if (capabilityModel.create(capability) == null) {
-			return fail();
-		}
-		capability = new Capability(sensor, "binary_16bit", "data");
-		if (capabilityModel.create(capability) == null) {
-			return fail();
-		}
-		capability = new Capability(sensor, "binary_32bit", "data");
-		if (capabilityModel.create(capability) == null) {
-			return fail();
-		}
+//		// add sensor to user
+//		own.getSensors().add(sensor);
+//		if (userModel.update(own) == null) {
+//			return fail();
+//		}
 		return result("uuid", sensor.getUuid());
 	}
 
@@ -169,6 +164,10 @@ public class SensorController extends Controller {
 			status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
+		Sensor sensor = sensorModel.queryForId(uuid);
+		if (sensor == null) {
+			return status(Status.WRONG_SENSOR);
+		}
 		if (sensorModel.delete(uuid) != 1) {
 			return fail();
 		}

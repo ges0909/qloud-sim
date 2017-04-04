@@ -18,6 +18,12 @@ public class Invitation {
 		// ORMLite needs a no-arg constructor
 	}
 
+	public Invitation(User user, @NotNull String uuid) {
+		super();
+		this.uuid = uuid;
+		this.user = user;
+	}
+
 	public String getUuid() {
 		return uuid;
 	}
