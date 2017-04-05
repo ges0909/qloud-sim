@@ -16,17 +16,17 @@ public class Tag {
 	@NotNull
 	@DatabaseField(id = true)
 	String uuid;
-	
+
 	@NotNull
 	@DatabaseField
 	String owner;
-	
+
 	@DatabaseField
 	String label;
 
 	@DatabaseField(defaultValue = "true")
 	Boolean foreignUse;
-	
+
 	@ForeignCollectionField
 	private Collection<Policy> policies;
 
@@ -35,7 +35,7 @@ public class Tag {
 		this.uuid = Uuid.next();
 		this.policies = new ArrayList<>();
 	}
-	
+
 	public Tag(String owner, String label, Boolean foreignUse) {
 		this();
 		this.owner = owner;
@@ -43,11 +43,11 @@ public class Tag {
 		this.foreignUse = foreignUse;
 		this.policies.add(new Policy(this, owner, 4/* owner */));
 	}
-	
+
 	public String getUuid() {
 		return uuid;
 	}
-	
+
 	public String getOwner() {
 		return owner;
 	}

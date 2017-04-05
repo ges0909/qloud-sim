@@ -94,12 +94,12 @@ public class SensorTests {
 		assertNotNull(user.get("tag_all"));
 		tagAllUuid = (String) user.get("tag_all");
 	}
-	
+
 	@Test
 	public void testE_Add_Sensor() {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor");
-//		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
+		//		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
 		req.put("code", "58XL4-UZX86-VCS9A-42SF9");
 		RestClient.Response res = RestClient.POST("/api/sensor", req, userSid, userServer);
 		assertEquals(200, res.status);
@@ -132,28 +132,28 @@ public class SensorTests {
 		assertEquals("ok", res.body.get("status"));
 		assertNotNull(res.body.get("data"));
 	}
-	
+
 	@Test
 	public void testI_Get_All_User_Sensor_Uuid() {
 		RestClient.Response res = RestClient.GET("/api/tag/" + tagAllUuid + "/object", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
-	
+
 	@Test
 	public void testJ_Subscribe_For_Sensor_Events() {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
-	
+
 	@Test
 	public void testK_Cancel_Sensor_Event_Subcription() {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
-	
+
 	@Test
 	public void testL_Delete_Sensor() {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);

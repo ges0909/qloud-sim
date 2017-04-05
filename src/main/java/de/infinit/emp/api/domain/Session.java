@@ -27,7 +27,7 @@ public class Session {
 	public Session() {
 		// ORMLite needs a no-arg constructor
 	}
-	
+
 	public String getSid() {
 		return sid;
 	}

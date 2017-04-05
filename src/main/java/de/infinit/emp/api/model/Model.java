@@ -108,7 +108,7 @@ public class Model<T, U> {
 		}
 		return null;
 	}
-	
+
 	public <V> List<T> findByColumn(String column, V value) {
 		try {
 			return dao.queryBuilder()

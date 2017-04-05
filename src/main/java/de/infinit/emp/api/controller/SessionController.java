@@ -22,7 +22,7 @@ public class SessionController extends Controller {
 		}
 		return instance;
 	}
-	
+
 	class LoginRequest {
 		String partner;
 		String key;

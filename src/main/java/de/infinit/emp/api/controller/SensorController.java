@@ -48,10 +48,12 @@ public class SensorController extends Controller {
 			List<String> data;
 			List<String> action;
 		}
+
 		class State {
 			List<Integer> data;
 			List<Object> action;
 		}
+
 		String owner;
 		long time;
 		String description;
@@ -64,6 +66,23 @@ public class SensorController extends Controller {
 		boolean batteryOk;
 		Capability capabilities;
 		State state;
+	}
+
+	public Sensor createSensor(String code, String description) {
+		Sensor sensor = new Sensor();
+		sensor.setCode(code);
+		sensor.setDescription(description);
+		sensor.setRecvTime(Instant.now().getEpochSecond());
+		sensor.setRecvInterval(900);
+		sensor.setBatteryOk(true);
+		// sensor.setTag(own.getTagAll()); // tag sensor
+		Collection<Capability> capabilities = sensor.getCapabilities();
+		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
+		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
+		capabilities.add(new Capability(sensor, "binary_16bit", "data"));
+		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
+		sensor.setCapabilities(capabilities);
+		return sensorModel.create(sensor);
 	}
 
 	public Object createSensor(Request request, Response response) {
@@ -82,21 +101,8 @@ public class SensorController extends Controller {
 		if (sensorModel.findFirstByColumn("code", req.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
-		// create sensor
-		Sensor sensor = new Sensor();
-		sensor.setCode(req.code);
-		sensor.setDescription(req.description);
-		sensor.setRecvTime(Instant.now().getEpochSecond());
-		sensor.setRecvInterval(900);
-		sensor.setBatteryOk(true);
-		sensor.setTag(own.getTagAll()); // tag sensor
-		Collection<Capability> capabilities = sensor.getCapabilities();
-		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
-		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
-		capabilities.add(new Capability(sensor, "binary_16bit", "data"));
-		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
-		sensor.setCapabilities(capabilities);
-		if (sensorModel.create(sensor) == null) {
+		Sensor sensor = createSensor(req.code, req.description);
+		if (sensor == null) {
 			return fail();
 		}
 		return result("uuid", sensor.getUuid());

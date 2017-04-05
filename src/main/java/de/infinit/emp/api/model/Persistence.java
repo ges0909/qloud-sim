@@ -57,5 +57,5 @@ public class Persistence {
 		TableUtils.createTableIfNotExists(cs, Tag.class);
 		TableUtils.createTableIfNotExists(cs, Policy.class);
 	}
-	
+
 }

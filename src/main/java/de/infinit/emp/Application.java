@@ -101,8 +101,8 @@ public class Application {
 
 	static void adminEndpoints() {
 		path("/config", () -> {
-			get("", ConfigController.instance()::displayConfigForm, fmTransformer);
-			post("", ConfigController.instance()::doConfiguration, fmTransformer);
+			get("", ConfigController.instance()::displayConfigurationDialog, fmTransformer);
+			post("", ConfigController.instance()::saveConfiguration, fmTransformer);
 			after((request, response) -> response.type("text/html"));
 		});
 		path("/upload", () -> {

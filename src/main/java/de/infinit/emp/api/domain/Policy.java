@@ -17,7 +17,7 @@ public class Policy {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private transient Tag tag;
-	
+
 	public Policy() {
 		// ORMLite needs a no-arg constructor
 	}

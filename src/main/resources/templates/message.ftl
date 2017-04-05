@@ -1,4 +1,4 @@
 <#include "page.ftl" />
 <@page>
-	${result}
+	${message}
 </@page>

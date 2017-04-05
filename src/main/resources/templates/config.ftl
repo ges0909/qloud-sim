@@ -1,10 +1,14 @@
 <#include "page.ftl" />
-<@page title="Konfiguration">
-	<form method='post'>
+<@page>
+	<form method='POST' action='${config.url}'>
 		<fieldset>
-			<#--<legend>In-Memory Datenbank?</legend>-->
-			<input type="checkbox" name="In Memory" value="true" />In-Memory Datenbank<br />
-			<input type="submit" value="Setzen" />
+		    <legend class="title">${config.title}</legend>
+			<#-- <input type="checkbox" name="In Memory" value="true" />In-Memory Datenbank<br />  -->
+			<#list properties as key, value>
+				<label class="label" for="${key}">${key}</label>
+				<input class="box" size="${max}" type="text" name="${key}" id="${key}" value="${value}">
+  			</#list>
+  		<input class="button" type="submit" value="${config.title}" />
 		</fieldset>
 	</form>
 </@page>

@@ -29,7 +29,7 @@ public class Controller {
 		}
 		return instance;
 	}
-	
+
 	protected Map<String, Object> status(String value) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", value);
@@ -66,20 +66,20 @@ public class Controller {
 		response.type("application/json");
 		return gson.toJson(fail());
 	}
-	
-//	public String except(Exception e, Request request, Response response) {
-//		response.type("application/json");
-//		return gson.toJson(fail());
-//	}
+
+	//	public String except(Exception e, Request request, Response response) {
+	//		response.type("application/json");
+	//		return gson.toJson(fail());
+	//	}
 
 	public Map<String, Object> notImplemented(Request request, Response response) {
 		return status(Status.NOT_IMPLEMENTED);
 	}
-	
+
 	protected Object ok() {
 		return status(Status.OK);
 	}
-	
+
 	protected Object fail() {
 		return status(Status.FAIL);
 	}

@@ -148,7 +148,7 @@ public class UserTests {
 		assertNotNull(res.body.get("in"));
 		@SuppressWarnings("unchecked")
 		List<String> invitations = (List<String>) res.body.get("in");
-		invitationUuid = (String) invitations.get(0);
+		invitationUuid = invitations.get(0);
 	}
 
 	@Test

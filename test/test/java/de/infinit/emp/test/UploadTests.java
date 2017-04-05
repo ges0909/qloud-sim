@@ -30,14 +30,14 @@ public class UploadTests {
 	}
 
 	private static File createTempFile() throws IOException {
-		File temp = File.createTempFile("uploadtest", ".temp");
-		// temp.deleteOnExit();
-		BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
+		File csvFile = File.createTempFile("Sensors", ".csv");
+		csvFile.deleteOnExit();
+		BufferedWriter bw = new BufferedWriter(new FileWriter(csvFile));
 		for (int i = 0; i < 1000; i++) {
-			bw.write(generatorHardwareCode() + "\n");
+			bw.write(generatorHardwareCode() + "," + "Messtelle " + i + "\n");
 		}
 		bw.close();
-		return temp;
+		return csvFile;
 	}
 
 	@BeforeClass

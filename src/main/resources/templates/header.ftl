@@ -1,5 +1,5 @@
 <div id="headerwrap">
 	<div id="header">
-		<p>Qloud Simlulator</p>
+		<p>Qloud-Simulator</p>
 	</div>
 </div>

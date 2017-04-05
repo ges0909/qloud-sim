@@ -1,10 +1,11 @@
 package de.infinit.emp.admin.controller;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.aeonbits.owner.ConfigCache;
@@ -29,29 +30,52 @@ public class ConfigController {
 		}
 		return instance;
 	}
-	
-	public ModelAndView displayConfigForm(Request request, Response response)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Map<String, Object> model = new HashMap<>();
-		model.put("configurl", request.scheme() + "://" + request.host() + "/config");
-		model.put("uploadurl", request.scheme() + "://" + request.host() + "/upload");
-		//
-		Class<ApplicationConfig> aClass = ApplicationConfig.class;
-		Method[] methods = aClass.getMethods();
-		Annotation[] annotations = aClass.getAnnotations();
-		for (Method method : methods) {
-			log.info(method + "=" + method.invoke(config, null));
+
+	private boolean saved() {
+		String fileName = System.getProperty("user.home") + "/.qloud-simulator.properties";
+		try {
+			File file = new File(fileName);
+			FileOutputStream out = new FileOutputStream(file);
+			config.store(out, "");
+			return true;
+		} catch (IOException e) {
+			log.severe(e.toString());
 		}
-		for (Annotation annotation : annotations) {
-			log.info(annotation.toString());
-		}
+		return false;
+	}
+
+	public ModelAndView displayConfigurationDialog(Request request, Response response) {
+		Map<String, String> properties = new TreeMap<>(); // sorted by keys
+		config.fill(properties);
+		Optional<Integer> option = properties.entrySet().stream().map(e -> e.getValue().length()).reduce(Integer::max);
+		int max = option.isPresent() ? option.get() : 40 /* default size */;
 		//
+		CommonModel model = new CommonModel(request);
+		model.put("title", "Konfiguration");
+		model.put("max", max);
+		model.put("properties", properties);
+		model.put("max", max);
 		return new ModelAndView(model, "config.ftl");
 	}
-	
-	public ModelAndView doConfiguration(Request request, Response response) {
-		Map<String, Object> model = new HashMap<>();
-		model.put("result", "Erfolgreich");
-		return new ModelAndView(model, "result.ftl");
+
+	public ModelAndView saveConfiguration(Request request, Response response) {
+		CommonModel model = new CommonModel(request);
+		Map<String, String[]> map = request.queryMap().toMap();
+		for (Map.Entry<String, String[]> e : map.entrySet()) {
+			String firstValue = e.getValue()[0];
+			if (firstValue != null && firstValue.isEmpty()) {
+				model.put("message", "Kein Wert: " + e.getKey());
+				return new ModelAndView(model, "message.ftl");
+			}
+		}
+		for (Map.Entry<String, String[]> e : map.entrySet()) {
+			config.setProperty(e.getKey(), e.getValue()[0]);
+		}
+		if (saved()) {
+			model.put("message", "Erfolgreich konfiguriert.");
+		} else {
+			model.put("message", "Fehler.");
+		}
+		return new ModelAndView(model, "message.ftl");
 	}
 }

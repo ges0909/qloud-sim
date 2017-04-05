@@ -4,15 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 
+import de.infinit.emp.api.controller.SensorController;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -33,9 +32,7 @@ public class UploadController {
 	}
 
 	public ModelAndView displayUploadForm(Request request, Response response) {
-		Map<String, Object> model = new HashMap<>();
-		model.put("configurl", request.scheme() + "://" + request.host() + "/config");
-		model.put("uploadurl", request.scheme() + "://" + request.host()+ "/upload");
+		CommonModel model = new CommonModel(request);
 		return new ModelAndView(model, "upload.ftl");
 	}
 
@@ -48,10 +45,11 @@ public class UploadController {
 			lines = buffer.lines().collect(Collectors.toList());
 		}
 		for (String line : lines) {
-			log.info(line);
+			String[] parts = line.split(",");
+			SensorController.instance().createSensor(parts[0], parts[1]);
 		}
-		Map<String, Object> model = new HashMap<>();
-		model.put("result", "Erfolgreich");
-		return new ModelAndView(model, "result.ftl");
+		CommonModel model = new CommonModel(request);
+		model.put("message", "Erfolgreich hochgeladen.");
+		return new ModelAndView(model, "message.ftl");
 	}
 }
