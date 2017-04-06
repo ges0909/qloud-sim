@@ -37,7 +37,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testA_Login_As_Partner() {
+	public void testA_Login_As_Partner() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		partnerSid = (String) res.body.get("sid");
@@ -48,7 +48,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testB_Get_All_Partner_Related_Users() {
+	public void testB_Get_All_Partner_Related_Users() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/partner/user", partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -58,24 +58,24 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testC_Create_User_Account() {
+	public void testC_Create_User_Account() throws IOException {
 		Map<String, Object> req = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
-		RestClient.Response resp = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
-		assertEquals(200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
-		assertNotNull(resp.body.get("uuid"));
-		assertNotNull(resp.body.get("verification"));
-		userUuid = (String) resp.body.get("uuid");
-		String verification = (String) resp.body.get("verification");
+		RestClient.Response res = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+		assertNotNull(res.body.get("uuid"));
+		assertNotNull(res.body.get("verification"));
+		userUuid = (String) res.body.get("uuid");
+		String verification = (String) res.body.get("verification");
 		req = Json.obj("email", "peter.pan@test.de", "firstname", "Peter", "lastname", "Pan", "display_name", "Peter Pan");
 		req.put("verification", verification);
-		resp = RestClient.POST("/api/signup/user", req, partnerSid, partnerServer);
-		assertEquals(200, resp.status);
-		assertEquals("ok", resp.body.get("status"));
+		res = RestClient.POST("/api/signup/user", req, partnerSid, partnerServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testD_List_All_Partner_Related_Users() {
+	public void testD_List_All_Partner_Related_Users() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/partner/user", partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -85,7 +85,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testE_Get_User_Account_Data() {
+	public void testE_Get_User_Account_Data() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/partner/user/" + userUuid, partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -98,7 +98,7 @@ public class PartnerTests {
 	}
 
 	@Test
-	public void testF_Delete_User_Account() {
+	public void testF_Delete_User_Account() throws IOException {
 		RestClient.Response res =
 				RestClient.POST("/api/partner/user/" + userUuid, Json.obj("deleted", true), partnerSid, partnerServer);
 		assertEquals(200, res.status);

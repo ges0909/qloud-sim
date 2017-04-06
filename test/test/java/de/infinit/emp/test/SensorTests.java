@@ -41,7 +41,7 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testA_Login_as_Partner() {
+	public void testA_Login_as_Partner() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		partnerSid = (String) res.body.get("sid");
@@ -54,7 +54,7 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testB_Create_User_Account() {
+	public void testB_Create_User_Account() throws IOException {
 		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
@@ -71,7 +71,7 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testC_Login_As_User() {
+	public void testC_Login_As_User() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
@@ -82,7 +82,7 @@ public class SensorTests {
 		assertEquals(200, res.status);
 	}
 	@Test
-	public void testD_Get_User_Data() {
+	public void testD_Get_User_Data() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/user", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -96,7 +96,7 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testE_Add_Sensor() {
+	public void testE_Add_Sensor() throws IOException {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor");
 		//		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
@@ -109,7 +109,7 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testF_Update_Sensor() {
+	public void testF_Update_Sensor() throws IOException {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor 2");
 		// req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
@@ -119,14 +119,14 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testG_Get_Sensor() {
+	public void testG_Get_Sensor() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testH_Get_Sensor_Data() {
+	public void testH_Get_Sensor_Data() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/data", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -134,28 +134,28 @@ public class SensorTests {
 	}
 
 	@Test
-	public void testI_Get_All_User_Sensor_Uuid() {
+	public void testI_Get_All_User_Sensor_Uuid() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/tag/" + tagAllUuid + "/object", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testJ_Subscribe_For_Sensor_Events() {
+	public void testJ_Subscribe_For_Sensor_Events() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testK_Cancel_Sensor_Event_Subcription() {
+	public void testK_Cancel_Sensor_Event_Subcription() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testL_Delete_Sensor() {
+	public void testL_Delete_Sensor() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));

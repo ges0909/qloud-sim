@@ -41,7 +41,7 @@ public class SignupTests {
 	}
 
 	@Test
-	public void testA_Login_As_Partner() {
+	public void testA_Login_As_Partner() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(HttpStatus.OK_200, res.status);
 		partnerSid = (String) res.body.get("sid");
@@ -54,7 +54,7 @@ public class SignupTests {
 	}
 
 	@Test
-	public void testB_Initiate_SignUp() {
+	public void testB_Initiate_SignUp() throws IOException {
 		List<String> companyIds = new ArrayList<>();
 		companyIds.add("12345");
 		Map<String, Object> obj = new HashMap<>();
@@ -71,7 +71,7 @@ public class SignupTests {
 	}
 
 	@Test
-	public void testC_Complete_Signup() {
+	public void testC_Complete_Signup() throws IOException {
 		Map<String, Object> req = Json.obj("email", "max.mustermann@infinit-services.de", "username", "max",
 				"firstname", "max", "username", "mustermann", "displayname", "max.mustermann", "password", "geheim",
 				"verification", verification);

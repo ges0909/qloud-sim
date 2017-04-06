@@ -4,6 +4,7 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
+import static spark.Spark.internalServerError;
 import static spark.Spark.notFound;
 import static spark.Spark.path;
 import static spark.Spark.post;
@@ -11,6 +12,7 @@ import static spark.Spark.staticFileLocation;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 
@@ -28,32 +30,31 @@ import de.infinit.emp.filter.LoggingFilter;
 import spark.template.freemarker.FreeMarkerEngine;
 
 public class Application {
+	static final Logger log = Logger.getLogger(Application.class.getName());
 	static final Gson gson = new Gson();
 	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
 	public static void main(String[] args) throws IOException, SQLException {
-		// Server server;
-		staticFileLocation("/public"); // to serve css, js, ...
-		// server = Server.createTcpServer().start();
+		staticFileLocation("/public"); // to serve css, ...
 
-		before(AuthenticationFilter::authenticateRequest);
 		before(LoggingFilter::logRequest);
 
 		apiEndpoints();
 		adminEndpoints();
 
-		notFound(Controller.instance()::notFound);
-		// exception(Exception.class, (exception, request, response) ->
-		// Controller.instance()::except);
-
 		after(LoggingFilter::logResponse);
 
+		// 'Not found' and 'Internal server error' are handles ALWAYS after the routes above
+		notFound(Controller.instance()::notFound);
+		internalServerError(Controller.instance()::internalServerError);
+
 		// Persistence.close();
-		// server.stop();
 	}
 
 	static void apiEndpoints() {
 		path("/api", () -> {
+			before("/*", AuthenticationFilter::authenticateRequest);
+
 			path("/session", () -> {
 				get("", SessionController.instance()::requestNonAuthorizedSession, gson::toJson);
 				post("", SessionController.instance()::loginToPartnerOrProxySession, gson::toJson);
@@ -95,7 +96,8 @@ public class Application {
 				post("/:uuid/action", Controller.instance()::notImplemented, gson::toJson);
 			});
 			path("/event", () -> get("", Controller.instance()::notImplemented, gson::toJson));
-			after((request, response) -> response.type("application/json"));
+
+			after("/*", (request, response) -> response.type("application/json"));
 		});
 	}
 

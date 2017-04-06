@@ -43,7 +43,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testA_Login_As_Partner() {
+	public void testA_Login_As_Partner() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		partnerSid = (String) res.body.get("sid");
@@ -54,7 +54,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testB_Create_User_Account() {
+	public void testB_Create_User_Account() throws IOException {
 		Map<String, Object> req = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response res = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
 		assertEquals(200, res.status);
@@ -71,7 +71,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testC_Login_As_User() {
+	public void testC_Login_As_User() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
@@ -83,7 +83,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testD_Get_User_Data() {
+	public void testD_Get_User_Data() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/user", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -96,7 +96,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testE_Update_User_Data() {
+	public void testE_Update_User_Data() throws IOException {
 		Map<String, Object> req = Json.obj("email", "max.mustermann@mail.de", "firstname", "Peter", "lastname", "Pan");
 		RestClient.Response res = RestClient.POST("/api/user", req, userSid, userServer);
 		assertEquals(200, res.status);
@@ -104,7 +104,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testF_Add_Other_User() {
+	public void testF_Add_Other_User() throws IOException {
 		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
@@ -121,7 +121,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testG_Invite_Other_User() {
+	public void testG_Invite_Other_User() throws IOException {
 		Map<String, Object> req = Json.obj("invite", Json.arr(otherUserUuid));
 		RestClient.Response res = RestClient.POST("/api/user/invitation", req, userSid, userServer);
 		assertEquals(200, res.status);
@@ -129,7 +129,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testH_Login_As_Other_User() {
+	public void testH_Login_As_Other_User() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		otherUserSid = (String) res.body.get("sid");
@@ -141,7 +141,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testI_Get_Other_User_Invitations() {
+	public void testI_Get_Other_User_Invitations() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/user/invitation", otherUserSid, otherUserServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -152,7 +152,7 @@ public class UserTests {
 	}
 
 	@Test
-	public void testJ_Get_Accept_Invitation() {
+	public void testJ_Get_Accept_Invitation() throws IOException {
 		Map<String, Object> req = Json.obj("invitation", Json.arr(invitationUuid));
 		RestClient.Response res = RestClient.POST("/api/user/link", req, otherUserSid, otherUserServer);
 		assertEquals(200, res.status);

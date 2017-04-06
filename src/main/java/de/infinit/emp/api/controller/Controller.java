@@ -62,18 +62,8 @@ public class Controller {
 		return !isProxySession(request);
 	}
 
-	public String notFound(Request request, Response response) {
-		response.type("application/json");
-		return gson.toJson(fail());
-	}
-
-	//	public String except(Exception e, Request request, Response response) {
-	//		response.type("application/json");
-	//		return gson.toJson(fail());
-	//	}
-
-	public Map<String, Object> notImplemented(Request request, Response response) {
-		return status(Status.NOT_IMPLEMENTED);
+	public Object notImplemented(Request request, Response response) {
+		return ok();
 	}
 
 	protected Object ok() {
@@ -82,5 +72,15 @@ public class Controller {
 
 	protected Object fail() {
 		return status(Status.FAIL);
+	}
+	
+	public Object notFound(Request request, Response response) {
+		response.type("text/plain");
+		return "NOT FOUND";
+	}
+	
+	public Object internalServerError(Request request, Response response) {
+		response.type("text/plain");
+		return "INTERNAL SERVER ERROR";
 	}
 }

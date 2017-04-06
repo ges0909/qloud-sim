@@ -39,7 +39,7 @@ public class XobjectTests {
 	}
 
 	@Test
-	public void testA_Login_As_Partner() {
+	public void testA_Login_As_Partner() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		partnerSid = (String) res.body.get("sid");
@@ -50,7 +50,7 @@ public class XobjectTests {
 	}
 
 	@Test
-	public void testB_Create_User_Account() {
+	public void testB_Create_User_Account() throws IOException {
 		Map<String, Object> req = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response res = RestClient.POST("/api/signup/verification", req, partnerSid, partnerServer);
 		assertEquals(200, res.status);
@@ -67,7 +67,7 @@ public class XobjectTests {
 	}
 
 	@Test
-	public void testC_Login_As_User() {
+	public void testC_Login_As_User() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
@@ -79,7 +79,7 @@ public class XobjectTests {
 	}
 
 	@Test
-	public void testD_Get_User_Data() {
+	public void testD_Get_User_Data() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/user", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -93,7 +93,7 @@ public class XobjectTests {
 	}
 
 	@Test
-	public void testE_XObject() {
+	public void testE_XObject() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/tag/" + tagAll + "/object/filter=xobject", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));

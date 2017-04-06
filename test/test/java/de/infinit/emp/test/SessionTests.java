@@ -36,7 +36,7 @@ public class SessionTests {
 	}
 
 	@Test
-	public void testA_Get_NonAuthorized_Session() {
+	public void testA_Get_NonAuthorized_Session() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
 		sid = (String) res.body.get("sid");
@@ -47,7 +47,7 @@ public class SessionTests {
 	}
 
 	@Test
-	public void testB_Login_As_Partner() {
+	public void testB_Login_As_Partner() throws IOException {
 		Map<String, Object> req =
 				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
 		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
@@ -56,7 +56,7 @@ public class SessionTests {
 	}
 
 	@Test
-	public void testC_Login_as_Proxy() {
+	public void testC_Login_as_Proxy() throws IOException {
 		Map<String, Object> req =
 				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", Uuid.next());
 		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
@@ -65,7 +65,7 @@ public class SessionTests {
 	}
 
 	@Test
-	public void testD_Logout_From_Session() {
+	public void testD_Logout_From_Session() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/session", sid, server);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
