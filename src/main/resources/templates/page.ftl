@@ -16,7 +16,7 @@
     			</div>
     		</div>
  		</div>
-    	<#include "menu.ftl">
+    	<#include "menu.ftlh">
  		<#-- <#include "footer.ftl"> -->
 </body>
 </html>

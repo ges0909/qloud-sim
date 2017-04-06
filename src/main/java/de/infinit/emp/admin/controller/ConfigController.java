@@ -55,7 +55,7 @@ public class ConfigController {
 		model.put("max", max);
 		model.put("properties", properties);
 		model.put("max", max);
-		return new ModelAndView(model, "config.ftl");
+		return new ModelAndView(model, "config.ftlh");
 	}
 
 	public ModelAndView saveConfiguration(Request request, Response response) {
@@ -65,7 +65,7 @@ public class ConfigController {
 			String firstValue = e.getValue()[0];
 			if (firstValue != null && firstValue.isEmpty()) {
 				model.put("message", "Kein Wert: " + e.getKey());
-				return new ModelAndView(model, "message.ftl");
+				return new ModelAndView(model, "message.ftlh");
 			}
 		}
 		for (Map.Entry<String, String[]> e : map.entrySet()) {
@@ -76,6 +76,6 @@ public class ConfigController {
 		} else {
 			model.put("message", "Fehler.");
 		}
-		return new ModelAndView(model, "message.ftl");
+		return new ModelAndView(model, "message.ftlh");
 	}
 }

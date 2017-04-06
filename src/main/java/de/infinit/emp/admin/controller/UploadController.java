@@ -18,6 +18,7 @@ import spark.Response;
 
 public class UploadController {
 	private static UploadController instance = null;
+	SensorController sensorController = SensorController.instance().instance();
 	static final Logger log = Logger.getLogger(UploadController.class.getName());
 
 	private UploadController() {
@@ -33,7 +34,7 @@ public class UploadController {
 
 	public ModelAndView displayUploadForm(Request request, Response response) {
 		CommonModel model = new CommonModel(request);
-		return new ModelAndView(model, "upload.ftl");
+		return new ModelAndView(model, "upload.ftlh");
 	}
 
 	public ModelAndView uploadFile(Request request, Response response) throws IOException, ServletException {
@@ -46,10 +47,10 @@ public class UploadController {
 		}
 		for (String line : lines) {
 			String[] parts = line.split(",");
-			SensorController.instance().createSensor(parts[0], parts[1]);
+			sensorController.createSensor(null, parts[0], parts[1]);
 		}
 		CommonModel model = new CommonModel(request);
 		model.put("message", "Erfolgreich hochgeladen.");
-		return new ModelAndView(model, "message.ftl");
+		return new ModelAndView(model, "message.ftlh");
 	}
 }

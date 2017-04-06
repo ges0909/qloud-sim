@@ -68,14 +68,14 @@ public class SensorController extends Controller {
 		State state;
 	}
 
-	public Sensor createSensor(String code, String description) {
+	public Sensor createSensor(User user, String code, String description) {
 		Sensor sensor = new Sensor();
 		sensor.setCode(code);
 		sensor.setDescription(description);
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
-		// sensor.setTag(own.getTagAll()); // tag sensor
+		sensor.setTag(user.getTagAll()); // tag sensor
 		Collection<Capability> capabilities = sensor.getCapabilities();
 		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
 		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
@@ -101,7 +101,7 @@ public class SensorController extends Controller {
 		if (sensorModel.findFirstByColumn("code", req.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
-		Sensor sensor = createSensor(req.code, req.description);
+		Sensor sensor = createSensor(own, req.code, req.description);
 		if (sensor == null) {
 			return fail();
 		}
