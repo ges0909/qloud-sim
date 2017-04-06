@@ -31,12 +31,12 @@ public class ConfigController {
 		return instance;
 	}
 
-	private boolean saved() {
-		String fileName = System.getProperty("user.home") + "/.qloud-simulator.properties";
+	private boolean saveProperties() {
 		try {
+			String fileName = System.getProperty("user.home") + "/.qs.config";
 			File file = new File(fileName);
-			FileOutputStream out = new FileOutputStream(file);
-			config.store(out, "");
+			FileOutputStream os = new FileOutputStream(file);
+			config.store(os, "");
 			return true;
 		} catch (IOException e) {
 			log.severe(e.toString());
@@ -44,13 +44,13 @@ public class ConfigController {
 		return false;
 	}
 
-	public ModelAndView displayConfigurationDialog(Request request, Response response) {
+	public ModelAndView showConfiguration(Request request, Response response) {
 		Map<String, String> properties = new TreeMap<>(); // sorted by keys
 		config.fill(properties);
 		Optional<Integer> option = properties.entrySet().stream().map(e -> e.getValue().length()).reduce(Integer::max);
 		int max = option.isPresent() ? option.get() : 40 /* default size */;
 		//
-		CommonModel model = new CommonModel(request);
+		Model model = new Model(request);
 		model.put("title", "Konfiguration");
 		model.put("max", max);
 		model.put("properties", properties);
@@ -59,22 +59,21 @@ public class ConfigController {
 	}
 
 	public ModelAndView saveConfiguration(Request request, Response response) {
-		CommonModel model = new CommonModel(request);
+		Model model = new Model(request, "Erfolgreich konfiguriert.");
 		Map<String, String[]> map = request.queryMap().toMap();
 		for (Map.Entry<String, String[]> e : map.entrySet()) {
-			String firstValue = e.getValue()[0];
+			String firstValue = e.getValue()[0]; // key-value pairs: only one value is expected
 			if (firstValue != null && firstValue.isEmpty()) {
-				model.put("message", "Kein Wert: " + e.getKey());
+				model = new Model(request, "Fehlender Wert: " + e.getKey());
 				return new ModelAndView(model, "message.ftlh");
 			}
 		}
 		for (Map.Entry<String, String[]> e : map.entrySet()) {
 			config.setProperty(e.getKey(), e.getValue()[0]);
 		}
-		if (saved()) {
-			model.put("message", "Erfolgreich konfiguriert.");
-		} else {
-			model.put("message", "Fehler.");
+		if (!saveProperties()) {
+			model = new Model(request, "Fehler.");
+			model.put("message", model);
 		}
 		return new ModelAndView(model, "message.ftlh");
 	}

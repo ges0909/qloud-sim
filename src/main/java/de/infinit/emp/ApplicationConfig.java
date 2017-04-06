@@ -5,8 +5,9 @@ import org.aeonbits.owner.Mutable;
 import org.aeonbits.owner.Config.Sources;
 
 @Sources({
-	"file:${user.home}/.qloud-simulator.properties",
-"classpath:de/infinit/emp/ApplicationConfig.properties" })
+	"file:${user.home}/.qs.config.properties",
+	"classpath:de/infinit/emp/qs.default.config.properties"
+})
 public interface ApplicationConfig extends Accessible, Mutable {
 	@Key("device.pattern")
 	@DefaultValue("[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}")

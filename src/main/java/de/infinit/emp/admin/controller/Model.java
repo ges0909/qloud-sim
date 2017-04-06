@@ -5,8 +5,8 @@ import java.util.HashMap;
 import spark.Request;
 
 @SuppressWarnings("serial")
-public class CommonModel extends HashMap<String, Object> {
-	public CommonModel(Request request) {
+public class Model extends HashMap<String, Object> {
+	public Model(Request request) {
 		super();
 		HashMap<String, Object> config = new HashMap<>();
 		config.put("title", "Konfigurieren");
@@ -16,5 +16,10 @@ public class CommonModel extends HashMap<String, Object> {
 		upload.put("url", "/upload");
 		this.put("config", config);
 		this.put("upload", upload);
+	}
+
+	public Model(Request request, String message) {
+		this(request);
+		this.put("message", message);
 	}
 }

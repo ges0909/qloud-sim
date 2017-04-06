@@ -47,7 +47,6 @@ public class User {
 	@DatabaseField
 	String password;
 
-	@NotNull
 	@Pattern(regexp = "^[a-zA-Z0-9-]{1,50}$")
 	@DatabaseField
 	String verification;
