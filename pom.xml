@@ -6,6 +6,11 @@
 	<artifactId>qloud_simulator</artifactId>
 	<version>1.0.0</version>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<application.main.class>de.infinit.emp.Application</application.main.class>
+	</properties>
+
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
@@ -18,21 +23,41 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<!-- add main class to manifest to start application as container entrypoint -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>${application.main.class}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<!-- build fat jar containing all dependencies for deployment to docker 
+				image -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.0.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>${application.main.class}</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 				<executions>
 					<execution>
-						<id>assemble-all</id>
-						<phase>package</phase>
+						<id>make-assembly</id>
+						<phase>package</phase> <!-- append to the packaging phase. -->
 						<goals>
-							<goal>single</goal>
+							<goal>attached</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -53,13 +78,13 @@
 			<version>2.5.5</version>
 		</dependency>
 
-		<!-- templates -->
+		<!-- freemarker templates -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.26-incubating</version>
 		</dependency>
-		
+
 		<!-- Gson -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -93,7 +118,7 @@
 			<version>5.0</version>
 		</dependency>
 
-		<!-- database -->
+		<!-- H2 database -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -102,7 +127,7 @@
 
 		<!-- bean validation -->
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>6.0.0.Alpha1</version>
 		</dependency>
@@ -117,7 +142,7 @@
 			<version>3.0.1-b08</version>
 		</dependency>
 
-		<!-- testing -->
+		<!-- test -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
