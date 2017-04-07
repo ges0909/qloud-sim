@@ -75,7 +75,7 @@ public class SensorController extends Controller {
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
-		sensor.setTag(user.getTagAll()); // tag sensor
+		sensor.addTag(user.getTagAll()); // tag sensor
 		Collection<Capability> capabilities = sensor.getCapabilities();
 		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
 		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
@@ -144,7 +144,7 @@ public class SensorController extends Controller {
 			return fail();
 		}
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
-		res.owner = sensor.getTag().getOwner();
+		res.owner = sensor.getTag().getOwner().getUuid();
 		res.capabilities = res.new Capability();
 		res.capabilities.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
 				.map(c -> c.getName()).collect(Collectors.toList());

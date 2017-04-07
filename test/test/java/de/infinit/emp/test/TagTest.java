@@ -14,18 +14,19 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.Uuid;
 import de.infinit.emp.test.utils.RestClient;
 import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class XobjectTests {
+public class TagTest {
 	static String partnerSid;
 	static String partnerServer;
 	static String userSid;
 	static String userServer;
 	static String userUuid;
-	static String tagAll;
+	static String tagUuid;
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
@@ -79,23 +80,37 @@ public class XobjectTests {
 	}
 
 	@Test
-	public void testD_Get_User_Data() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/user", userSid, userServer);
+	public void testD_Create_Tag() throws IOException {
+		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy",
+				Json.obj(Uuid.next(), 1));
+		RestClient.Response res = RestClient.POST("/api/tag", req, userSid, userServer);
 		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> user = (Map<String, Object>) res.body.get("user");
-		assertEquals("max.mustermann@mail.de", user.get("email"));
-		assertEquals("Max", user.get("firstname"));
-		assertEquals("Mustermann", user.get("lastname"));
-		assertNotNull(user.get("tag_all"));
-		tagAll = (String) user.get("tag_all");
+		assertNotNull(res.body.get("uuid"));
+		tagUuid = (String) res.body.get("uuid");
 	}
 
 	@Test
-	public void testE_XObject() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/tag/" + tagAll + "/object/filter=xobject", userSid, userServer);
+	public void testE_Update_Tag() throws IOException {
+		Map<String, Object> req = Json.obj("label", "Label updated", "foreign_use", true);
+		RestClient.Response res = RestClient.POST("/api/tag/" + tagUuid, req, userSid, userServer);
 		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testF_Get_Tag() throws IOException {
+		RestClient.Response res = RestClient.GET("/api/tag/" + tagUuid, userSid, userServer);
+		assertEquals(200, res.status);
+	}
+
+	@Test
+	public void testG_Get_Tags() throws IOException {
+		RestClient.Response res = RestClient.GET("/api/tag", userSid, userServer);
+		assertEquals(200, res.status);
+	}
+
+	@Test
+	public void testH_Delete_Tag() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/tag/" + tagUuid, userSid, userServer);
+		assertEquals(200, res.status);
 	}
 }

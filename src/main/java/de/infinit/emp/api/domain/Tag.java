@@ -18,8 +18,8 @@ public class Tag {
 	String uuid;
 
 	@NotNull
-	@DatabaseField
-	String owner;
+	@DatabaseField(columnName = "owner_id", foreign = true, foreignAutoRefresh = true)
+	User owner;
 
 	@DatabaseField
 	String label;
@@ -29,6 +29,9 @@ public class Tag {
 
 	@ForeignCollectionField
 	private Collection<Policy> policies;
+	
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private transient Sensor sensor;
 
 	public Tag() {
 		// ORMLite needs a no-arg constructor
@@ -36,23 +39,23 @@ public class Tag {
 		this.policies = new ArrayList<>();
 	}
 
-	public Tag(String owner, String label, Boolean foreignUse) {
+	public Tag(User owner, String label, Boolean foreignUse) {
 		this();
 		this.owner = owner;
 		this.label = label;
 		this.foreignUse = foreignUse;
-		this.policies.add(new Policy(this, owner, 4/* owner */));
+		this.policies.add(new Policy(this, owner.getUuid(), 4/* owner */));
 	}
 
 	public String getUuid() {
 		return uuid;
 	}
 
-	public String getOwner() {
+	public User getOwner() {
 		return owner;
 	}
 
-	public void setOwner(String owner) {
+	public void setOwner(User owner) {
 		this.owner = owner;
 	}
 
@@ -78,5 +81,30 @@ public class Tag {
 
 	public void setPolicies(Collection<Policy> policies) {
 		this.policies = policies;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tag other = (Tag) obj;
+		if (uuid == null) {
+			if (other.uuid != null)
+				return false;
+		} else if (!uuid.equals(other.uuid))
+			return false;
+		return true;
 	}
 }

@@ -109,7 +109,7 @@ public class TagController extends Controller {
 			return fail();
 		}
 		CreateTagRequest req = decode(request.body(), CreateTagRequest.class);
-		Tag tag = new Tag(own.getUuid(), req.label, req.foreignUse);
+		Tag tag = new Tag(own, req.label, req.foreignUse);
 		Collection<Policy> policies = tag.getPolicies();
 		for (String uuid : req.policies.keySet()) {
 			policies.add(new Policy(tag, uuid, req.policies.get(uuid)));
@@ -244,12 +244,10 @@ public class TagController extends Controller {
 			log.warning("query parameter 'count': ignored");
 		}
 		Tag tagAll = own.getTagAll();
-		List<Sensor> sensors = sensorModel.queryForAll();
+		List<Sensor> sensors = sensorModel.queryForTaggedWith(tagAll);
 		Map<String, Object> objects = new HashMap<>();
 		for (Sensor sensor : sensors) {
-			if (sensor.getTag().getUuid().equals(tagAll.getUuid())) {
-				objects.put(sensor.getUuid(), Json.obj());
-			}
+			objects.put(sensor.getUuid(), Json.obj());
 		}
 		return result("object", objects);
 	}

@@ -17,7 +17,7 @@ import de.infinit.emp.Application;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UploadTests {
+public class UploadTest {
 	static File fileToUpload;
 
 	private static String generatorHardwareCode() {

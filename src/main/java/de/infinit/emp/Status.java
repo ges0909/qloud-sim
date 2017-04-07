@@ -1,6 +1,7 @@
 package de.infinit.emp;
 
 public class Status {
+	public static final String ACCESS_DENIED = "access-denied";
 	public static final String ALREADY_EXIST = "already-exist";
 	public static final String DUPLICATE_CODE = "duplicate-code";
 	public static final String DUPLICATE_SENSOR = "duplicate-sensor";
@@ -14,10 +15,10 @@ public class Status {
 	public static final String WRONG_CODE = "wrong-code";
 	public static final String WRONG_CREDENTIALS = "wrong-credentials";
 	public static final String WRONG_INVITATION= "wrong-invitation";
+	public static final String WRONG_OBJECT = "wrong-object";
 	public static final String WRONG_ORIGIN = "wrong-origin";
 	public static final String WRONG_SENSOR = "wrong-sensor";
 	public static final String WRONG_SYNTAX = "wrong-syntax";
-	public static final String WRONG_USER = "wrong-user";
 	public static final String WRONG_TAG = "wrong-tag";
-	public static final String ACCESS_DENIED = "access-denied";
+	public static final String WRONG_USER = "wrong-user";
 }

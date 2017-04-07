@@ -71,7 +71,7 @@ public class SignupController extends Controller {
 		user.setPassword(req.password);
 		user.setUserName(req.username);
 		user.setPartner(config.partner());
-		Tag tag = new Tag(user.getUuid(), null, null);
+		Tag tag = new Tag(user, null, null);
 		if (tagModel.create(tag) == null) {
 			return fail();
 		}

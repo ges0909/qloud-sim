@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import de.infinit.emp.admin.controller.ConfigController;
 import de.infinit.emp.admin.controller.UploadController;
 import de.infinit.emp.api.controller.Controller;
+import de.infinit.emp.api.controller.ObjectController;
 import de.infinit.emp.api.controller.PartnerController;
 import de.infinit.emp.api.controller.SensorController;
 import de.infinit.emp.api.controller.SessionController;
@@ -47,8 +48,6 @@ public class Application {
 		// 'Not found' and 'Internal server error' are handles ALWAYS after the routes above
 		notFound(Controller.instance()::notFound);
 		internalServerError(Controller.instance()::internalServerError);
-
-		// Persistence.close();
 	}
 
 	static void apiEndpoints() {
@@ -60,11 +59,13 @@ public class Application {
 				post("", SessionController.instance()::loginToPartnerOrProxySession, gson::toJson);
 				delete("", SessionController.instance()::logoutFromSession, gson::toJson);
 			});
-			path("/partner", () -> path("/user", () -> {
-				get("", PartnerController.instance()::getAccounts, gson::toJson);
-				get("/:uuid", PartnerController.instance()::getAccount, gson::toJson);
-				post("/:uuid", PartnerController.instance()::deleteAccount, gson::toJson);
-			}));
+			path("/partner", () ->
+				path("/user", () -> {
+					get("", PartnerController.instance()::getAccounts, gson::toJson);
+					get("/:uuid", PartnerController.instance()::getAccount, gson::toJson);
+					post("/:uuid", PartnerController.instance()::deleteAccount, gson::toJson);
+				})
+			);
 			path("/signup", () -> {
 				post("/verification", SignupController.instance()::reserveAccount, gson::toJson);
 				post("/user", SignupController.instance()::addAccount, gson::toJson);
@@ -84,7 +85,7 @@ public class Application {
 				post("/:uuid", TagController.instance()::updateTag, gson::toJson);
 				get("/:uuid/object", TagController.instance()::getTaggedObjects, gson::toJson);
 			});
-			path("/object", () -> post("/:uuid/tag", Controller.instance()::notImplemented, gson::toJson));
+			path("/object", () -> post("/:uuid/tag", ObjectController.instance()::updateTagAttachment, gson::toJson));
 			path("/sensor", () -> {
 				post("", SensorController.instance()::createSensor, gson::toJson);
 				get("/:uuid", SensorController.instance()::getSensor, gson::toJson);
