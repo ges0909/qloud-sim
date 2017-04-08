@@ -1,0 +1,65 @@
+@startuml
+!define entity(x) class x << (E,#FFAAAA) >>
+!define PK(x) <u>x</u>
+hide methods
+hide stereotypes
+
+entity(Session) {
+  PK(sid)
+  server
+  partner
+  key
+  user
+}
+
+entity(User) {
+  PK(uuid)
+  email
+  userName
+  firstName
+  lastName
+  displayName
+  verification
+  partner
+}
+
+entity(Sensor) {
+  PK(uuid)
+  code
+  description
+  model
+  recvTime
+  recvIntervall
+  batterOk
+}
+
+entity(Tag) {
+  PK(uuid)
+  owner
+  label
+  foreignUse
+  
+}
+
+entity(Invitation) {
+  PK(uuid)
+}
+
+entity(Capability) {
+  name
+  type
+}
+
+entity(Policy) {
+  PK(userUuid)
+  policy
+
+}
+
+Session "1" *-- "1" User
+User "1" *-- "n" Invitation
+User "1" *-- "1" Tag : tag_all
+Sensor "1" *-- "n" Capability
+Sensor "1" *-- "n" Tag
+Tag "1" *-- "n" Policy
+@enduml
