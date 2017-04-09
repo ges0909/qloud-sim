@@ -1,8 +1,35 @@
 @startuml
+
+/'
+underline - primary key
+bold - unique
+strike through - deprecated
+'/
 !define entity(x) class x << (E,#FFAAAA) >>
 !define PK(x) <u>x</u>
+!define unique(x) <b>x</b>
+!define deprecated(x) <s>x</s>
+'hide circle
 hide methods
 hide stereotypes
+show <<Entity>> stereotype
+
+title Qloud Simulator\n\
+Entity Relationship Model\n\
+
+' diagram orientation
+'top to bottom direction
+left to right direction
+
+entity(Sensor)  {
+  PK(uuid)
+  unique(code)
+  description
+  model
+  recvTime
+  recvIntervall
+  batteryOk
+}
 
 entity(Session) {
   PK(sid)
@@ -14,7 +41,7 @@ entity(Session) {
 
 entity(User) {
   PK(uuid)
-  email
+  unique(email)
   userName
   firstName
   lastName
@@ -23,19 +50,9 @@ entity(User) {
   partner
 }
 
-entity(Sensor) {
-  PK(uuid)
-  code
-  description
-  model
-  recvTime
-  recvIntervall
-  batterOk
-}
-
 entity(Tag) {
   PK(uuid)
-  owner
+  deprecated(owner)
   label
   foreignUse
   
@@ -51,15 +68,24 @@ entity(Capability) {
 }
 
 entity(Policy) {
-  PK(userUuid)
+  PK(uuid)
   policy
-
 }
+note bottom: policy values: {1,2,3,4}
 
 Session "1" *-- "1" User
-User "1" *-- "n" Invitation
+User "1" *-- "0..N" Invitation
 User "1" *-- "1" Tag : tag_all
-Sensor "1" *-- "n" Capability
-Sensor "1" *-- "n" Tag
-Tag "1" *-- "n" Policy
+Sensor "1" *-- "1..N" Capability
+Sensor "1" *-- "1..N" Tag
+Tag "1" *-- "1..N" Policy : at least tag owner
+
+
+legend left
+|= Legend         |=  |
+| E               | <<Entity>>  |
+| underlined      | primary key |
+| bold            | unique      |
+endlegend
+
 @enduml
