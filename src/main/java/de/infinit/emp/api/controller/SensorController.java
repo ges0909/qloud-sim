@@ -13,9 +13,11 @@ import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
@@ -26,6 +28,7 @@ public class SensorController extends Controller {
 	final SensorModel sensorModel = SensorModel.instance();
 	final CapabilityModel capabilityModel = CapabilityModel.instance();
 	final UserModel userModel = UserModel.instance();
+	final TagModel tagModel = TagModel.instance();
 
 	private SensorController() {
 		super();
@@ -75,13 +78,19 @@ public class SensorController extends Controller {
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
-		sensor.addTag(user.getTagAll()); // tag sensor with user's 'tag_all' tag 
+		//
+		Tag tagAll = user.getTagAll();
+		tagAll.setSensor(sensor);
+		Collection<Tag> tags = sensor.getTags();
+		tags.add(tagAll); // tag sensor with user's 'tag_all' tag
+		//
 		Collection<Capability> capabilities = sensor.getCapabilities();
 		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
 		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
 		capabilities.add(new Capability(sensor, "binary_16bit", "data"));
 		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
-		sensor.setCapabilities(capabilities);
+		//
+		tagModel.update(tagAll);
 		return sensorModel.create(sensor);
 	}
 

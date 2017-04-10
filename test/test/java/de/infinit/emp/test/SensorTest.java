@@ -138,6 +138,10 @@ public class SensorTest {
 		RestClient.Response res = RestClient.GET("/api/tag/" + tagAllUuid + "/object", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
+		@SuppressWarnings("unchecked")
+		Map<String, Object> objects = (Map<String, Object>) res.body.get("object");
+		assertNotNull(objects);
+		assertNotNull(objects.get(sensorUuid));
 	}
 
 	@Test

@@ -70,6 +70,14 @@ public class Tag {
 		this.policies = policies;
 	}
 
+	public Sensor getSensor() {
+		return sensor;
+	}
+
+	public void setSensor(Sensor sensor) {
+		this.sensor = sensor;
+	}
+
 	/*
 	 * returns the user uuid of the owner of the attached policy list
 	 */

@@ -80,13 +80,13 @@ public class ObjectController extends Controller {
 		if (req.add != null) {
 			for (String tagUuid : req.add) {
 				Tag tag = tagModel.queryForId(tagUuid);
-				sensor.addTag(tag);
+				sensor.getTags().add(tag);
 			}
 		}
 		if (req.delete != null) {
 			for (String tagUuid : req.add) {
 				Tag tag = tagModel.queryForId(tagUuid);
-				sensor.removeTag(tag);
+				sensor.getTags().remove(tag);
 			}
 		}
 		return ok();

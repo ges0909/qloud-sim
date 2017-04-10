@@ -111,15 +111,11 @@ public class Sensor {
 	}
 
 	public Collection<Tag> getTags() {
-		return tags;
+		return this.tags;
 	}
 
-	public boolean addTag(Tag tag) {
-		return this.tags.add(tag);
-	}
-
-	public boolean removeTag(Tag tag) {
-		return this.tags.remove(tag);
+	public void setTags(Collection<Tag> tags) {
+		this.tags = tags;
 	}
 
 	public Collection<Capability> getCapabilities() {
