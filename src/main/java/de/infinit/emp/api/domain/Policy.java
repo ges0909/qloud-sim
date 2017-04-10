@@ -7,13 +7,18 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "policies")
 public class Policy {
+	static final int READ = 1;
+	static final int WRITE = 2;
+	static final int PROPAGATE = 3;
+	static final int OWNER = 4;
+	
 	@NotNull
-	@DatabaseField(id = true, canBeNull = false)
-	String uuid; // user uuid
+	@DatabaseField(canBeNull = false)
+	String userUuid;
 
 	@NotNull
-	@DatabaseField(defaultValue = "4", canBeNull = false) // 4 = owner
-	int policy;
+	@DatabaseField(defaultValue = "4" /*OWNER*/, canBeNull = false)
+	int policyValue;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private transient Tag tag;
@@ -22,26 +27,26 @@ public class Policy {
 		// ORMLite needs a no-arg constructor
 	}
 
-	public Policy(Tag tag, @NotNull String uuid, @NotNull int policy) {
-		this.uuid = uuid;
+	public Policy(Tag tag, @NotNull String userUuid, @NotNull int policyValue) {
+		this.userUuid = userUuid;
 		this.tag = tag;
-		this.policy = policy;
+		this.policyValue = policyValue;
 	}
 
-	public String getUuid() {
-		return uuid;
+	public String getUserUuid() {
+		return userUuid;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setUserUuid(String userUuid) {
+		this.userUuid = userUuid;
 	}
 
 	public int getPolicy() {
-		return policy;
+		return policyValue;
 	}
 
 	public void setPolicy(int policy) {
-		this.policy = policy;
+		this.policyValue = policy;
 	}
 
 	public Tag getTag() {

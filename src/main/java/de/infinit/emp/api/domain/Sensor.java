@@ -29,9 +29,6 @@ public class Sensor {
 	@DatabaseField
 	String description;
 
-	@DatabaseField
-	long time;
-
 	@DatabaseField(defaultValue = "EnergyCam")
 	String model;
 
@@ -47,7 +44,7 @@ public class Sensor {
 	@DatabaseField()
 	boolean batteryOk;
 
-	@ForeignCollectionField()
+	@ForeignCollectionField
 	private transient Collection<Tag> tags;
 
 	// One-to-many
@@ -57,6 +54,7 @@ public class Sensor {
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
 		this.uuid = Uuid.next();
+		this.tags = new ArrayList<>();
 		this.capabilities = new ArrayList<>();
 	}
 
@@ -78,14 +76,6 @@ public class Sensor {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public long getTime() {
-		return time;
-	}
-
-	public void setTime(long time) {
-		this.time = time;
 	}
 
 	public String getModel() {
@@ -124,8 +114,12 @@ public class Sensor {
 		return tags;
 	}
 
-	public void addTag(Tag tag) {
-		this.tags.add(tag);
+	public boolean addTag(Tag tag) {
+		return this.tags.add(tag);
+	}
+
+	public boolean removeTag(Tag tag) {
+		return this.tags.remove(tag);
 	}
 
 	public Collection<Capability> getCapabilities() {
@@ -134,5 +128,16 @@ public class Sensor {
 
 	public void setCapabilities(Collection<Capability> capabilities) {
 		this.capabilities = capabilities;
+	}
+
+	public String getOwnerUuid() {
+		for (Tag tag : tags) {
+			for (Policy policy : tag.getPolicies()) {
+				if (policy.getPolicy() == Policy.OWNER) {
+					return tag.getUuid();
+				}
+			}
+		}
+		return null;
 	}
 }

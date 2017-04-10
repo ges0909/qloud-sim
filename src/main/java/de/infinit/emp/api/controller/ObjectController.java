@@ -58,15 +58,17 @@ public class ObjectController extends Controller {
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}
-		String sensorUuid = request.params(":uuid");
-		Tag tagAll = own.getTagAll();
 		// get all sensors belonging the user
+		Tag tagAll = own.getTagAll();
 		List<Sensor> sensors = sensorModel.queryForTaggedWith(tagAll);
 		// find sensor requested to be tagged
+		String sensorUuid = request.params(":uuid");
 		Optional<Sensor> optional = sensors.stream().filter(s -> s.getUuid().equals(sensorUuid)).findFirst();
 		if (!optional.isPresent()) {
 			return status(Status.WRONG_OBJECT);
 		}
+		Sensor sensor = optional.get();
+		// check input
 		UpdateTagAttchamentRequest req = decode(request.body(), UpdateTagAttchamentRequest.class);
 		if (req.add != null && containsUnknownTag(req.add)) {
 			return status(Status.WRONG_TAG);
@@ -74,11 +76,17 @@ public class ObjectController extends Controller {
 		if (req.delete != null && containsUnknownTag(req.delete)) {
 			return status(Status.WRONG_TAG);
 		}
-		Sensor sensor = optional.get();
+		//
 		if (req.add != null) {
 			for (String tagUuid : req.add) {
 				Tag tag = tagModel.queryForId(tagUuid);
 				sensor.addTag(tag);
+			}
+		}
+		if (req.delete != null) {
+			for (String tagUuid : req.add) {
+				Tag tag = tagModel.queryForId(tagUuid);
+				sensor.removeTag(tag);
 			}
 		}
 		return ok();

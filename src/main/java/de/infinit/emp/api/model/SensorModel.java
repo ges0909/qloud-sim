@@ -2,8 +2,6 @@ package de.infinit.emp.api.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Tag;
 
@@ -28,7 +26,7 @@ public class SensorModel extends Model<Sensor, String> {
 
 	public List<Sensor> queryForTaggedWith(Tag tagToSearch) {
 		List<Sensor> sensors = new ArrayList<>();
-		for (Sensor sensor : queryForAll()) {
+		for (Sensor sensor : super.queryForAll()) {
 			for (Tag tag : sensor.getTags()) {
 				if (tag.equals(tagToSearch)) {
 					sensors.add(sensor);

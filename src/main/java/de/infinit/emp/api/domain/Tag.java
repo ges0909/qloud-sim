@@ -17,10 +17,6 @@ public class Tag {
 	@DatabaseField(id = true)
 	String uuid;
 
-	@NotNull
-	@DatabaseField(columnName = "owner_id", foreign = true, foreignAutoRefresh = true)
-	User owner;
-
 	@DatabaseField
 	String label;
 
@@ -29,7 +25,7 @@ public class Tag {
 
 	@ForeignCollectionField
 	private Collection<Policy> policies;
-	
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private transient Sensor sensor;
 
@@ -41,22 +37,13 @@ public class Tag {
 
 	public Tag(User owner, String label, Boolean foreignUse) {
 		this();
-		this.owner = owner;
 		this.label = label;
 		this.foreignUse = foreignUse;
-		this.policies.add(new Policy(this, owner.getUuid(), 4/* owner */));
+		this.policies.add(new Policy(this, owner.getUuid(), Policy.OWNER));
 	}
 
 	public String getUuid() {
 		return uuid;
-	}
-
-	public User getOwner() {
-		return owner;
-	}
-
-	public void setOwner(User owner) {
-		this.owner = owner;
 	}
 
 	public String getLabel() {
@@ -81,6 +68,18 @@ public class Tag {
 
 	public void setPolicies(Collection<Policy> policies) {
 		this.policies = policies;
+	}
+
+	/*
+	 * returns the user uuid of the owner of the attached policy list
+	 */
+	public String getOwnerUuid() {
+		for (Policy policy : policies) {
+			if (policy.policyValue == Policy.OWNER) {
+				return policy.getUserUuid();
+			}
+		}
+		return null;
 	}
 
 	@Override

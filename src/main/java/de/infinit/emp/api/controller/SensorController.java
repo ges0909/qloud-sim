@@ -75,7 +75,7 @@ public class SensorController extends Controller {
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
-		sensor.addTag(user.getTagAll()); // tag sensor
+		sensor.addTag(user.getTagAll()); // tag sensor with user's 'tag_all' tag 
 		Collection<Capability> capabilities = sensor.getCapabilities();
 		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
 		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
@@ -144,17 +144,13 @@ public class SensorController extends Controller {
 			return fail();
 		}
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
-		res.owner = sensor.getTag().getOwner().getUuid();
+		res.owner = sensor.getOwnerUuid();
 		res.capabilities = res.new Capability();
-		res.capabilities.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
-				.map(c -> c.getName()).collect(Collectors.toList());
-		res.capabilities.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action"))
-				.map(c -> c.getName()).collect(Collectors.toList());
+		res.capabilities.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data")).map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(Capability::getName).collect(Collectors.toList());
 		res.state = res.new State();
-		res.state.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
-				.map(c -> (Integer) null).collect(Collectors.toList());
-		res.state.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(c -> null)
-				.collect(Collectors.toList());
+		res.state.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data")).map(c -> (Integer) null).collect(Collectors.toList());
+		res.state.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(c -> null).collect(Collectors.toList());
 		return result("sensor", res);
 	}
 

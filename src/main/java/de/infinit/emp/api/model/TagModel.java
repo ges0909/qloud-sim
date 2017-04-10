@@ -1,6 +1,11 @@
 package de.infinit.emp.api.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Tag;
+import de.infinit.emp.api.domain.User;
 
 public class TagModel extends Model<Tag, String> {
 	private static TagModel instance = null;
@@ -19,5 +24,17 @@ public class TagModel extends Model<Tag, String> {
 	public int delete(Tag tag) {
 		tag.getPolicies().clear();
 		return super.delete(tag.getUuid());
+	}
+
+	public List<Tag> queryForUserTags(User user) {
+		List<Tag> tags = new ArrayList<>();
+		for (Tag tag : super.queryForAll()) {
+			for (Policy policy : tag.getPolicies()) {
+				if (policy.getUserUuid().equals(user.getUuid())) {
+					tags.add(tag);
+				}
+			}
+		}
+		return tags;
 	}
 }

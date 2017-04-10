@@ -66,14 +66,14 @@ public class TagController extends Controller {
 	private Map<String, Integer> getPolicies(Tag tag) {
 		Map<String, Integer> policies = new HashMap<>();
 		for (Policy policy : tag.getPolicies()) {
-			policies.put(policy.getUuid(), policy.getPolicy());
+			policies.put(policy.getUserUuid(), policy.getPolicy());
 		}
 		return policies;
 	}
 
 	private void updateExistingPolicies(Tag tag, Map<String, Integer> policies) {
 		for (Policy policy : tag.getPolicies()) {
-			Integer value = policies.get(policy.getUuid());
+			Integer value = policies.get(policy.getUserUuid());
 			if (value != null) {
 				policy.setPolicy(value);
 			}
@@ -83,7 +83,7 @@ public class TagController extends Controller {
 	private void createMissingPolicies(Tag tag, Map<String, Integer> policies) {
 		for (Map.Entry<String, Integer> entry : policies.entrySet()) {
 			String userUuid = entry.getKey();
-			if (tag.getPolicies().stream().noneMatch(p -> p.getUuid().equals(userUuid))) {
+			if (tag.getPolicies().stream().noneMatch(p -> p.getUserUuid().equals(userUuid))) {
 				Integer value = policies.get(userUuid);
 				tag.getPolicies().add(new Policy(tag, userUuid, value));
 			}
@@ -92,7 +92,7 @@ public class TagController extends Controller {
 
 	private void deletePolicies(Tag tag, List<String> policies) {
 		for (String userUuid : policies) {
-			Optional<Policy> o = tag.getPolicies().stream().filter(p -> p.getUuid().equals(userUuid)).findFirst();
+			Optional<Policy> o = tag.getPolicies().stream().filter(p -> p.getUserUuid().equals(userUuid)).findFirst();
 			if (o.isPresent()) {
 				policies.remove(o.get());
 			}
@@ -136,7 +136,7 @@ public class TagController extends Controller {
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwner())) {
+		if (!own.getUuid().equals(tag.getOwnerUuid())) {
 			return status(Status.ACCESS_DENIED);
 		}
 		UpdateTagRequest req = decode(request.body(), UpdateTagRequest.class);
@@ -171,10 +171,10 @@ public class TagController extends Controller {
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwner())) {
+		if (!own.getUuid().equals(tag.getOwnerUuid())) {
 			return status(Status.ACCESS_DENIED);
 		}
-		return result("owner", tag.getOwner(), "label", tag.getLabel(), "foreign_use", tag.isForeignUse(), "policy",
+		return result("owner", tag.getOwnerUuid(), "label", tag.getLabel(), "foreign_use", tag.isForeignUse(), "policy",
 				getPolicies(tag));
 	}
 
@@ -187,11 +187,14 @@ public class TagController extends Controller {
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}
-		List<Tag> ownerTags = tagModel.findByColumn("owner", own.getUuid());
+		List<Tag> ownerTags = tagModel.queryForUserTags(own);
 		Map<String, Object> tags = new HashMap<>();
 		for (Tag tag : ownerTags) {
-			tags.put(tag.getUuid(), Json.obj("owner", tag.getOwner(), "label", tag.getLabel(), "foreign_use",
-					tag.isForeignUse(), "policy", getPolicies(tag)));
+			tags.put(tag.getUuid(),
+					Json.obj("owner", tag.getOwnerUuid(),
+							"label", tag.getLabel(),
+							"foreign_use", tag.isForeignUse(),
+							"policy", getPolicies(tag)));
 		}
 		return result("tag", tags);
 	}
@@ -210,7 +213,7 @@ public class TagController extends Controller {
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwner())) {
+		if (!own.getUuid().equals(tag.getOwnerUuid())) {
 			return status(Status.ACCESS_DENIED);
 		}
 		if (tagModel.delete(uuid) != 1) {

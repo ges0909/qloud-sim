@@ -73,16 +73,14 @@ public class TagTest {
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
 		userServer = (String) res.body.get("server");
-		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user",
-				userUuid);
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", userUuid);
 		res = RestClient.POST("/api/session", req, userSid, userServer);
 		assertEquals(200, res.status);
 	}
 
 	@Test
 	public void testD_Create_Tag() throws IOException {
-		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy",
-				Json.obj(Uuid.next(), 1));
+		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy", Json.obj(Uuid.next(), 1));
 		RestClient.Response res = RestClient.POST("/api/tag", req, userSid, userServer);
 		assertEquals(200, res.status);
 		assertNotNull(res.body.get("uuid"));
