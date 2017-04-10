@@ -87,6 +87,7 @@ User "1" *-- "0..N" Invitation
 User "1" *-- "1" Tag : tag_all
 Sensor "1" *-- "1..N" Capability
 Sensor "1" *-- "1..N" Tag
+Tag "1" *-- "1" User: owner
 Tag "1" *-- "1..N" Policy
 note top on link 
   at least 1:1 relation

@@ -17,6 +17,9 @@ public class Tag {
 	@DatabaseField(id = true)
 	String uuid;
 
+	@DatabaseField(foreign = true, canBeNull=false)
+	User owner;
+
 	@DatabaseField
 	String label;
 
@@ -37,9 +40,9 @@ public class Tag {
 
 	public Tag(User owner, String label, Boolean foreignUse) {
 		this();
+		this.owner = owner;
 		this.label = label;
 		this.foreignUse = foreignUse;
-		this.policies.add(new Policy(this, owner.getUuid(), Policy.OWNER));
 	}
 
 	public String getUuid() {
@@ -48,6 +51,14 @@ public class Tag {
 
 	public String getLabel() {
 		return label;
+	}
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
 	}
 
 	public void setLabel(String label) {
@@ -76,18 +87,6 @@ public class Tag {
 
 	public void setSensor(Sensor sensor) {
 		this.sensor = sensor;
-	}
-
-	/*
-	 * returns the user uuid of the owner of the attached policy list
-	 */
-	public String getOwnerUuid() {
-		for (Policy policy : policies) {
-			if (policy.policyValue == Policy.OWNER) {
-				return policy.getUserUuid();
-			}
-		}
-		return null;
 	}
 
 	@Override

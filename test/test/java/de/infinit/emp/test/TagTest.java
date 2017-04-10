@@ -76,6 +76,7 @@ public class TagTest {
 		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", userUuid);
 		res = RestClient.POST("/api/session", req, userSid, userServer);
 		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
@@ -83,6 +84,7 @@ public class TagTest {
 		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy", Json.obj(Uuid.next(), 1));
 		RestClient.Response res = RestClient.POST("/api/tag", req, userSid, userServer);
 		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 		assertNotNull(res.body.get("uuid"));
 		tagUuid = (String) res.body.get("uuid");
 	}
@@ -92,23 +94,27 @@ public class TagTest {
 		Map<String, Object> req = Json.obj("label", "Label updated", "foreign_use", true);
 		RestClient.Response res = RestClient.POST("/api/tag/" + tagUuid, req, userSid, userServer);
 		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
 	public void testF_Get_Tag() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/tag/" + tagUuid, userSid, userServer);
 		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
 	public void testG_Get_Tags() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/tag", userSid, userServer);
 		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
 	public void testH_Delete_Tag() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/tag/" + tagUuid, userSid, userServer);
 		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
 	}
 }

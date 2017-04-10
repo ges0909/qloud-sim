@@ -6,8 +6,10 @@ import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
+import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.model.PolicyModel;
 import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.UserModel;
 import spark.Request;
@@ -17,6 +19,7 @@ public class SignupController extends Controller {
 	private static SignupController instance = null;
 	final UserModel userModel = UserModel.instance();
 	final TagModel tagModel = TagModel.instance();
+	final PolicyModel policyModel = PolicyModel.instance();
 
 	private SignupController() {
 		super();
@@ -71,10 +74,20 @@ public class SignupController extends Controller {
 		user.setPassword(req.password);
 		user.setUserName(req.username);
 		user.setPartner(config.partner());
+		// create new tag for user's 'tag_all'
 		Tag tag = new Tag(user, null, null);
+		// create owner policy ...
+		Policy policy = new Policy(tag, user.getUuid(), Policy.OWNER);
+		if (policyModel.create(policy) == null) {
+			return fail();
+		}
+		// ... and add to tag
+		tag.getPolicies().add(policy);
+		// create tag and ...
 		if (tagModel.create(tag) == null) {
 			return fail();
 		}
+		// ... assign to user's 'tag_all'
 		user.setTagAll(tag);
 		if (userModel.update(user) == null) {
 			return fail();

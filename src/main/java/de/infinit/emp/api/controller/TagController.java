@@ -112,9 +112,12 @@ public class TagController extends Controller {
 		Tag tag = new Tag(own, req.label, req.foreignUse);
 		Collection<Policy> policies = tag.getPolicies();
 		for (String uuid : req.policies.keySet()) {
+			Policy policy = new Policy(tag, uuid, req.policies.get(uuid));
+			if (policyModel.create(policy) == null) {
+				return fail();
+			}
 			policies.add(new Policy(tag, uuid, req.policies.get(uuid)));
 		}
-		tag.setPolicies(policies);
 		if (tagModel.create(tag) == null) {
 			return fail();
 		}
@@ -136,7 +139,7 @@ public class TagController extends Controller {
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwnerUuid())) {
+		if (!own.getUuid().equals(tag.getOwner().getUuid())) {
 			return status(Status.ACCESS_DENIED);
 		}
 		UpdateTagRequest req = decode(request.body(), UpdateTagRequest.class);
@@ -171,10 +174,10 @@ public class TagController extends Controller {
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwnerUuid())) {
+		if (!own.getUuid().equals(tag.getOwner().getUuid())) {
 			return status(Status.ACCESS_DENIED);
 		}
-		return result("owner", tag.getOwnerUuid(), "label", tag.getLabel(), "foreign_use", tag.isForeignUse(), "policy",
+		return result("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use", tag.isForeignUse(), "policy",
 				getPolicies(tag));
 	}
 
@@ -191,7 +194,7 @@ public class TagController extends Controller {
 		Map<String, Object> tags = new HashMap<>();
 		for (Tag tag : ownerTags) {
 			tags.put(tag.getUuid(),
-					Json.obj("owner", tag.getOwnerUuid(),
+					Json.obj("owner", tag.getOwner().getUuid(),
 							"label", tag.getLabel(),
 							"foreign_use", tag.isForeignUse(),
 							"policy", getPolicies(tag)));
@@ -213,7 +216,7 @@ public class TagController extends Controller {
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwnerUuid())) {
+		if (!own.getUuid().equals(tag.getOwner().getUuid())) {
 			return status(Status.ACCESS_DENIED);
 		}
 		if (tagModel.delete(uuid) != 1) {

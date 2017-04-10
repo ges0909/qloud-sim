@@ -7,10 +7,10 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "policies")
 public class Policy {
-	static final int READ = 1;
-	static final int WRITE = 2;
-	static final int PROPAGATE = 3;
-	static final int OWNER = 4;
+	public static final int READ = 1;
+	public static final int WRITE = 2;
+	public static final int PROPAGATE = 3;
+	public static final int OWNER = 4;
 	
 	@NotNull
 	@DatabaseField(canBeNull = false)
