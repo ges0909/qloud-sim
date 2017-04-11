@@ -12,6 +12,7 @@ import com.j256.ormlite.table.TableUtils;
 
 import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.api.domain.Capability;
+import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Invitation;
 import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Sensor;
@@ -48,14 +49,19 @@ public class Persistence {
 		}
 	}
 
-	private static void createTabelsIfNotExists() throws SQLException {
-		TableUtils.createTableIfNotExists(cs, Session.class);
-		TableUtils.createTableIfNotExists(cs, User.class);
-		TableUtils.createTableIfNotExists(cs, Invitation.class);
-		TableUtils.createTableIfNotExists(cs, Sensor.class);
-		TableUtils.createTableIfNotExists(cs, Capability.class);
-		TableUtils.createTableIfNotExists(cs, Tag.class);
-		TableUtils.createTableIfNotExists(cs, Policy.class);
+	private static void createTabelsIfNotExists() {
+		try {
+			TableUtils.createTableIfNotExists(cs, Session.class);
+			TableUtils.createTableIfNotExists(cs, User.class);
+			TableUtils.createTableIfNotExists(cs, Invitation.class);
+			TableUtils.createTableIfNotExists(cs, Sensor.class);
+			TableUtils.createTableIfNotExists(cs, Capability.class);
+			TableUtils.createTableIfNotExists(cs, Tag.class);
+			TableUtils.createTableIfNotExists(cs, Policy.class);
+			TableUtils.createTableIfNotExists(cs, Event.class);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

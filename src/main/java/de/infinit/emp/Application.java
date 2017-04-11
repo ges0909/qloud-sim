@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import de.infinit.emp.admin.controller.ConfigController;
 import de.infinit.emp.admin.controller.UploadController;
 import de.infinit.emp.api.controller.Controller;
+import de.infinit.emp.api.controller.EventController;
 import de.infinit.emp.api.controller.ObjectController;
 import de.infinit.emp.api.controller.PartnerController;
 import de.infinit.emp.api.controller.SensorController;
@@ -60,12 +61,12 @@ public class Application {
 				delete("", SessionController.instance()::logoutFromSession, gson::toJson);
 			});
 			path("/partner", () ->
-				path("/user", () -> {
-					get("", PartnerController.instance()::getAccounts, gson::toJson);
-					get("/:uuid", PartnerController.instance()::getAccount, gson::toJson);
-					post("/:uuid", PartnerController.instance()::deleteAccount, gson::toJson);
-				})
-			);
+			path("/user", () -> {
+				get("", PartnerController.instance()::getAccounts, gson::toJson);
+				get("/:uuid", PartnerController.instance()::getAccount, gson::toJson);
+				post("/:uuid", PartnerController.instance()::deleteAccount, gson::toJson);
+			})
+					);
 			path("/signup", () -> {
 				post("/verification", SignupController.instance()::reserveAccount, gson::toJson);
 				post("/user", SignupController.instance()::addAccount, gson::toJson);
@@ -92,11 +93,11 @@ public class Application {
 				post("/:uuid", SensorController.instance()::updateSensor, gson::toJson);
 				delete("/:uuid", SensorController.instance()::deleteSensor, gson::toJson);
 				get("/:uuid/data", SensorController.instance()::getSensorData, gson::toJson);
-				get("/:uuid/event", SensorController.instance()::susbcribeSensorForEvents, gson::toJson);
-				delete("/:uuid/event", SensorController.instance()::cancelSensorEventSubcription, gson::toJson);
+				get("/:uuid/event", EventController.instance()::susbcribeSensorForEvents, gson::toJson);
+				delete("/:uuid/event", EventController.instance()::cancelSensorEventSubcription, gson::toJson);
 				post("/:uuid/action", Controller.instance()::notImplemented, gson::toJson);
 			});
-			path("/event", () -> get("", Controller.instance()::notImplemented, gson::toJson));
+			path("/event", () -> get("", EventController.instance()::getSensorEvents, gson::toJson));
 
 			after("/*", (request, response) -> response.type("application/json"));
 		});

@@ -35,6 +35,11 @@ entity(Session) {
   user
 }
 
+entity(Event) {
+  PK(sensorUuid)
+  expiresAt
+}
+
 entity(Sensor)  {
   PK(uuid)
   unique(code)

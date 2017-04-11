@@ -192,28 +192,4 @@ public class SensorController extends Controller {
 		Map<String, Object> obj = Json.obj(timestamp, values);
 		return result("data", obj);
 	}
-
-	public Object susbcribeSensorForEvents(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
-		}
-		String uuid = request.params(":uuid");
-		Sensor sensor = sensorModel.queryForId(uuid);
-		if (sensor == null) {
-			return status(Status.WRONG_SENSOR);
-		}
-		return ok();
-	}
-
-	public Object cancelSensorEventSubcription(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
-		}
-		String uuid = request.params(":uuid");
-		Sensor sensor = sensorModel.queryForId(uuid);
-		if (sensor == null) {
-			return status(Status.WRONG_SENSOR);
-		}
-		return ok();
-	}
 }

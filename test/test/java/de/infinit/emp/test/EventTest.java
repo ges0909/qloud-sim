@@ -20,13 +20,12 @@ import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SensorTest {
+public class EventTest {
 	static String partnerSid;
 	static String partnerServer;
 	static String userSid;
 	static String userServer;
 	static String userUuid;
-	static String tagAllUuid;
 	static String sensorUuid;
 
 	@BeforeClass
@@ -76,32 +75,17 @@ public class SensorTest {
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
 		userServer = (String) res.body.get("server");
-		Map<String, Object> req =
-				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", userUuid);
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user",
+				userUuid);
 		res = RestClient.POST("/api/session", req, userSid, userServer);
 		assertEquals(200, res.status);
 	}
-	
-	@Test
-	public void testD_Get_User_Data() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/user", userSid, userServer);
-		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> user = (Map<String, Object>) res.body.get("user");
-		assertEquals("max.mustermann@mail.de", user.get("email"));
-		assertEquals("Max", user.get("firstname"));
-		assertEquals("Mustermann", user.get("lastname"));
-		assertNotNull(user.get("tag_all"));
-		tagAllUuid = (String) user.get("tag_all");
-	}
 
 	@Test
-	public void testE_Create_Sensor() throws IOException {
+	public void testD_Create_Sensor() throws IOException {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor");
-//		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
-		req.put("code", "58XL4-UZX86-VCS9A-42SF9");
+		req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
 		RestClient.Response res = RestClient.POST("/api/sensor", req, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -110,58 +94,29 @@ public class SensorTest {
 	}
 
 	@Test
-	public void testF_Update_Sensor() throws IOException {
-		Map<String, Object> req = new HashMap<>();
-		req.put("description", "Testsensor 2");
-		// req.put("code", "SIMUL-FGHIJ-KLMNI-OPQRS");
-		RestClient.Response res = RestClient.POST("/api/sensor/" + sensorUuid, req, userSid, userServer);
-		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
-	}
-
-	@Test
-	public void testG_Get_Sensor() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid, userSid, userServer);
-		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
-	}
-
-	@Test
-	public void testH_Get_Sensor_Data() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/data", userSid, userServer);
-		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
-		assertNotNull(res.body.get("data"));
-	}
-
-	@Test
-	public void testI_Get_All_User_Sensor_Uuid() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/tag/" + tagAllUuid + "/object", userSid, userServer);
-		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> objects = (Map<String, Object>) res.body.get("object");
-		assertNotNull(objects);
-		assertNotNull(objects.get(sensorUuid));
-	}
-
-	@Test
-	public void testJ_Subscribe_For_Sensor_Events() throws IOException {
+	public void testE_Susbribe_Sensor_For_Events() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testK_Cancel_Sensor_Event_Subcription() throws IOException {
+	public void testF_Susbribe_Sensor_For_Events_No2() throws IOException {
+		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/event?timeout=60", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testG_Unsubribe_Sensor_From_Events() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testL_Delete_Sensor() throws IOException {
-		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
+	public void testHGget_SessionEvents() throws IOException {
+		RestClient.Response res = RestClient.GET("/api/event?timeout=30", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
