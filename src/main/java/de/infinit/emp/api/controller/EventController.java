@@ -1,7 +1,10 @@
 package de.infinit.emp.api.controller;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -13,6 +16,7 @@ import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.UserModel;
+import de.infinit.emp.utils.Json;
 import spark.Request;
 import spark.Response;
 
@@ -21,6 +25,7 @@ public class EventController extends Controller {
 	final EventModel eventModel = EventModel.instance();
 	final UserModel userModel = UserModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
+	long nextCounter = 0;
 
 	private EventController() {
 		super();
@@ -60,17 +65,15 @@ public class EventController extends Controller {
 		Instant now = Instant.now();
 		now.plusSeconds(timeout);
 		Date expiresAt = Date.from(now);
-		Event event = null;
-		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensorUuid().equals(sensor.getUuid()))
-				.findFirst();
+		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensor().equals(sensor)).findFirst();
 		if (optional.isPresent()) {
-			event = optional.get();
+			Event event = optional.get();
 			event.setExpiresAt(expiresAt);
 			if (eventModel.update(event) == null) {
 				return fail();
 			}
 		} else {
-			event = new Event(session, sensor.getUuid(), expiresAt);
+			Event event = new Event(session, sensor, expiresAt);
 			session.getEvents().add(event);
 		}
 		return ok();
@@ -91,8 +94,7 @@ public class EventController extends Controller {
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}
-		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensorUuid().equals(sensor.getUuid()))
-				.findFirst();
+		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensor().equals(sensor)).findFirst();
 		if (!optional.isPresent()) {
 			return fail();
 		}
@@ -132,8 +134,22 @@ public class EventController extends Controller {
 		int effectiveTimeout = rn.nextInt(timeout) + 1;
 		Thread.sleep(effectiveTimeout * 1000L);
 
-		int numberOfSensors = session.getEvents().size();
+		long eventId = 0;
+		String eventType = "sensor_data";
+		long eventTime = Instant.now().getEpochSecond();
 
-		return ok();
+		List<Object> events = new ArrayList<>();
+		for (Event e : session.getEvents()) {
+			List<Object> values = Json.arr(1, 0, 0, 2231828644L);
+			Map<String, Object> data = Json.obj("1481730387000", values);
+			Object obj = Json.obj("event", eventType, "time", eventTime, "sensor", e.getSensor().getUuid(), "data",
+					data, "id", eventId);
+			events.add(obj);
+			eventId = eventId + 1;
+		}
+
+		nextCounter = nextCounter + 1;
+
+		return result("event", events, "next", nextCounter);
 	}
 }

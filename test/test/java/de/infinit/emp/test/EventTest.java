@@ -121,7 +121,7 @@ public class EventTest {
 
 	@Test
 	public void testH_Get_SessionEvents() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/event?timeout=30", userSid, userServer);
+		RestClient.Response res = RestClient.GET("/api/event?timeout=5", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}

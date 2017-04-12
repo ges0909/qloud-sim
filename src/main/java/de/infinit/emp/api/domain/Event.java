@@ -13,12 +13,13 @@ import de.infinit.emp.Uuid;
 public class Event {
 	@DatabaseField(id = true)
 	String id;
-
-	@DatabaseField(canBeNull = false)
-	String sensorUuid;
-
+	
 	@DatabaseField(canBeNull = false)
 	Date expiresAt;
+
+	@NotNull
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Sensor sensor;
 
 	@NotNull
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -29,10 +30,10 @@ public class Event {
 		this.id = Uuid.next();
 	}
 
-	public Event(@NotNull Session session, String sensorUuid, Date expiresAt) {
+	public Event(@NotNull Session session, Sensor sensor, Date expiresAt) {
 		this();
 		this.session = session;
-		this.sensorUuid = sensorUuid;
+		this.sensor = sensor;
 		this.expiresAt = expiresAt;
 	}
 
@@ -52,14 +53,14 @@ public class Event {
 		this.expiresAt = expiresAt;
 	}
 
-	public String getSensorUuid() {
-		return this.sensorUuid;
+	public Sensor getSensor() {
+		return sensor;
 	}
 
-	public void setSensorUuid(String sensorUuid) {
-		this.sensorUuid = sensorUuid;
+	public void setSensor(Sensor sensor) {
+		this.sensor = sensor;
 	}
-
+	
 	public Session getSession() {
 		return session;
 	}
