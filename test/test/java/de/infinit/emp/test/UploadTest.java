@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.aeonbits.owner.ConfigCache;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -14,10 +15,12 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.ApplicationConfig;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UploadTest {
+	static String initialURL;
 	static File fileToUpload;
 
 	private static String generatorHardwareCode() {
@@ -42,6 +45,8 @@ public class UploadTest {
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
+		ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
+		initialURL = "http://localhost:" + config.port();
 		Application.main(null);
 		Spark.awaitInitialization();
 		fileToUpload = createTempFile();

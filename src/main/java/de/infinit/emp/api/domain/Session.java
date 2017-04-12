@@ -25,7 +25,7 @@ public class Session {
 	@DatabaseField
 	String key;
 
-	@DatabaseField(foreign = true, columnName = "user_id")
+	@DatabaseField(foreign = true, columnName = "user_id", foreignAutoRefresh = true)
 	User user;
 
 	@ForeignCollectionField

@@ -7,12 +7,15 @@ import static spark.Spark.get;
 import static spark.Spark.internalServerError;
 import static spark.Spark.notFound;
 import static spark.Spark.path;
+import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFileLocation;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+
+import org.aeonbits.owner.ConfigCache;
 
 import com.google.gson.Gson;
 
@@ -33,10 +36,12 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 public class Application {
 	static final Logger log = Logger.getLogger(Application.class.getName());
+	static ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static final Gson gson = new Gson();
 	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
 	public static void main(String[] args) throws IOException, SQLException {
+		port(config.port());
 		staticFileLocation("/public"); // to serve css, ...
 
 		before(LoggingFilter::logRequest);

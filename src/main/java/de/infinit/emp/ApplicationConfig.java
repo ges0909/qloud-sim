@@ -6,9 +6,13 @@ import org.aeonbits.owner.Config.Sources;
 
 @Sources({
 	"file:${user.home}/.qs.config.properties",
-	"classpath:de/infinit/emp/qs.default.config.properties"
+	"classpath:qs.default.config.properties"
 })
 public interface ApplicationConfig extends Accessible, Mutable {
+	@Key("spark.port")
+	@DefaultValue("4567")
+	int port();
+	
 	@Key("device.pattern")
 	@DefaultValue("[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}")
 	String devicePattern();

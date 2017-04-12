@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.aeonbits.owner.ConfigCache;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -15,18 +16,22 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.test.utils.RestClient;
 import de.infinit.emp.utils.Json;
 import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PartnerTest {
+	static String initialURL;
 	static String partnerSid;
 	static String partnerServer;
 	static String userUuid;
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
+		ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
+		initialURL = "http://localhost:" + config.port();
 		Application.main(null);
 		Spark.awaitInitialization();
 	}
@@ -38,7 +43,7 @@ public class PartnerTest {
 
 	@Test
 	public void testA_Login_As_Partner() throws IOException {
-		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
+		RestClient.Response res = RestClient.GET("/api/session", null, initialURL);
 		assertEquals(200, res.status);
 		partnerSid = (String) res.body.get("sid");
 		partnerServer = (String) res.body.get("server");

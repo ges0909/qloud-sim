@@ -44,8 +44,8 @@ public class Sensor {
 	@DatabaseField()
 	boolean batteryOk;
 
-	@DatabaseField(foreign = true, columnName = "owner_id")
-	User owner;
+	@DatabaseField(foreign = true, columnName = "owner_id", foreignAutoRefresh = true)
+	private transient User owner;
 
 	@ForeignCollectionField
 	private transient Collection<Tag> tags;
@@ -111,7 +111,7 @@ public class Sensor {
 	public void setBatteryOk(boolean batteryOk) {
 		this.batteryOk = batteryOk;
 	}
-	
+
 	public User getOwner() {
 		return owner;
 	}
