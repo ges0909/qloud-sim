@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.UUID;
 
 import org.aeonbits.owner.ConfigCache;
 import org.junit.AfterClass;
@@ -16,7 +17,6 @@ import org.junit.runners.MethodSorters;
 
 import de.infinit.emp.Application;
 import de.infinit.emp.ApplicationConfig;
-import de.infinit.emp.Uuid;
 import de.infinit.emp.test.utils.RestClient;
 import de.infinit.emp.utils.Json;
 import spark.Spark;
@@ -86,7 +86,7 @@ public class TagTest {
 
 	@Test
 	public void testD_Create_Tag() throws IOException {
-		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy", Json.obj(Uuid.next(), 1));
+		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy", Json.obj(UUID.randomUUID().toString(), 1));
 		RestClient.Response res = RestClient.POST("/api/tag", req, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));

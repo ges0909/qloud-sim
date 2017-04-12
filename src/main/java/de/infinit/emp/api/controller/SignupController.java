@@ -1,11 +1,11 @@
 package de.infinit.emp.api.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.Uuid;
 import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
@@ -48,13 +48,12 @@ public class SignupController extends Controller {
 		@SerializedName("display_name")
 		String displayName;
 		String password;
-		String verification;
+		UUID verification;
 	}
 
 	public Object reserveAccount(Request request, Response response) {
 		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
-		user.setVerification(Uuid.next());
 		if (userModel.create(user) == null) {
 			return fail();
 		}

@@ -1,8 +1,10 @@
 package de.infinit.emp.api.model;
 
+import java.util.UUID;
+
 import de.infinit.emp.api.domain.Session;
 
-public class SessionModel extends Model<Session, String> {
+public class SessionModel extends Model<Session, UUID> {
 	private static SessionModel instance = null;
 
 	private SessionModel() {

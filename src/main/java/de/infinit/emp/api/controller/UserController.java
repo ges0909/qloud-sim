@@ -2,6 +2,7 @@ package de.infinit.emp.api.controller;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -47,17 +48,17 @@ public class UserController extends Controller {
 
 	class InviteUserRequest {
 		@SerializedName("invite")
-		List<String> userUuids;
+		List<UUID> userUuids;
 	}
 
 	class AcceptInvitationRequest {
 		@SerializedName("invitation")
-		List<String> invitationsToAccept;
+		List<UUID> invitationsToAccept;
 	}
 
 	public Object updateUser(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -80,7 +81,7 @@ public class UserController extends Controller {
 	// GET /api/user
 	public Object getUser(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -96,7 +97,7 @@ public class UserController extends Controller {
 
 	public Object getUserInvitations(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -104,18 +105,18 @@ public class UserController extends Controller {
 		if (user == null) {
 			return status(Status.WRONG_USER);
 		}
-		List<String> invitations = user.getInvitations().stream().map(Invitation::getUuid).collect(Collectors.toList());
+		List<String> invitations = user.getInvitations().stream().map(i -> i.getUuid().toString()).collect(Collectors.toList());
 		return result("in", invitations);
 	}
 
 	public Object inviteUser(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
 		InviteUserRequest req = decode(request.body(), InviteUserRequest.class);
-		for (String uuid : req.userUuids) {
+		for (UUID uuid : req.userUuids) {
 			User other = userModel.queryForId(uuid);
 			if (other == null) {
 				return status(Status.WRONG_USER);
@@ -132,7 +133,7 @@ public class UserController extends Controller {
 
 	public Object acceptInvitation(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -142,7 +143,7 @@ public class UserController extends Controller {
 		}
 		AcceptInvitationRequest req = decode(request.body(), AcceptInvitationRequest.class);
 		int numberAccepted = 0;
-		for (String uuid : req.invitationsToAccept) {
+		for (UUID uuid : req.invitationsToAccept) {
 			for (Invitation invitation : storedInvitations) {
 				if (uuid.equals(invitation.getUuid())) {
 					numberAccepted = +1;

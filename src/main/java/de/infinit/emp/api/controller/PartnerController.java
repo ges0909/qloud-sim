@@ -1,6 +1,7 @@
 package de.infinit.emp.api.controller;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class PartnerController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		List<User> users = userModel.queryForAll();
-		List<String> uuids = users.stream().map(User::getUuid).collect(Collectors.toList());
+		List<String> uuids = users.stream().map(u -> u.getUuid().toString()).collect(Collectors.toList());
 		return result("users", uuids);
 	}
 
@@ -61,7 +62,7 @@ public class PartnerController extends Controller {
 		if (user != null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		user = userModel.queryForId(uuid);
 		if (user == null) {
 			return status(Status.WRONG_USER);
@@ -82,7 +83,7 @@ public class PartnerController extends Controller {
 		if (!req.deleted) {
 			return ok();
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		user = userModel.queryForId(uuid);
 		if (user == null) {
 			return status(Status.WRONG_USER);

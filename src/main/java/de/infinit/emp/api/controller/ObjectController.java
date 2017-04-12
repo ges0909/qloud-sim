@@ -2,6 +2,7 @@ package de.infinit.emp.api.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import de.infinit.emp.Status;
@@ -23,8 +24,8 @@ public class ObjectController extends Controller {
 	final TagModel tagModel = TagModel.instance();
 
 	class UpdateTagAttchamentRequest {
-		List<String> add;
-		List<String> delete;
+		List<UUID> add;
+		List<UUID> delete;
 	}
 
 	private ObjectController() {
@@ -38,8 +39,8 @@ public class ObjectController extends Controller {
 		return instance;
 	}
 
-	private boolean containsUnknownTag(List<String> tagUuids) {
-		for (String uuid : tagUuids) {
+	private boolean containsUnknownTag(List<UUID> tagUuids) {
+		for (UUID uuid : tagUuids) {
 			Tag tag = tagModel.queryForId(uuid);
 			if (tag == null) {
 				return true;
@@ -75,13 +76,13 @@ public class ObjectController extends Controller {
 		}
 		//
 		if (req.add != null) {
-			for (String tagUuid : req.add) {
+			for (UUID tagUuid : req.add) {
 				Tag tag = tagModel.queryForId(tagUuid);
 				sensor.getTags().add(tag);
 			}
 		}
 		if (req.delete != null) {
-			for (String tagUuid : req.add) {
+			for (UUID tagUuid : req.add) {
 				Tag tag = tagModel.queryForId(tagUuid);
 				sensor.getTags().remove(tag);
 			}

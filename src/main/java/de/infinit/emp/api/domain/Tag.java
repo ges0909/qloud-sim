@@ -2,20 +2,16 @@ package de.infinit.emp.api.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import de.infinit.emp.Uuid;
-
 @DatabaseTable(tableName = "tags")
 public class Tag {
-	@NotNull
-	@DatabaseField(id = true)
-	String uuid;
+	@DatabaseField(generatedId = true)
+	UUID uuid;
 
 	@DatabaseField(foreign = true, canBeNull=false)
 	User owner;
@@ -34,7 +30,6 @@ public class Tag {
 
 	public Tag() {
 		// ORMLite needs a no-arg constructor
-		this.uuid = Uuid.next();
 		this.policies = new ArrayList<>();
 	}
 
@@ -45,7 +40,7 @@ public class Tag {
 		this.foreignUse = foreignUse;
 	}
 
-	public String getUuid() {
+	public UUID getUuid() {
 		return uuid;
 	}
 

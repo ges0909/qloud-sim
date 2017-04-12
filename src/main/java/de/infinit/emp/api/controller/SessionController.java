@@ -1,7 +1,8 @@
 package de.infinit.emp.api.controller;
 
+import java.util.UUID;
+
 import de.infinit.emp.Status;
-import de.infinit.emp.Uuid;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.SessionModel;
@@ -29,19 +30,17 @@ public class SessionController extends Controller {
 	class LoginRequest {
 		String partner;
 		String key;
-		String user;
+		UUID user;
 	}
 
 	public Object requestNonAuthorizedSession(Request request, Response response) {
 		Session session = new Session();
-		String sid = Uuid.next();
 		String server = request.scheme() + "://" + request.host();
-		session.setSid(sid);
 		session.setServer(server);
 		if (sessionModel.create(session) == null) {
 			return fail();
 		}
-		return result("sid", sid, "server", server);
+		return result("sid", session.getSid(), "server", server);
 	}
 
 	public Object loginToPartnerOrProxySession(Request request, Response response) {

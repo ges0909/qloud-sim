@@ -2,6 +2,7 @@ package de.infinit.emp.api.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -11,13 +12,10 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import de.infinit.emp.Uuid;
-
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
-	@NotNull
-	@DatabaseField(id = true)
-	String uuid;
+	@DatabaseField(generatedId = true)
+	UUID uuid;
 
 	@NotNull
 	@Pattern(regexp = "^.{10,50}$")
@@ -55,12 +53,11 @@ public class Sensor {
 
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
-		this.uuid = Uuid.next();
 		this.tags = new ArrayList<>();
 		this.capabilities = new ArrayList<>();
 	}
 
-	public String getUuid() {
+	public UUID getUuid() {
 		return uuid;
 	}
 
@@ -136,7 +133,7 @@ public class Sensor {
 		this.capabilities = capabilities;
 	}
 
-	public String getOwnerUuid() {
+	public UUID getOwnerUuid() {
 		for (Tag tag : tags) {
 			for (Policy policy : tag.getPolicies()) {
 				if (policy.getPolicy() == Policy.OWNER) {
@@ -171,5 +168,5 @@ public class Sensor {
 			return false;
 		return true;
 	}
-	
+
 }

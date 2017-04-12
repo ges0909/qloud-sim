@@ -1,5 +1,7 @@
 package de.infinit.emp.api.domain;
 
+import java.util.UUID;
+
 import javax.validation.constraints.NotNull;
 
 import com.j256.ormlite.field.DatabaseField;
@@ -14,7 +16,7 @@ public class Policy {
 	
 	@NotNull
 	@DatabaseField(canBeNull = false)
-	String userUuid;
+	UUID userUuid;
 
 	@NotNull
 	@DatabaseField(defaultValue = "4" /*OWNER*/, canBeNull = false)
@@ -27,17 +29,17 @@ public class Policy {
 		// ORMLite needs a no-arg constructor
 	}
 
-	public Policy(Tag tag, @NotNull String userUuid, @NotNull int policyValue) {
+	public Policy(Tag tag, @NotNull UUID userUuid, @NotNull int policyValue) {
 		this.userUuid = userUuid;
 		this.tag = tag;
 		this.policyValue = policyValue;
 	}
 
-	public String getUserUuid() {
+	public UUID getUserUuid() {
 		return userUuid;
 	}
 
-	public void setUserUuid(String userUuid) {
+	public void setUserUuid(UUID userUuid) {
 		this.userUuid = userUuid;
 	}
 

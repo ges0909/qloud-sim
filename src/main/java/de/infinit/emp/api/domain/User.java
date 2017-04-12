@@ -2,8 +2,8 @@ package de.infinit.emp.api.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.google.gson.annotations.SerializedName;
@@ -11,13 +11,10 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import de.infinit.emp.Uuid;
-
 @DatabaseTable(tableName = "users")
 public class User {
-	@NotNull
-	@DatabaseField(id = true)
-	String uuid;
+	@DatabaseField(generatedId = true)
+	UUID uuid;
 
 	@SerializedName("email")
 	@DatabaseField(unique = true)
@@ -47,9 +44,8 @@ public class User {
 	@DatabaseField
 	String password;
 
-	@Pattern(regexp = "^[a-zA-Z0-9-]{1,50}$")
-	@DatabaseField
-	String verification;
+	@DatabaseField()
+	UUID verification;
 
 	@DatabaseField
 	String partner;
@@ -62,11 +58,11 @@ public class User {
 
 	public User() {
 		// ORMLite needs a no-arg constructor
-		this.uuid = Uuid.next();
+		this.verification = UUID.randomUUID();
 		this.invitations = new ArrayList<>();
 	}
 
-	public String getUuid() {
+	public UUID getUuid() {
 		return uuid;
 	}
 
@@ -118,12 +114,8 @@ public class User {
 		this.password = password;
 	}
 
-	public String getVerification() {
+	public UUID getVerification() {
 		return verification;
-	}
-
-	public void setVerification(String verification) {
-		this.verification = verification;
 	}
 
 	public String getPartner() {

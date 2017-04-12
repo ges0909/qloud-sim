@@ -2,6 +2,7 @@ package de.infinit.emp.api.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,9 +12,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "sessions")
 public class Session {
-	@NotNull
-	@DatabaseField(id = true)
-	String sid;
+	@DatabaseField(generatedId = true)
+	UUID sid;
 
 	@NotNull
 	@DatabaseField(canBeNull = false)
@@ -36,12 +36,8 @@ public class Session {
 		this.events = new ArrayList<>();
 	}
 
-	public String getSid() {
+	public UUID getSid() {
 		return sid;
-	}
-
-	public void setSid(String sid) {
-		this.sid = sid;
 	}
 
 	public String getServer() {

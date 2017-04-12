@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Event;
@@ -41,11 +42,11 @@ public class EventController extends Controller {
 	// GET /api/sensor/:uuid/event
 	public Object susbcribeSensorForEvents(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
@@ -83,11 +84,11 @@ public class EventController extends Controller {
 	// DELETE /api/sensor/:uuid/event
 	public Object cancelSensorEventSubcription(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
@@ -108,7 +109,7 @@ public class EventController extends Controller {
 	// GET /API/event
 	public Object getSensorEvents(Request request, Response response) throws InterruptedException {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -139,6 +140,7 @@ public class EventController extends Controller {
 
 		List<Object> events = new ArrayList<>();
 		for (Event e : session.getEvents()) {
+			Sensor sensor = e.getSensor();
 			List<Object> values = Json.arr(1, 0, 0, 2231828644L);
 			Map<String, Object> data = Json.obj("1481730387000", values);
 			Object obj = Json.obj("event", eventType, "time", eventTime, "sensor", e.getSensor().getUuid(), "data",

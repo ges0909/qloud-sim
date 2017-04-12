@@ -2,6 +2,7 @@ package de.infinit.emp.filter;
 
 import static spark.Spark.halt;
 
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +46,7 @@ public class AuthenticationFilter {
 		if (sid == null) {
 			halt(STATUS_NO_AUTH);
 		}
-		Session session = sessionModel.queryForId(sid);
+		Session session = sessionModel.queryForId(UUID.fromString(sid));
 		request.session().attribute(SessionController.SESSION, session);
 		if (session == null) {
 			log.log(Level.SEVERE, "Authorization header: sid {0}: unknow session", sid);

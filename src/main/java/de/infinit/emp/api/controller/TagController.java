@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.google.gson.annotations.SerializedName;
@@ -47,13 +48,13 @@ public class TagController extends Controller {
 		@SerializedName("foreign_use")
 		boolean foreignUse;
 		@SerializedName("policy")
-		Map<String, Integer> policies;
+		Map<UUID, Integer> policies;
 	}
 
 	class UpdateTagRequest {
 		class PolicyList {
-			Map<String, Integer> update;
-			List<String> delete;
+			Map<UUID, Integer> update;
+			List<UUID> delete;
 		}
 
 		String label;
@@ -63,15 +64,15 @@ public class TagController extends Controller {
 		PolicyList policies;
 	}
 
-	private Map<String, Integer> getPolicies(Tag tag) {
-		Map<String, Integer> policies = new HashMap<>();
+	private Map<UUID, Integer> getPolicies(Tag tag) {
+		Map<UUID, Integer> policies = new HashMap<>();
 		for (Policy policy : tag.getPolicies()) {
 			policies.put(policy.getUserUuid(), policy.getPolicy());
 		}
 		return policies;
 	}
 
-	private void updateExistingPolicies(Tag tag, Map<String, Integer> policies) {
+	private void updateExistingPolicies(Tag tag, Map<UUID, Integer> policies) {
 		for (Policy policy : tag.getPolicies()) {
 			Integer value = policies.get(policy.getUserUuid());
 			if (value != null) {
@@ -80,9 +81,9 @@ public class TagController extends Controller {
 		}
 	}
 
-	private void createMissingPolicies(Tag tag, Map<String, Integer> policies) {
-		for (Map.Entry<String, Integer> entry : policies.entrySet()) {
-			String userUuid = entry.getKey();
+	private void createMissingPolicies(Tag tag, Map<UUID, Integer> policies) {
+		for (Map.Entry<UUID, Integer> entry : policies.entrySet()) {
+			UUID userUuid = entry.getKey();
 			if (tag.getPolicies().stream().noneMatch(p -> p.getUserUuid().equals(userUuid))) {
 				Integer value = policies.get(userUuid);
 				tag.getPolicies().add(new Policy(tag, userUuid, value));
@@ -90,8 +91,8 @@ public class TagController extends Controller {
 		}
 	}
 
-	private void deletePolicies(Tag tag, List<String> policies) {
-		for (String userUuid : policies) {
+	private void deletePolicies(Tag tag, List<UUID> policies) {
+		for (UUID userUuid : policies) {
 			Optional<Policy> o = tag.getPolicies().stream().filter(p -> p.getUserUuid().equals(userUuid)).findFirst();
 			if (o.isPresent()) {
 				policies.remove(o.get());
@@ -108,7 +109,7 @@ public class TagController extends Controller {
 		CreateTagRequest req = decode(request.body(), CreateTagRequest.class);
 		Tag tag = new Tag(user, req.label, req.foreignUse);
 		Collection<Policy> policies = tag.getPolicies();
-		for (String uuid : req.policies.keySet()) {
+		for (UUID uuid : req.policies.keySet()) {
 			Policy policy = new Policy(tag, uuid, req.policies.get(uuid));
 			if (policyModel.create(policy) == null) {
 				return fail();
@@ -128,7 +129,7 @@ public class TagController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Tag tag = tagModel.queryForId(uuid);
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
@@ -160,7 +161,7 @@ public class TagController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Tag tag = tagModel.queryForId(uuid);
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
@@ -181,7 +182,7 @@ public class TagController extends Controller {
 		List<Tag> ownerTags = tagModel.queryForUserTags(user);
 		Map<String, Object> tags = new HashMap<>();
 		for (Tag tag : ownerTags) {
-			tags.put(tag.getUuid(), Json.obj("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use",
+			tags.put(tag.getUuid().toString(), Json.obj("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use",
 					tag.isForeignUse(), "policy", getPolicies(tag)));
 		}
 		return result("tag", tags);
@@ -193,7 +194,7 @@ public class TagController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Tag tag = tagModel.queryForId(uuid);
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
@@ -214,7 +215,7 @@ public class TagController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Tag tag = tagModel.queryForId(uuid);
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
@@ -228,9 +229,8 @@ public class TagController extends Controller {
 		if (count != null) {
 			log.warning("query parameter 'count': ignored");
 		}
-		Tag tagAll = user.getTagAll();
-		List<Sensor> sensors = sensorModel.queryForTaggedWith(tagAll);
-		Map<String, Object> objects = new HashMap<>();
+		List<Sensor> sensors = sensorModel.queryForTaggedWith(tag);
+		Map<UUID, Object> objects = new HashMap<>();
 		for (Sensor sensor : sensors) {
 			objects.put(sensor.getUuid(), Json.obj());
 		}

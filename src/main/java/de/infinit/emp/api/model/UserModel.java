@@ -1,8 +1,10 @@
 package de.infinit.emp.api.model;
 
+import java.util.UUID;
+
 import de.infinit.emp.api.domain.User;
 
-public class UserModel extends Model<User, String> {
+public class UserModel extends Model<User, UUID> {
 	private static UserModel instance = null;
 
 	private UserModel() {

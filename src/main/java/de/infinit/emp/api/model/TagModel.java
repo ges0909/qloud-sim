@@ -2,12 +2,13 @@ package de.infinit.emp.api.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 
-public class TagModel extends Model<Tag, String> {
+public class TagModel extends Model<Tag, UUID> {
 	private static TagModel instance = null;
 
 	private TagModel() {

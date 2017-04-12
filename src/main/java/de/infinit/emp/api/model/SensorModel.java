@@ -2,10 +2,12 @@ package de.infinit.emp.api.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Tag;
 
-public class SensorModel extends Model<Sensor, String> {
+public class SensorModel extends Model<Sensor, UUID> {
 	private static SensorModel instance = null;
 
 	private SensorModel() {

@@ -1,20 +1,20 @@
 package de.infinit.emp.api.domain;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import de.infinit.emp.Uuid;
-
 @DatabaseTable(tableName = "events")
 public class Event {
-	@DatabaseField(id = true)
-	String id;
-	
-	@DatabaseField(canBeNull = false)
+	@DatabaseField(generatedId = true)
+	UUID uuid;
+
+	@DatabaseField(canBeNull = false, dataType = DataType.DATE_LONG)
 	Date expiresAt;
 
 	@NotNull
@@ -27,7 +27,6 @@ public class Event {
 
 	public Event() {
 		// ORMLite needs a no-arg constructor
-		this.id = Uuid.next();
 	}
 
 	public Event(@NotNull Session session, Sensor sensor, Date expiresAt) {
@@ -37,12 +36,8 @@ public class Event {
 		this.expiresAt = expiresAt;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+	public UUID getUuid() {
+		return uuid;
 	}
 
 	public Date getExpiresAt() {
@@ -60,7 +55,7 @@ public class Event {
 	public void setSensor(Sensor sensor) {
 		this.sensor = sensor;
 	}
-	
+
 	public Session getSession() {
 		return session;
 	}

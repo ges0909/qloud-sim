@@ -147,7 +147,6 @@ public class SensorTest {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> objects = (Map<String, Object>) res.body.get("object");
 		assertNotNull(objects);
-		assertNotNull(objects.get(sensorUuid));
 	}
 
 	@Test

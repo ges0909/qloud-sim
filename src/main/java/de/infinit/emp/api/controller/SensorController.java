@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -11,11 +12,13 @@ import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Capability;
+import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.CapabilityModel;
+import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.SessionModel;
 import de.infinit.emp.api.model.TagModel;
@@ -31,6 +34,7 @@ public class SensorController extends Controller {
 	final SessionModel sessionModel = SessionModel.instance();
 	final UserModel userModel = UserModel.instance();
 	final TagModel tagModel = TagModel.instance();
+	final EventModel eventModel = EventModel.instance();
 
 	private SensorController() {
 		super();
@@ -59,7 +63,7 @@ public class SensorController extends Controller {
 			List<Object> action;
 		}
 
-		String owner;
+		UUID owner;
 		long time;
 		String description;
 		String model;
@@ -84,8 +88,7 @@ public class SensorController extends Controller {
 		//
 		Tag tagAll = user.getTagAll();
 		tagAll.setSensor(sensor);
-		Collection<Tag> tags = sensor.getTags();
-		tags.add(tagAll); // tag sensor with user's 'tag_all' tag
+		sensor.getTags().add(tagAll); // tag sensor with user's 'tag_all' tag
 		//
 		Collection<Capability> capabilities = sensor.getCapabilities();
 		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
@@ -114,7 +117,7 @@ public class SensorController extends Controller {
 		if (sensor == null) {
 			return fail();
 		}
-		return result("uuid", sensor.getUuid());
+		return result("uuid", sensor.getUuid().toString());
 	}
 
 	public Object updateSensor(Request request, Response response) {
@@ -123,7 +126,7 @@ public class SensorController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
@@ -155,7 +158,7 @@ public class SensorController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return fail();
@@ -181,7 +184,7 @@ public class SensorController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
@@ -190,6 +193,12 @@ public class SensorController extends Controller {
 		if (!owner.equals(user)) {
 			return status(Status.WRONG_USER);
 		}
+		// before sensor is deleted remove it from session event list
+		Event event = eventModel.findEventBySensor(sensor);
+		if (event != null) {
+			eventModel.delete(event.getUuid());
+		}
+		// delete sensor
 		if (sensorModel.delete(uuid) != 1) {
 			return fail();
 		}
@@ -202,7 +211,7 @@ public class SensorController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		String uuid = request.params(":uuid");
+		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);

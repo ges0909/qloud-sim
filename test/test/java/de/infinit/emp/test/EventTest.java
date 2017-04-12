@@ -125,4 +125,13 @@ public class EventTest {
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
+	
+	@Test
+	public void testI_Delete_Sensor() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	
 }
