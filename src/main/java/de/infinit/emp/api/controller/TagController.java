@@ -100,16 +100,13 @@ public class TagController extends Controller {
 	}
 
 	public Object createTag(Request request, Response response) {
-		if (!isProxySession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
-		}
 		CreateTagRequest req = decode(request.body(), CreateTagRequest.class);
-		Tag tag = new Tag(own, req.label, req.foreignUse);
+		Tag tag = new Tag(user, req.label, req.foreignUse);
 		Collection<Policy> policies = tag.getPolicies();
 		for (String uuid : req.policies.keySet()) {
 			Policy policy = new Policy(tag, uuid, req.policies.get(uuid));
@@ -126,20 +123,17 @@ public class TagController extends Controller {
 
 	// POST /api/tag/:uuid
 	public Object updateTag(Request request, Response response) {
-		if (!isProxySession(request)) {
-			return status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Tag tag = tagModel.queryForId(uuid);
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwner().getUuid())) {
+		if (!user.equals(tag.getOwner())) {
 			return status(Status.ACCESS_DENIED);
 		}
 		UpdateTagRequest req = decode(request.body(), UpdateTagRequest.class);
@@ -161,20 +155,17 @@ public class TagController extends Controller {
 	// GET /api/tag
 	// Get list of tags associated with current user.
 	public Object getTag(Request request, Response response) {
-		if (!isProxySession(request)) {
-			return status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return status(Status.WRONG_USER);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Tag tag = tagModel.queryForId(uuid);
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwner().getUuid())) {
+		if (!user.equals(tag.getOwner())) {
 			return status(Status.ACCESS_DENIED);
 		}
 		return result("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use", tag.isForeignUse(),
@@ -182,15 +173,12 @@ public class TagController extends Controller {
 	}
 
 	public Object getTags(Request request, Response response) {
-		if (!isProxySession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return status(Status.WRONG_USER);
-		}
-		List<Tag> ownerTags = tagModel.queryForUserTags(own);
+		List<Tag> ownerTags = tagModel.queryForUserTags(user);
 		Map<String, Object> tags = new HashMap<>();
 		for (Tag tag : ownerTags) {
 			tags.put(tag.getUuid(), Json.obj("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use",
@@ -200,20 +188,17 @@ public class TagController extends Controller {
 	}
 
 	public Object deleteTag(Request request, Response response) {
-		if (!isProxySession(request)) {
-			return status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return status(Status.WRONG_USER);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Tag tag = tagModel.queryForId(uuid);
 		if (tag == null) {
 			return status(Status.WRONG_TAG);
 		}
-		if (!own.getUuid().equals(tag.getOwner().getUuid())) {
+		if (!user.equals(tag.getOwner())) {
 			return status(Status.ACCESS_DENIED);
 		}
 		if (tagModel.delete(uuid) != 1) {
@@ -224,13 +209,10 @@ public class TagController extends Controller {
 
 	// GET /api/tag/:uuid/object
 	public Object getTaggedObjects(Request request, Response response) {
-		if (!isProxySession(request)) {
-			return status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return status(Status.WRONG_USER);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Tag tag = tagModel.queryForId(uuid);
@@ -246,7 +228,7 @@ public class TagController extends Controller {
 		if (count != null) {
 			log.warning("query parameter 'count': ignored");
 		}
-		Tag tagAll = own.getTagAll();
+		Tag tagAll = user.getTagAll();
 		List<Sensor> sensors = sensorModel.queryForTaggedWith(tagAll);
 		Map<String, Object> objects = new HashMap<>();
 		for (Sensor sensor : sensors) {

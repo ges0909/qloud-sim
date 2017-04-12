@@ -98,13 +98,10 @@ public class SensorController extends Controller {
 	}
 
 	public Object createSensor(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return status(Status.WRONG_USER);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		CreateOrUpdateSensorRequest req = decode(request.body(), CreateOrUpdateSensorRequest.class);
 		if (req.code == null || !Pattern.matches(config.devicePattern(), req.code)) {
@@ -113,7 +110,7 @@ public class SensorController extends Controller {
 		if (sensorModel.findFirstByColumn("code", req.code) != null) {
 			return status(Status.DUPLICATE_CODE);
 		}
-		Sensor sensor = createSensor(own, req.code, req.description);
+		Sensor sensor = createSensor(user, req.code, req.description);
 		if (sensor == null) {
 			return fail();
 		}
@@ -121,13 +118,19 @@ public class SensorController extends Controller {
 	}
 
 	public Object updateSensor(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
+		}
+		User owner = sensor.getOwner();
+		if (!owner.equals(user)) {
+			return status(Status.WRONG_USER);
 		}
 		CreateOrUpdateSensorRequest req = decode(request.body(), CreateOrUpdateSensorRequest.class);
 		if (req.code != null) {
@@ -147,13 +150,19 @@ public class SensorController extends Controller {
 	}
 
 	public Object getSensor(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return fail();
+		}
+		User owner = sensor.getOwner();
+		if (!owner.equals(user)) {
+			return status(Status.WRONG_USER);
 		}
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
 		res.owner = sensor.getOwnerUuid();
@@ -167,13 +176,19 @@ public class SensorController extends Controller {
 	}
 
 	public Object deleteSensor(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
+		}
+		User owner = sensor.getOwner();
+		if (!owner.equals(user)) {
+			return status(Status.WRONG_USER);
 		}
 		if (sensorModel.delete(uuid) != 1) {
 			return fail();
@@ -182,13 +197,19 @@ public class SensorController extends Controller {
 	}
 
 	public Object getSensorData(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
+		}
+		User owner = sensor.getOwner();
+		if (!owner.equals(user)) {
+			return status(Status.WRONG_USER);
 		}
 		String timestamp = Long.toString(Instant.now().getEpochSecond());
 		List<Integer> values = Json.arr(1234, 5678, 901234, 9961);

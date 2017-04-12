@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import de.infinit.emp.Status;
+import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.InvitationModel;
 import de.infinit.emp.api.model.SensorModel;
@@ -44,7 +45,9 @@ public class PartnerController extends Controller {
 	}
 
 	public Object getAccounts(Request request, Response response) {
-		if (!isPartnerSession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user != null) {
 			return status(Status.NO_AUTH);
 		}
 		List<User> users = userModel.queryForAll();
@@ -53,11 +56,13 @@ public class PartnerController extends Controller {
 	}
 
 	public Object getAccount(Request request, Response response) {
-		if (!isPartnerSession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user != null) {
 			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
-		User user = userModel.queryForId(uuid);
+		user = userModel.queryForId(uuid);
 		if (user == null) {
 			return status(Status.WRONG_USER);
 		}
@@ -65,7 +70,9 @@ public class PartnerController extends Controller {
 	}
 
 	public Object deleteAccount(Request request, Response response) {
-		if (!isPartnerSession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user != null) {
 			return status(Status.NO_AUTH);
 		}
 		DeleteUserRequest req = decode(request.body(), DeleteUserRequest.class);
@@ -76,7 +83,7 @@ public class PartnerController extends Controller {
 			return ok();
 		}
 		String uuid = request.params(":uuid");
-		User user = userModel.queryForId(uuid);
+		user = userModel.queryForId(uuid);
 		if (user == null) {
 			return status(Status.WRONG_USER);
 		}

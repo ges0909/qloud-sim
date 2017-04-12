@@ -50,16 +50,13 @@ public class ObjectController extends Controller {
 
 	// POST /api/object/:uuid/tag
 	public Object updateTagAttachment(Request request, Response response) {
-		if (!isProxySession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return status(Status.WRONG_USER);
-		}
 		// get all sensors belonging the user
-		Tag tagAll = own.getTagAll();
+		Tag tagAll = user.getTagAll();
 		List<Sensor> sensors = sensorModel.queryForTaggedWith(tagAll);
 		// find sensor requested to be tagged
 		String sensorUuid = request.params(":uuid");

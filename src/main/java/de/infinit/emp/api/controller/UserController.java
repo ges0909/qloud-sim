@@ -56,25 +56,22 @@ public class UserController extends Controller {
 	}
 
 	public Object updateUser(Request request, Response response) {
-		if (!isProxySession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
+		user = userModel.queryForId(user.getUuid());
+		if (user == null) {
 			return status(Status.WRONG_USER);
 		}
-		User other = userModel.findFirstByColumn("email", session.getUser());
-		if (other != null) {
-			return status(Status.ALREADY_EXIST);
-		}
 		UpdateUserRequest req = decode(request.body(), UpdateUserRequest.class);
-		own.setFirstName(req.firstname);
-		own.setLastName(req.lastname);
-		own.setDisplayName(req.displayName);
-		own.setPassword(req.password);
-		own.setEmail(req.email);
-		if (userModel.update(own) == null) {
+		user.setFirstName(req.firstname);
+		user.setLastName(req.lastname);
+		user.setDisplayName(req.displayName);
+		user.setPassword(req.password);
+		user.setEmail(req.email);
+		if (userModel.update(user) == null) {
 			return fail();
 		}
 		return ok();
@@ -82,41 +79,40 @@ public class UserController extends Controller {
 
 	// GET /api/user
 	public Object getUser(Request request, Response response) {
-		if (!isProxySession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
+		user = userModel.queryForId(user.getUuid());
+		if (user == null) {
+			return status(Status.WRONG_USER);
 		}
 		return result("user",
-				Json.obj("uuid", own.getUuid(), "username", own.getUserName(), "firstname", own.getFirstName(),
-						"lastname", own.getLastName(), "display_name", own.getDisplayName(), "email", own.getEmail(),
-						"partner", own.getPartner(), "tag_all", own.getTagAll().getUuid()));
+				Json.obj("uuid", user.getUuid(), "username", user.getUserName(), "firstname", user.getFirstName(),
+						"lastname", user.getLastName(), "display_name", user.getDisplayName(), "email", user.getEmail(),
+						"partner", user.getPartner(), "tag_all", user.getTagAll().getUuid()));
 	}
 
 	public Object getUserInvitations(Request request, Response response) {
-		if (!isProxySession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
+		user = userModel.queryForId(user.getUuid());
+		if (user == null) {
+			return status(Status.WRONG_USER);
 		}
-		List<String> invitations = own.getInvitations().stream().map(Invitation::getUuid).collect(Collectors.toList());
+		List<String> invitations = user.getInvitations().stream().map(Invitation::getUuid).collect(Collectors.toList());
 		return result("in", invitations);
 	}
 
 	public Object inviteUser(Request request, Response response) {
-		if (!isProxySession(request)) {
-			return status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		InviteUserRequest req = decode(request.body(), InviteUserRequest.class);
 		for (String uuid : req.userUuids) {
@@ -135,15 +131,12 @@ public class UserController extends Controller {
 	}
 
 	public Object acceptInvitation(Request request, Response response) {
-		if (!isProxySession(request)) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		User user = session.getUser();		
+		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
-		}
-		Collection<Invitation> storedInvitations = own.getInvitations();
+		Collection<Invitation> storedInvitations = user.getInvitations();
 		if (storedInvitations.isEmpty()) {
 			return status(Status.WRONG_INVITATION);
 		}
@@ -158,7 +151,7 @@ public class UserController extends Controller {
 			}
 		}
 		if (numberAccepted > 0) {
-			userModel.update(own); // update because of removed invitations
+			userModel.update(user); // update because of removed invitations
 		}
 		if (req.invitationsToAccept.size() != numberAccepted) {
 			return fail();

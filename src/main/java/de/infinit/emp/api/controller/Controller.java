@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 
 import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
-import de.infinit.emp.api.domain.Session;
 import spark.Request;
 import spark.Response;
 
@@ -48,15 +47,6 @@ public class Controller {
 	protected <T, U> U convert(T from, Class<U> to) {
 		String jsonString = gson.toJson(from);
 		return gson.fromJson(jsonString, to);
-	}
-
-	protected boolean isProxySession(Request request) {
-		Session session = request.session().attribute(SessionController.SESSION);
-		return session.getUser() != null;
-	}
-
-	protected boolean isPartnerSession(Request request) {
-		return !isProxySession(request);
 	}
 
 	public Object notImplemented(Request request, Response response) {

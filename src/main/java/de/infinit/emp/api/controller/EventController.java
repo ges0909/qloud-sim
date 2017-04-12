@@ -40,18 +40,19 @@ public class EventController extends Controller {
 
 	// GET /api/sensor/:uuid/event
 	public Object susbcribeSensorForEvents(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
+		}
+		User owner = sensor.getOwner();
+		if (!owner.equals(user)) {
+			return status(Status.WRONG_USER);
 		}
 		// valid range 1..36000 seconds (10 hours), default: 3600 (1 hour )
 		long timeout = 36000;
@@ -81,18 +82,19 @@ public class EventController extends Controller {
 
 	// DELETE /api/sensor/:uuid/event
 	public Object cancelSensorEventSubcription(Request request, Response response) {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
+		}
+		User owner = sensor.getOwner();
+		if (!owner.equals(user)) {
+			return status(Status.WRONG_USER);
 		}
 		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensor().equals(sensor)).findFirst();
 		if (!optional.isPresent()) {
@@ -105,13 +107,10 @@ public class EventController extends Controller {
 
 	// GET /API/event
 	public Object getSensorEvents(Request request, Response response) throws InterruptedException {
-		if (!isProxySession(request)) {
-			status(Status.NO_AUTH);
-		}
 		Session session = request.session().attribute(SessionController.SESSION);
-		User own = session.getUser();
-		if (own == null) {
-			return fail();
+		User user = session.getUser();		
+		if (user == null) {
+			return status(Status.NO_AUTH);
 		}
 		int timeout = 55; // valid range: 0..300 seconds, default: 55
 		String timeoutParam = request.queryParams("timeout");
