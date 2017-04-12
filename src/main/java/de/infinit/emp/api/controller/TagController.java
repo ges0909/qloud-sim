@@ -104,7 +104,7 @@ public class TagController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return fail();
 		}
@@ -130,7 +130,7 @@ public class TagController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return fail();
 		}
@@ -165,7 +165,7 @@ public class TagController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}
@@ -177,8 +177,8 @@ public class TagController extends Controller {
 		if (!own.getUuid().equals(tag.getOwner().getUuid())) {
 			return status(Status.ACCESS_DENIED);
 		}
-		return result("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use", tag.isForeignUse(), "policy",
-				getPolicies(tag));
+		return result("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use", tag.isForeignUse(),
+				"policy", getPolicies(tag));
 	}
 
 	public Object getTags(Request request, Response response) {
@@ -186,18 +186,15 @@ public class TagController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}
 		List<Tag> ownerTags = tagModel.queryForUserTags(own);
 		Map<String, Object> tags = new HashMap<>();
 		for (Tag tag : ownerTags) {
-			tags.put(tag.getUuid(),
-					Json.obj("owner", tag.getOwner().getUuid(),
-							"label", tag.getLabel(),
-							"foreign_use", tag.isForeignUse(),
-							"policy", getPolicies(tag)));
+			tags.put(tag.getUuid(), Json.obj("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use",
+					tag.isForeignUse(), "policy", getPolicies(tag)));
 		}
 		return result("tag", tags);
 	}
@@ -207,7 +204,7 @@ public class TagController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}
@@ -231,7 +228,7 @@ public class TagController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}

@@ -50,7 +50,6 @@ public class AuthenticationFilter {
 			log.log(Level.SEVERE, "Authorization header: sid {0}: unknow session", sid);
 			halt(STATUS_NO_SESSION);
 		}
-		request.session().attribute(SessionController.QLOUD_SESSION, session);
 		log.log(Level.INFO, "valid sid: {0} ", sid);
 	}
 }

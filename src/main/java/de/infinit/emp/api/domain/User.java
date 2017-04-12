@@ -54,10 +54,9 @@ public class User {
 	@DatabaseField
 	String partner;
 
-	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, columnName = "tag_id")
 	Tag tagAll;
 
-	// One-to-many
 	@ForeignCollectionField
 	private Collection<Invitation> invitations;
 

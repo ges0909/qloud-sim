@@ -17,6 +17,7 @@ import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.SessionModel;
 import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
@@ -27,6 +28,7 @@ public class SensorController extends Controller {
 	private static SensorController instance = null;
 	final SensorModel sensorModel = SensorModel.instance();
 	final CapabilityModel capabilityModel = CapabilityModel.instance();
+	final SessionModel sessionModel = SessionModel.instance();
 	final UserModel userModel = UserModel.instance();
 	final TagModel tagModel = TagModel.instance();
 
@@ -73,6 +75,7 @@ public class SensorController extends Controller {
 
 	public Sensor createSensor(User user, String code, String description) {
 		Sensor sensor = new Sensor();
+		sensor.setOwner(user);
 		sensor.setCode(code);
 		sensor.setDescription(description);
 		sensor.setRecvTime(Instant.now().getEpochSecond());
@@ -98,8 +101,8 @@ public class SensorController extends Controller {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		Session session = sessionModel.queryForId(SessionController.SESSION_ID);
+		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}

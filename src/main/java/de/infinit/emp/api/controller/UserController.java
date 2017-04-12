@@ -60,7 +60,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
 		}
@@ -86,7 +86,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return fail();
 		}
@@ -101,7 +101,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return fail();
 		}
@@ -114,7 +114,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return fail();
 		}
@@ -139,7 +139,7 @@ public class UserController extends Controller {
 			return status(Status.NO_AUTH);
 		}
 		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
-		User own = userModel.queryForId(session.getUser());
+		User own = session.getUser();
 		if (own == null) {
 			return fail();
 		}

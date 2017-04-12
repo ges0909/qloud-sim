@@ -3,14 +3,17 @@ package de.infinit.emp.api.controller;
 import de.infinit.emp.Status;
 import de.infinit.emp.Uuid;
 import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.SessionModel;
+import de.infinit.emp.api.model.UserModel;
 import spark.Request;
 import spark.Response;
 
 public class SessionController extends Controller {
-	public static final String QLOUD_SESSION = "session";
+	public static final String SESSION_ID = "SID";
 	private static SessionController instance = null;
 	final SessionModel sessionModel = SessionModel.instance();
+	final UserModel userModel = UserModel.instance();
 
 	private SessionController() {
 		super();
@@ -49,13 +52,19 @@ public class SessionController extends Controller {
 		if (!(config.partner().equals(req.partner) && config.key().equals(req.key))) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
-		Session session = request.session().attribute(QLOUD_SESSION);
+		Session session = request.session().attribute(SESSION_ID);
 		if (session == null) {
 			return fail();
 		}
 		session.setPartner(req.partner);
 		session.setKey(req.key);
-		session.setUser(req.user);
+		if (req.user != null) {
+			User user = userModel.queryForId(req.user);
+			if (user == null) {
+				return status(Status.WRONG_USER);
+			}
+			session.setUser(user);
+		}
 		if (sessionModel.update(session) == null) {
 			return fail();
 		}
@@ -63,7 +72,7 @@ public class SessionController extends Controller {
 	}
 
 	public Object logoutFromSession(Request request, Response response) {
-		Session session = request.session().attribute(QLOUD_SESSION);
+		Session session = request.session().attribute(SESSION_ID);
 		if (session == null) {
 			return fail();
 		}

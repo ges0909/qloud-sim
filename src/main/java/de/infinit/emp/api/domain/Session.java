@@ -1,8 +1,12 @@
 package de.infinit.emp.api.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.validation.constraints.NotNull;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "sessions")
@@ -21,11 +25,15 @@ public class Session {
 	@DatabaseField
 	String key;
 
-	@DatabaseField
-	String user; // user uuid in case of proxy session; otherwise null
+	@DatabaseField(foreign = true, columnName = "user_id")
+	User user;
+
+	@ForeignCollectionField
+	Collection<Event> events;
 
 	public Session() {
 		// ORMLite needs a no-arg constructor
+		this.events = new ArrayList<>();
 	}
 
 	public String getSid() {
@@ -60,11 +68,19 @@ public class Session {
 		this.key = key;
 	}
 
-	public String getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUser(String user) {
+	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public Collection<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(Collection<Event> events) {
+		this.events = events;
 	}
 }

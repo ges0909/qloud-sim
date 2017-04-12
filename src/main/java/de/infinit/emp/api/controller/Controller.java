@@ -2,8 +2,6 @@ package de.infinit.emp.api.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
-
 import org.aeonbits.owner.ConfigCache;
 
 import com.google.gson.Gson;
@@ -16,7 +14,6 @@ import spark.Response;
 
 public class Controller {
 	private static Controller instance = null;
-	static final Logger log = Logger.getLogger(UserController.class.getName());
 	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static final Gson gson = new Gson();
 
@@ -73,12 +70,12 @@ public class Controller {
 	protected Object fail() {
 		return status(Status.FAIL);
 	}
-	
+
 	public Object notFound(Request request, Response response) {
 		response.type("text/plain");
 		return "NOT FOUND";
 	}
-	
+
 	public Object internalServerError(Request request, Response response) {
 		response.type("text/plain");
 		return "INTERNAL SERVER ERROR";

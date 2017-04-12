@@ -37,6 +37,7 @@ public class Persistence {
 				createTabelsIfNotExists();
 			} catch (SQLException e) {
 				log.severe(e.toString());
+				e.printStackTrace();
 				System.exit(0);
 			}
 		}
@@ -49,19 +50,19 @@ public class Persistence {
 		}
 	}
 
-	private static void createTabelsIfNotExists() {
-		try {
-			TableUtils.createTableIfNotExists(cs, Session.class);
-			TableUtils.createTableIfNotExists(cs, User.class);
-			TableUtils.createTableIfNotExists(cs, Invitation.class);
-			TableUtils.createTableIfNotExists(cs, Sensor.class);
-			TableUtils.createTableIfNotExists(cs, Capability.class);
-			TableUtils.createTableIfNotExists(cs, Tag.class);
-			TableUtils.createTableIfNotExists(cs, Policy.class);
-			TableUtils.createTableIfNotExists(cs, Event.class);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	private static void createTabelsIfNotExists() throws SQLException {
+		//
+		TableUtils.createTableIfNotExists(cs, Session.class);
+		TableUtils.createTableIfNotExists(cs, Event.class);
+		TableUtils.createTableIfNotExists(cs, User.class);
+		TableUtils.createTableIfNotExists(cs, Invitation.class);
+		TableUtils.createTableIfNotExists(cs, Sensor.class);
+		TableUtils.createTableIfNotExists(cs, Capability.class);
+		TableUtils.createTableIfNotExists(cs, Tag.class);
+		TableUtils.createTableIfNotExists(cs, Policy.class);
+		//
+		TableUtils.clearTable(cs, Event.class);
+		TableUtils.clearTable(cs, Session.class);
 	}
 
 }

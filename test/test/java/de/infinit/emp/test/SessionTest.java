@@ -21,8 +21,11 @@ import spark.Spark;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SessionTest {
-	static String sid;
-	static String server;
+	static String partnerSid;
+	static String partnerServer;
+	static String userSid;
+	static String userServer;
+	static String userUuid;
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
@@ -39,34 +42,60 @@ public class SessionTest {
 	public void testA_Get_NonAuthorized_Session() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
-		sid = (String) res.body.get("sid");
-		server = (String) res.body.get("server");
-		assertNotNull(sid);
-		assertEquals("http://localhost:4567", server);
 		assertEquals("ok", res.body.get("status"));
+		assertNotNull(res.body.get("sid"));
+		assertNotNull(res.body.get("server"));
+		partnerSid = (String) res.body.get("sid");
+		partnerServer = (String) res.body.get("server");
 	}
 
 	@Test
-	public void testB_Login_As_Partner() throws IOException {
-		Map<String, Object> req =
-				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
-		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
+	public void testB_Create_User_Account() throws IOException {
+		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
+		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
+		assertEquals(200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
+		assertNotNull(resp.body.get("uuid"));
+		assertNotNull(resp.body.get("verification"));
+		userUuid = (String) resp.body.get("uuid");
+		String verification = (String) resp.body.get("verification");
+		body = Json.obj("email", "max.mustermann@mail.de", "firstname", "Max", "lastname", "Mustermann");
+		body.put("verification", verification);
+		resp = RestClient.POST("/api/signup/user", body, partnerSid, partnerServer);
+		assertEquals(200, resp.status);
+		assertEquals("ok", resp.body.get("status"));
+	}
+
+	@Test
+	public void testC_Login_As_Partner() throws IOException {
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
+		RestClient.Response res = RestClient.POST("/api/session", req, partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test
-	public void testC_Login_as_Proxy() throws IOException {
-		Map<String, Object> req =
-				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", Uuid.next());
-		RestClient.Response res = RestClient.POST("/api/session", req, sid, server);
+	public void testD_Login_As_User() throws IOException {
+		RestClient.Response res = RestClient.GET("/api/session", null, "http://localhost:4567");
 		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
+		userSid = (String) res.body.get("sid");
+		userServer = (String) res.body.get("server");
+		Map<String, Object> req =
+				Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", userUuid);
+		res = RestClient.POST("/api/session", req, userSid, userServer);
+		assertEquals(200, res.status);
 	}
 
 	@Test
-	public void testD_Logout_From_Session() throws IOException {
-		RestClient.Response res = RestClient.DELETE("/api/session", sid, server);
+	public void testE_Logout_From_User_Session() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/session", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+	
+	@Test
+	public void testF_Logout_From_Partner_Session() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/session", partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}

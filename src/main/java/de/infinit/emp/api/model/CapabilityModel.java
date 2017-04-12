@@ -2,7 +2,7 @@ package de.infinit.emp.api.model;
 
 import de.infinit.emp.api.domain.Capability;
 
-public class CapabilityModel extends Model<Capability, String> {
+public class CapabilityModel extends Model<Capability, Void> {
 	private static CapabilityModel instance = null;
 
 	private CapabilityModel() {

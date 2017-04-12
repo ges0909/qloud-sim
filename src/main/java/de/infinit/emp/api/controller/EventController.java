@@ -2,23 +2,24 @@ package de.infinit.emp.api.controller;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Logger;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Sensor;
+import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.UserModel;
 import spark.Request;
 import spark.Response;
 
 public class EventController extends Controller {
 	private static EventController instance = null;
-	static final Logger log = Logger.getLogger(TagController.class.getName());
 	final EventModel eventModel = EventModel.instance();
+	final UserModel userModel = UserModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
 
 	private EventController() {
@@ -37,13 +38,18 @@ public class EventController extends Controller {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		User own = session.getUser();
+		if (own == null) {
+			return fail();
+		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}
-		long timeout = 36000; // valid range 1..36000 seconds (10 hours),
-								// default: 3600 (1 hour )
+		// valid range 1..36000 seconds (10 hours), default: 3600 (1 hour )
+		long timeout = 36000;
 		String timeoutParam = request.queryParams("timeout");
 		if (timeoutParam != null) {
 			timeout = Long.parseLong(timeoutParam);
@@ -51,23 +57,21 @@ public class EventController extends Controller {
 		if (timeout < 1 /* min */ || timeout > 36000 /* max */) {
 			return fail();
 		}
-
 		Instant now = Instant.now();
 		now.plusSeconds(timeout);
 		Date expiresAt = Date.from(now);
-		Event event = eventModel.queryForId(sensor.getUuid());
-		if (event == null) {
-			event = new Event();
-			event.setExpiresAt(expiresAt);
-			event.setSensorUuid(sensor.getUuid());
-			if (eventModel.create(event) == null) {
-				return fail();
-			}
-		} else {
+		Event event = null;
+		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensorUuid().equals(sensor.getUuid()))
+				.findFirst();
+		if (optional.isPresent()) {
+			event = optional.get();
 			event.setExpiresAt(expiresAt);
 			if (eventModel.update(event) == null) {
 				return fail();
 			}
+		} else {
+			event = new Event(session, sensor.getUuid(), expiresAt);
+			session.getEvents().add(event);
 		}
 		return ok();
 	}
@@ -77,21 +81,35 @@ public class EventController extends Controller {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
 		}
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		User own = session.getUser();
+		if (own == null) {
+			return fail();
+		}
 		String uuid = request.params(":uuid");
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
 			return status(Status.WRONG_SENSOR);
 		}
-		if (eventModel.delete(sensor.getUuid()) != 1) {
+		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensorUuid().equals(sensor.getUuid()))
+				.findFirst();
+		if (!optional.isPresent()) {
 			return fail();
 		}
+		Event event = optional.get();
+		session.getEvents().remove(event);
 		return ok();
 	}
 
 	// GET /API/event
-	public Object getSensorEvents(Request request, Response response) {
+	public Object getSensorEvents(Request request, Response response) throws InterruptedException {
 		if (!isProxySession(request)) {
 			status(Status.NO_AUTH);
+		}
+		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		User own = session.getUser();
+		if (own == null) {
+			return fail();
 		}
 		int timeout = 55; // valid range: 0..300 seconds, default: 55
 		String timeoutParam = request.queryParams("timeout");
@@ -109,15 +127,13 @@ public class EventController extends Controller {
 		if (next < 0 /* min */) {
 			return fail();
 		}
-		
+
 		Random rn = new Random();
 		int effectiveTimeout = rn.nextInt(timeout) + 1;
-		try {
-			Thread.sleep(effectiveTimeout * 1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
+		Thread.sleep(effectiveTimeout * 1000L);
+
+		int numberOfSensors = session.getEvents().size();
+
 		return ok();
 	}
 }
