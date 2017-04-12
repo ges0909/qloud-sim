@@ -51,7 +51,7 @@ public class Controller {
 	}
 
 	protected boolean isProxySession(Request request) {
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		Session session = request.session().attribute(SessionController.SESSION);
 		return session.getUser() != null;
 	}
 

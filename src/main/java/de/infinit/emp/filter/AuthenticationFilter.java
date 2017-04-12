@@ -46,6 +46,7 @@ public class AuthenticationFilter {
 			halt(STATUS_NO_AUTH);
 		}
 		Session session = sessionModel.queryForId(sid);
+		request.session().attribute(SessionController.SESSION, session);
 		if (session == null) {
 			log.log(Level.SEVERE, "Authorization header: sid {0}: unknow session", sid);
 			halt(STATUS_NO_SESSION);

@@ -10,7 +10,7 @@ import spark.Request;
 import spark.Response;
 
 public class SessionController extends Controller {
-	public static final String SESSION_ID = "SID";
+	public static final String SESSION = "QLOUD_SESSION";
 	private static SessionController instance = null;
 	final SessionModel sessionModel = SessionModel.instance();
 	final UserModel userModel = UserModel.instance();
@@ -52,7 +52,7 @@ public class SessionController extends Controller {
 		if (!(config.partner().equals(req.partner) && config.key().equals(req.key))) {
 			return status(Status.WRONG_CREDENTIALS);
 		}
-		Session session = request.session().attribute(SESSION_ID);
+		Session session = request.session().attribute(SESSION);
 		if (session == null) {
 			return fail();
 		}
@@ -72,7 +72,7 @@ public class SessionController extends Controller {
 	}
 
 	public Object logoutFromSession(Request request, Response response) {
-		Session session = request.session().attribute(SESSION_ID);
+		Session session = request.session().attribute(SESSION);
 		if (session == null) {
 			return fail();
 		}

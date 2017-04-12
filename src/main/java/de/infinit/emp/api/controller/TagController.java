@@ -103,7 +103,7 @@ public class TagController extends Controller {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		Session session = request.session().attribute(SessionController.SESSION);
 		User own = session.getUser();
 		if (own == null) {
 			return fail();
@@ -129,7 +129,7 @@ public class TagController extends Controller {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		Session session = request.session().attribute(SessionController.SESSION);
 		User own = session.getUser();
 		if (own == null) {
 			return fail();
@@ -164,7 +164,7 @@ public class TagController extends Controller {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		Session session = request.session().attribute(SessionController.SESSION);
 		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
@@ -185,7 +185,7 @@ public class TagController extends Controller {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		Session session = request.session().attribute(SessionController.SESSION);
 		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
@@ -203,7 +203,7 @@ public class TagController extends Controller {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		Session session = request.session().attribute(SessionController.SESSION);
 		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
@@ -227,7 +227,7 @@ public class TagController extends Controller {
 		if (!isProxySession(request)) {
 			return status(Status.NO_AUTH);
 		}
-		Session session = request.session().attribute(SessionController.QLOUD_SESSION);
+		Session session = request.session().attribute(SessionController.SESSION);
 		User own = session.getUser();
 		if (own == null) {
 			return status(Status.WRONG_USER);
