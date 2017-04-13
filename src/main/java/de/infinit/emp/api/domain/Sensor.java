@@ -22,6 +22,10 @@ public class Sensor {
 	@DatabaseField(unique = true, canBeNull = false)
 	String code;
 
+	@NotNull
+	@DatabaseField(unique = true, canBeNull = false)
+	String sdevice;
+
 	@Pattern(regexp = "^.{0,200}$")
 	@SerializedName("description")
 	@DatabaseField
@@ -67,6 +71,14 @@ public class Sensor {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getSdevice() {
+		return sdevice;
+	}
+
+	public void setSdevice(String sdevice) {
+		this.sdevice = sdevice;
 	}
 
 	public String getDescription() {

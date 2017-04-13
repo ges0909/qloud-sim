@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -66,6 +67,7 @@ public class SensorController extends Controller {
 		UUID owner;
 		long time;
 		String description;
+		String sdevice;
 		String model;
 		@SerializedName("recv_interval")
 		int recvInterval;
@@ -77,10 +79,20 @@ public class SensorController extends Controller {
 		State state;
 	}
 
+	private String generateHexId(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        while(sb.length() < length){
+            sb.append(Integer.toHexString(random.nextInt()));
+        }
+        return sb.toString();
+	}
+	
 	public Sensor createSensor(User user, String code, String description) {
 		Sensor sensor = new Sensor();
 		sensor.setOwner(user);
 		sensor.setCode(code);
+		sensor.setSdevice(generateHexId(8));
 		sensor.setDescription(description);
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
