@@ -44,7 +44,7 @@ public class Application {
 	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
 	public static void main(String[] args) throws IOException, SQLException {
-        Runnable task = new BackgroudTask();
+        Runnable task = new BackgroudValueGeneratorTask();
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         executor.scheduleWithFixedDelay(task, 15, 15, TimeUnit.SECONDS /*MINUTES*/);
 		

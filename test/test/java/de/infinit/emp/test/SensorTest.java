@@ -163,7 +163,7 @@ public class SensorTest {
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	@Test
+	//@Test
 	public void testL_Delete_Sensor() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);

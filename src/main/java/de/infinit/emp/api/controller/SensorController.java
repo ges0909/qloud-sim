@@ -1,7 +1,6 @@
 package de.infinit.emp.api.controller;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -97,19 +96,29 @@ public class SensorController extends Controller {
 		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
+		if (sensorModel.create(sensor) == null) {
+			return null;
+		}
 		//
 		Tag tagAll = user.getTagAll();
 		tagAll.setSensor(sensor);
 		sensor.getTags().add(tagAll); // tag sensor with user's 'tag_all' tag
-		//
-		Collection<Capability> capabilities = sensor.getCapabilities();
-		capabilities.add(new Capability(sensor, "binary_8bit", "data", 1));
-		capabilities.add(new Capability(sensor, "binary_32bit", "data", 2));
-		capabilities.add(new Capability(sensor, "binary_16bit", "data", 3));
-		capabilities.add(new Capability(sensor, "binary_32bit", "data", 4));
-		//
 		tagModel.update(tagAll);
-		return sensorModel.create(sensor);
+		//
+		Capability c = new Capability(sensor, "binary_8bit", "data", 0, 1);
+		sensor.getCapabilities().add(c);
+		capabilityModel.create(c);
+		c = new Capability(sensor, "binary_32bit", "data", 0, 2);
+		sensor.getCapabilities().add(c);
+		capabilityModel.create(c);
+		c = new Capability(sensor, "binary_16bit", "data", 0, 3);
+		sensor.getCapabilities().add(c);
+		capabilityModel.create(c);
+		c = new Capability(sensor, "binary_32bit", "data", 0, 4);
+		sensor.getCapabilities().add(c);
+		capabilityModel.create(c);
+		//
+		return sensor;
 	}
 
 	public Object createSensor(Request request, Response response) {
@@ -137,6 +146,9 @@ public class SensorController extends Controller {
 		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
+		}
+		if (request.params(":uuid") == null) {
+			return status(Status.WRONG_SENSOR);
 		}
 		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
@@ -170,6 +182,9 @@ public class SensorController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
+		if (request.params(":uuid") == null) {
+			return status(Status.WRONG_SENSOR);
+		}
 		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
@@ -200,6 +215,9 @@ public class SensorController extends Controller {
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
+		if (request.params(":uuid") == null) {
+			return status(Status.WRONG_SENSOR);
+		}
 		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
 		if (sensor == null) {
@@ -226,6 +244,9 @@ public class SensorController extends Controller {
 		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
+		}
+		if (request.params(":uuid") == null) {
+			return status(Status.WRONG_SENSOR);
 		}
 		UUID uuid = UUID.fromString(request.params(":uuid"));
 		Sensor sensor = sensorModel.queryForId(uuid);
