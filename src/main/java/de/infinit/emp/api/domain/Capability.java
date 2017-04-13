@@ -15,6 +15,9 @@ public class Capability {
 	@DatabaseField(canBeNull = false, defaultValue = "data")
 	String type;
 
+	@DatabaseField(canBeNull = false)
+	Integer order;
+
 	@NotNull
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Sensor sensor;
@@ -23,11 +26,12 @@ public class Capability {
 		// ORMLite needs a no-arg constructor
 	}
 
-	public Capability(Sensor sensor, @NotNull String name, String type) {
+	public Capability(Sensor sensor, @NotNull String name, String type, Integer order) {
 		super();
 		this.sensor = sensor;
 		this.name = name;
 		this.type = type;
+		this.order = order;
 	}
 
 	public String getName() {
@@ -44,6 +48,14 @@ public class Capability {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 
 	public Sensor getSensor() {

@@ -13,6 +13,9 @@ import static spark.Spark.staticFileLocation;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.aeonbits.owner.ConfigCache;
@@ -41,6 +44,10 @@ public class Application {
 	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
 
 	public static void main(String[] args) throws IOException, SQLException {
+        Runnable task = new BackgroudTask();
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleWithFixedDelay(task, 15, 15, TimeUnit.SECONDS /*MINUTES*/);
+		
 		port(config.port());
 		staticFileLocation("/public"); // to serve css, ...
 
@@ -51,7 +58,7 @@ public class Application {
 
 		after(LoggingFilter::logResponse);
 
-		// 'Not found' and 'Internal server error' are handles ALWAYS after the routes above
+		// !!! 'Not found' and 'Internal server error' are handles ALWAYS after the routes above
 		notFound(Controller.instance()::notFound);
 		internalServerError(Controller.instance()::internalServerError);
 	}

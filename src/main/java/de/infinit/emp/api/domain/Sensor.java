@@ -2,6 +2,7 @@ package de.infinit.emp.api.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -140,6 +141,12 @@ public class Sensor {
 	public Collection<Capability> getCapabilities() {
 		return capabilities;
 	}
+
+    public Collection<Capability> getCapabilityByOrder() {
+    	List<Capability> orderedCapabilities = new ArrayList<>(capabilities);
+    	orderedCapabilities.sort((s1, s2) -> s1.order.compareTo(s2.order));
+        return orderedCapabilities;
+    }
 
 	public void setCapabilities(Collection<Capability> capabilities) {
 		this.capabilities = capabilities;

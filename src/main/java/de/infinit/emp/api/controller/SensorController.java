@@ -80,14 +80,14 @@ public class SensorController extends Controller {
 	}
 
 	private String generateHexId(int length) {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        while(sb.length() < length){
-            sb.append(Integer.toHexString(random.nextInt()));
-        }
-        return sb.toString();
+		Random random = new Random();
+		StringBuilder sb = new StringBuilder();
+		while (sb.length() < length) {
+			sb.append(Integer.toHexString(random.nextInt()));
+		}
+		return sb.toString();
 	}
-	
+
 	public Sensor createSensor(User user, String code, String description) {
 		Sensor sensor = new Sensor();
 		sensor.setOwner(user);
@@ -103,10 +103,10 @@ public class SensorController extends Controller {
 		sensor.getTags().add(tagAll); // tag sensor with user's 'tag_all' tag
 		//
 		Collection<Capability> capabilities = sensor.getCapabilities();
-		capabilities.add(new Capability(sensor, "binary_8bit", "data"));
-		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
-		capabilities.add(new Capability(sensor, "binary_16bit", "data"));
-		capabilities.add(new Capability(sensor, "binary_32bit", "data"));
+		capabilities.add(new Capability(sensor, "binary_8bit", "data", 1));
+		capabilities.add(new Capability(sensor, "binary_32bit", "data", 2));
+		capabilities.add(new Capability(sensor, "binary_16bit", "data", 3));
+		capabilities.add(new Capability(sensor, "binary_32bit", "data", 4));
 		//
 		tagModel.update(tagAll);
 		return sensorModel.create(sensor);
@@ -114,7 +114,7 @@ public class SensorController extends Controller {
 
 	public Object createSensor(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -134,7 +134,7 @@ public class SensorController extends Controller {
 
 	public Object updateSensor(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -166,7 +166,7 @@ public class SensorController extends Controller {
 
 	public Object getSensor(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -182,17 +182,21 @@ public class SensorController extends Controller {
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
 		res.owner = sensor.getOwnerUuid();
 		res.capabilities = res.new Capability();
-		res.capabilities.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data")).map(Capability::getName).collect(Collectors.toList());
-		res.capabilities.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
+				.map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action"))
+				.map(Capability::getName).collect(Collectors.toList());
 		res.state = res.new State();
-		res.state.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data")).map(c -> (Integer) null).collect(Collectors.toList());
-		res.state.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(c -> null).collect(Collectors.toList());
+		res.state.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
+				.map(c -> (Integer) null).collect(Collectors.toList());
+		res.state.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(c -> null)
+				.collect(Collectors.toList());
 		return result("sensor", res);
 	}
 
 	public Object deleteSensor(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -219,7 +223,7 @@ public class SensorController extends Controller {
 
 	public Object getSensorData(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
