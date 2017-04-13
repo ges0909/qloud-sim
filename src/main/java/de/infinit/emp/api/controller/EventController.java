@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Event;
@@ -132,7 +133,7 @@ public class EventController extends Controller {
 
 		Random rn = new Random();
 		int effectiveTimeout = rn.nextInt(timeout) + 1;
-		Thread.sleep(effectiveTimeout * 1000L);
+		TimeUnit.SECONDS.sleep(effectiveTimeout);
 
 		long eventId = 0;
 		String eventType = "sensor_data";

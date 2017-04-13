@@ -36,13 +36,13 @@ entity(Session) {
 }
 
 entity(Event) {
-  PK(sensorUuid)
+  PK(uuid)
   expiresAt
 }
 
 entity(Sensor)  {
   PK(uuid)
-  unique(code)
+  code
   description
   model
   recvIntervall
@@ -52,7 +52,7 @@ entity(Sensor)  {
 
 entity(User) {
   PK(uuid)
-  unique(email)
+  email
   userName
   firstName
   lastName
@@ -84,10 +84,19 @@ entity(Policy) {
 }
 note bottom: policy values: {1,2,3,4}
 
+entity(Data) {
+ PK(uuid)
+}
+
+entity(EnergyCam) {
+}
+
 /'
 	entity relations
 '/
 
+Session "1" *-- "1" User
+Session "1" *-- "N" Event
 User "1" *-- "0..N" Invitation
 User "1" *-- "1" Tag : tag_all
 Sensor "1" *-- "1..N" Capability
@@ -99,6 +108,8 @@ note top on link
   because of sensor
   owner
 end note
+Sensor <|-- EnergyCam
+EnergyCam "1" *-- "0..N" Data
 
 /'
 	legend
@@ -108,7 +119,6 @@ legend left
 |= Legend         |=  |
 | E               | <<Entity>>  |
 | underlined      | primary key |
-| bold            | unique      |
 endlegend
 
 @enduml
