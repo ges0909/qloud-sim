@@ -1,8 +1,12 @@
 package de.infinit.emp.api.domain;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -12,8 +16,13 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import de.infinit.emp.Application;
+import de.infinit.emp.api.model.CapabilityModel;
+
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
+	static final Logger log = Logger.getLogger(Sensor.class.getName());
+
 	@DatabaseField(generatedId = true)
 	UUID uuid;
 
@@ -55,6 +64,8 @@ public class Sensor {
 	@ForeignCollectionField(orderColumnName = "order", orderAscending = true)
 	private transient Collection<Capability> capabilities;
 
+	ScheduledFuture<?> future;
+	
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
 		this.tags = new ArrayList<>();
@@ -156,6 +167,31 @@ public class Sensor {
 		return null;
 	}
 
+	// ordering is ensured by ORMLite
+	// see @ForeignCollectionField configuration above
+	public Collection<Capability> getCapabilitiesByOrder() {
+		return getCapabilities();
+	}
+
+	public void startSimulation() {
+		Runnable task = () -> {
+			setRecvTime(Instant.now().getEpochSecond());
+			for (Capability c : getCapabilitiesByOrder()) {
+				if (c.getDelta() != null) {
+					c.setValue(c.getValue() + c.getDelta());
+					if (CapabilityModel.instance().update(c) == null) {
+						log.severe("sensor: " + getSdevice() + ": periodic value update failed");
+					}
+				}
+			}
+		};
+		future = Application.getScheduledExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
+	}
+
+	public void stopSimulation() {
+		future.cancel(false);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

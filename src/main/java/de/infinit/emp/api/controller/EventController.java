@@ -9,12 +9,15 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import de.infinit.emp.Status;
+import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.UserModel;
@@ -24,9 +27,11 @@ import spark.Response;
 
 public class EventController extends Controller {
 	private static EventController instance = null;
+	static final Logger log = Logger.getLogger(EventController.class.getName());
 	final EventModel eventModel = EventModel.instance();
 	final UserModel userModel = UserModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
+	final CapabilityModel capabilityModel = CapabilityModel.instance();
 	long nextCounter = 0;
 
 	private EventController() {
@@ -142,16 +147,17 @@ public class EventController extends Controller {
 		List<Object> events = new ArrayList<>();
 		for (Event e : session.getEvents()) {
 			Sensor sensor = e.getSensor();
-			List<Object> values = Json.arr(1, 0, 0, 2231828644L);
-			Map<String, Object> data = Json.obj("1481730387000", values);
-			Object obj = Json.obj("event", eventType, "time", eventTime, "sensor", e.getSensor().getUuid(), "data",
-					data, "id", eventId);
+			List<Long> values = new ArrayList<>();
+			for (Capability c : sensor.getCapabilitiesByOrder()) {
+				values.add(c.getValue());
+			}
+			Map<String, Object> data = Json.obj(sensor.getRecvTime() + "000", Json.arr(values.toArray()));
+			Object obj = Json.obj("event", eventType, "time", eventTime, "sensor", e.getSensor().getUuid(), "data", data, "id", eventId);
 			events.add(obj);
 			eventId = eventId + 1;
 		}
 
 		nextCounter = nextCounter + 1;
-
 		return result("event", events, "next", nextCounter);
 	}
 }

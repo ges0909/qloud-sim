@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.aeonbits.owner.ConfigCache;
@@ -42,12 +41,9 @@ public class Application {
 	static ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static final Gson gson = new Gson();
 	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
+	static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(16);
 
 	public static void main(String[] args) throws IOException, SQLException {
-        Runnable task = new BackgroudValueGeneratorTask();
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleWithFixedDelay(task, 15, 15, TimeUnit.SECONDS /*MINUTES*/);
-		
 		port(config.port());
 		staticFileLocation("/public"); // to serve css, ...
 
@@ -63,6 +59,10 @@ public class Application {
 		internalServerError(Controller.instance()::internalServerError);
 	}
 
+	public static ScheduledExecutorService getScheduledExecutor() {
+		return executor;
+	}
+	
 	static void apiEndpoints() {
 		path("/api", () -> {
 			before("/*", AuthenticationFilter::authenticateRequest);

@@ -93,7 +93,6 @@ public class SensorController extends Controller {
 		sensor.setCode(code);
 		sensor.setSdevice(generateHexId(8));
 		sensor.setDescription(description);
-		sensor.setRecvTime(Instant.now().getEpochSecond());
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
 		if (sensorModel.create(sensor) == null) {
@@ -105,18 +104,20 @@ public class SensorController extends Controller {
 		sensor.getTags().add(tagAll); // tag sensor with user's 'tag_all' tag
 		tagModel.update(tagAll);
 		//
-		Capability c = new Capability(sensor, "binary_8bit", "data", 0, 1);
-		sensor.getCapabilities().add(c);
-		capabilityModel.create(c);
-		c = new Capability(sensor, "binary_32bit", "data", 0, 2);
-		sensor.getCapabilities().add(c);
-		capabilityModel.create(c);
-		c = new Capability(sensor, "binary_16bit", "data", 0, 3);
-		sensor.getCapabilities().add(c);
-		capabilityModel.create(c);
-		c = new Capability(sensor, "binary_32bit", "data", 0, 4);
-		sensor.getCapabilities().add(c);
-		capabilityModel.create(c);
+		Capability capability = new Capability(sensor, 1, "binary_8bit", 1L, null);
+		sensor.getCapabilities().add(capability);
+		capabilityModel.create(capability);
+		capability = new Capability(sensor, 2, "binary_32bit", 0L, 1L);
+		sensor.getCapabilities().add(capability);
+		capabilityModel.create(capability);
+		capability = new Capability(sensor, 3, "binary_16bit", 0L, null);
+		sensor.getCapabilities().add(capability);
+		capabilityModel.create(capability);
+		capability = new Capability(sensor, 4, "binary_32bit", 2214814041L, null);
+		sensor.getCapabilities().add(capability);
+		capabilityModel.create(capability);
+		//
+		sensor.startSimulation();
 		//
 		return sensor;
 	}
@@ -197,15 +198,11 @@ public class SensorController extends Controller {
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
 		res.owner = sensor.getOwnerUuid();
 		res.capabilities = res.new Capability();
-		res.capabilities.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
-				.map(Capability::getName).collect(Collectors.toList());
-		res.capabilities.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action"))
-				.map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.data = sensor.getCapabilities().stream().map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.action = sensor.getCapabilities().stream().map(Capability::getName).collect(Collectors.toList());
 		res.state = res.new State();
-		res.state.data = sensor.getCapabilities().stream().filter(c -> c.getType().equals("data"))
-				.map(c -> (Integer) null).collect(Collectors.toList());
-		res.state.action = sensor.getCapabilities().stream().filter(c -> c.getType().equals("action")).map(c -> null)
-				.collect(Collectors.toList());
+		res.state.data = sensor.getCapabilities().stream().map(c -> (Integer) null).collect(Collectors.toList());
+		res.state.action = sensor.getCapabilities().stream().map(c -> null).collect(Collectors.toList());
 		return result("sensor", res);
 	}
 
@@ -227,6 +224,8 @@ public class SensorController extends Controller {
 		if (!owner.equals(user)) {
 			return status(Status.WRONG_USER);
 		}
+		//
+		sensor.startSimulation();
 		// before sensor is deleted remove it from session event list
 		Event event = eventModel.findEventBySensor(sensor);
 		if (event != null) {

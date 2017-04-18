@@ -132,6 +132,4 @@ public class EventTest {
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
-
-	
 }

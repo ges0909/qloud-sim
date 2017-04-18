@@ -11,20 +11,19 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Capability {
 	@DatabaseField(generatedId = true)
 	UUID uuid;
-	
+
+	@DatabaseField(canBeNull = false)
+	Integer order;
+
 	@NotNull
 	@DatabaseField(canBeNull = false)
 	String name;
 
-	@NotNull
-	@DatabaseField(canBeNull = false, defaultValue = "data")
-	String type;
-
 	@DatabaseField(canBeNull = false)
-	Integer value;
+	Long value;
 
-	@DatabaseField(canBeNull = false)
-	Integer order;
+	@DatabaseField
+	Long delta;
 
 	@NotNull
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "sensor_id")
@@ -34,19 +33,27 @@ public class Capability {
 		// ORMLite needs a no-arg constructor
 	}
 
-	public Capability(Sensor sensor, @NotNull String name, String type, Integer value, Integer order) {
+	public Capability(Sensor sensor, Integer order, String name, Long value, Long delta) {
 		super();
 		this.sensor = sensor;
-		this.name = name;
-		this.type = type;
-		this.value = value;
 		this.order = order;
+		this.name = name;
+		this.value = value;
+		this.delta = delta;
 	}
 
 	public UUID getUuid() {
 		return uuid;
 	}
-	
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -55,28 +62,20 @@ public class Capability {
 		this.name = name;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public Integer getValue() {
+	public Long getValue() {
 		return value;
 	}
 
-	public void setValue(Integer value) {
+	public void setValue(Long value) {
 		this.value = value;
 	}
-	
-	public Integer getOrder() {
-		return order;
+
+	public Long getDelta() {
+		return delta;
 	}
 
-	public void setOrder(Integer order) {
-		this.order = order;
+	public void setDelta(Long delta) {
+		this.delta = delta;
 	}
 
 	public Sensor getSensor() {
