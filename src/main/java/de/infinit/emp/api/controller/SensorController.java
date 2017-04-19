@@ -1,6 +1,7 @@
 package de.infinit.emp.api.controller;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -59,7 +60,7 @@ public class SensorController extends Controller {
 		}
 
 		class State {
-			List<Integer> data;
+			List<Long> data;
 			List<Object> action;
 		}
 
@@ -197,13 +198,16 @@ public class SensorController extends Controller {
 			return status(Status.WRONG_USER);
 		}
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
-		res.owner = sensor.getOwnerUuid();
+		res.owner = owner.getUuid();
+		res.time = Instant.now().getEpochSecond();
+		//
 		res.capabilities = res.new Capability();
-		res.capabilities.data = sensor.getCapabilities().stream().map(Capability::getName).collect(Collectors.toList());
-		res.capabilities.action = sensor.getCapabilities().stream().map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.action = new ArrayList<>();
+		//
 		res.state = res.new State();
-		res.state.data = sensor.getCapabilities().stream().map(c -> (Integer) null).collect(Collectors.toList());
-		res.state.action = sensor.getCapabilities().stream().map(c -> null).collect(Collectors.toList());
+		res.state.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getValue).collect(Collectors.toList());
+		res.state.action = new ArrayList<>();		
 		return result("sensor", res);
 	}
 
