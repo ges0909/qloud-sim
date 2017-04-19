@@ -30,7 +30,7 @@ public class SessionController extends Controller {
 	class LoginRequest {
 		String partner;
 		String key;
-		UUID user;
+		String user;
 	}
 
 	public Object requestNonAuthorizedSession(Request request, Response response) {
@@ -58,7 +58,7 @@ public class SessionController extends Controller {
 		session.setPartner(req.partner);
 		session.setKey(req.key);
 		if (req.user != null) {
-			User user = userModel.queryForId(req.user);
+			User user = userModel.queryForId(UUID.fromString(req.user));
 			if (user == null) {
 				return status(Status.WRONG_USER);
 			}
