@@ -18,6 +18,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import de.infinit.emp.Application;
 import de.infinit.emp.api.model.CapabilityModel;
+import de.infinit.emp.api.model.SensorModel;
 
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
@@ -51,6 +52,10 @@ public class Sensor {
 	@SerializedName("recv_time")
 	long recvTime;
 
+	@DatabaseField
+	@SerializedName("is_sent")
+	boolean sent;
+
 	@SerializedName("battery_ok")
 	@DatabaseField()
 	boolean batteryOk;
@@ -65,7 +70,7 @@ public class Sensor {
 	private transient Collection<Capability> capabilities;
 
 	ScheduledFuture<?> future;
-	
+
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
 		this.tags = new ArrayList<>();
@@ -124,6 +129,14 @@ public class Sensor {
 		this.recvTime = recvTime;
 	}
 
+	public boolean isEventAlreadySent() {
+		return sent;
+	}
+
+	public void setSent(boolean sent) {
+		this.sent = sent;
+	}
+
 	public boolean isBatteryOk() {
 		return batteryOk;
 	}
@@ -175,23 +188,27 @@ public class Sensor {
 
 	public void startSimulation() {
 		Runnable task = () -> {
-			setRecvTime(Instant.now().getEpochSecond());
+			if (isEventAlreadySent()) {
+				return;
+			}
 			for (Capability c : getCapabilitiesByOrder()) {
 				if (c.getDelta() != null) {
 					c.setValue(c.getValue() + c.getDelta());
-					if (CapabilityModel.instance().update(c) == null) {
-						log.severe("sensor: " + getSdevice() + ": periodic value update failed");
-					}
+					CapabilityModel.instance().update(c);
 				}
 			}
+			setSent(false);
+			setRecvTime(Instant.now().getEpochSecond());
+			SensorModel.instance().update(this);
 		};
-		future = Application.getScheduledExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
+		future = Application.getScheduledExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(),
+				TimeUnit.SECONDS);
 	}
 
 	public void stopSimulation() {
 		future.cancel(false);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

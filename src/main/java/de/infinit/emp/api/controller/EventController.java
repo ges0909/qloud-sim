@@ -147,11 +147,17 @@ public class EventController extends Controller {
 		List<Object> events = new ArrayList<>();
 		for (Event e : session.getEvents()) {
 			Sensor sensor = e.getSensor();
+			if (sensor.isEventAlreadySent()) {
+				continue;
+			}
+			sensor.setSent(true);
+			sensorModel.update(sensor);
 			List<Long> values = new ArrayList<>();
 			for (Capability c : sensor.getCapabilitiesByOrder()) {
 				values.add(c.getValue());
 			}
-			Map<String, Object> data = Json.obj(sensor.getRecvTime() + "000", Json.arr(values.toArray()));
+			String recvTime = String.valueOf(sensor.getRecvTime());
+			Map<String, Object> data = Json.obj(recvTime + "000", Json.arr(values.toArray()));
 			Object obj = Json.obj("event", eventType, "time", eventTime, "sensor", e.getSensor().getUuid(), "data", data, "id", eventId);
 			events.add(obj);
 			eventId = eventId + 1;

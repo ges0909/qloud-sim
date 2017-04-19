@@ -95,6 +95,7 @@ public class SensorController extends Controller {
 		sensor.setDescription(description);
 		sensor.setRecvInterval(900);
 		sensor.setBatteryOk(true);
+		sensor.setSent(false);
 		if (sensorModel.create(sensor) == null) {
 			return null;
 		}
