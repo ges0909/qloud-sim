@@ -21,9 +21,9 @@ import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 
 public class Persistence {
+	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static final Logger log = Logger.getLogger(Persistence.class.getName());
 	static ConnectionSource cs = null;
-	static ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 
 	private Persistence() {
 	}

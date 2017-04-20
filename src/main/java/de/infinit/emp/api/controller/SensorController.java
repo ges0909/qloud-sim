@@ -9,8 +9,11 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.aeonbits.owner.ConfigCache;
+
 import com.google.gson.annotations.SerializedName;
 
+import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Event;
@@ -29,6 +32,7 @@ import spark.Request;
 import spark.Response;
 
 public class SensorController extends Controller {
+	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	private static SensorController instance = null;
 	final SensorModel sensorModel = SensorModel.instance();
 	final CapabilityModel capabilityModel = CapabilityModel.instance();
@@ -94,7 +98,7 @@ public class SensorController extends Controller {
 		sensor.setCode(code);
 		sensor.setSdevice(generateHexId(8));
 		sensor.setDescription(description);
-		sensor.setRecvInterval(900);
+		sensor.setRecvInterval(config.recvInterval());
 		sensor.setBatteryOk(true);
 		sensor.setSent(false);
 		if (sensorModel.create(sensor) == null) {
