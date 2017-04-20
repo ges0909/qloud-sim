@@ -57,8 +57,9 @@ public class SessionController extends Controller {
 		}
 		session.setPartner(req.partner);
 		session.setKey(req.key);
-		if (req.user != null) {
-			User user = userModel.queryForId(UUID.fromString(req.user));
+		if (req.user != null && !req.user.isEmpty()) {
+			UUID uuid = UUID.fromString(req.user);
+			User user = userModel.queryForId(uuid);
 			if (user == null) {
 				return status(Status.WRONG_USER);
 			}
