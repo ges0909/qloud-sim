@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.aeonbits.owner.ConfigCache;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.ApplicationConfig;
@@ -56,33 +57,49 @@ public class SensorController extends Controller {
 	}
 
 	class CreateOrUpdateSensorRequest {
+		@Expose
 		String code;
+		@Expose
 		String description;
 	}
 
 	class GetSensorResponse {
 		class Capability {
+			@Expose
 			List<String> data;
+			@Expose
 			List<String> action;
 		}
 
 		class State {
+			@Expose
 			List<Long> data;
+			@Expose
 			List<Object> action;
 		}
-
+		
+		@Expose
 		UUID owner;
+		@Expose
 		long time;
+		@Expose
 		String description;
+		@Expose
 		String sdevice;
+		@Expose
 		String model;
+		@Expose
 		@SerializedName("recv_interval")
 		int recvInterval;
+		@Expose
 		@SerializedName("recv_time")
 		int recvTime;
+		@Expose
 		@SerializedName("battery_ok")
 		boolean batteryOk;
+		@Expose
 		Capability capabilities;
+		@Expose
 		State state;
 	}
 

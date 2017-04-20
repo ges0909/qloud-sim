@@ -2,6 +2,8 @@ package de.infinit.emp.api.controller;
 
 import java.util.UUID;
 
+import com.google.gson.annotations.Expose;
+
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.User;
@@ -28,8 +30,11 @@ public class SessionController extends Controller {
 	}
 
 	class LoginRequest {
+		@Expose
 		String partner;
+		@Expose
 		String key;
+		@Expose
 		String user;
 	}
 

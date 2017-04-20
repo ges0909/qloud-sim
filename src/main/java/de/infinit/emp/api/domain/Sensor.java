@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -29,43 +30,51 @@ public class Sensor {
 	static final Logger log = Logger.getLogger(Sensor.class.getName());
 	final TagSensorModel tagSensorModel = TagSensorModel.instance();
 
+	@Expose
 	@DatabaseField(generatedId = true)
 	UUID uuid;
 
+	@Expose
 	@NotNull
 	@Pattern(regexp = "^.{10,50}$")
 	@DatabaseField(unique = true, canBeNull = false)
 	String code;
 
+	@Expose
 	@NotNull
 	@DatabaseField(unique = true, canBeNull = false)
 	String sdevice;
 
+	@Expose
 	@Pattern(regexp = "^.{0,200}$")
 	@SerializedName("description")
 	@DatabaseField
 	String description;
 
+	@Expose
 	@DatabaseField(defaultValue = "EnergyCam")
 	String model;
 
+	@Expose
 	@SerializedName("recv_interval")
 	@DatabaseField()
 	int recvInterval;
 
+	@Expose
 	@DatabaseField
 	@SerializedName("recv_time")
 	long recvTime;
 
+	@Expose
 	@SerializedName("battery_ok")
 	@DatabaseField()
 	boolean batteryOk;
 
 	@DatabaseField(foreign = true, columnName = "owner_id", foreignAutoRefresh = true)
-	private transient User owner;
+	private User owner;
 
 	@ForeignCollectionField(orderColumnName = "order", orderAscending = true)
-	private transient Collection<Capability> capabilities;
+	private Collection<Capability> capabilities;
 
 	@DatabaseField
 	@SerializedName("is_event_sent")

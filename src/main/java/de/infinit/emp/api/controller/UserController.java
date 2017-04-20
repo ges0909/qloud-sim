@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
@@ -38,20 +39,27 @@ public class UserController extends Controller {
 	}
 
 	class UpdateUserRequest {
+		@Expose
 		String firstname;
+		@Expose
 		String lastname;
+		@Expose
 		@SerializedName("display_name")
 		String displayName;
+		@Expose
 		String password;
+		@Expose
 		String email;
 	}
 
 	class InviteUserRequest {
+		@Expose
 		@SerializedName("invite")
 		List<UUID> userUuids;
 	}
 
 	class AcceptInvitationRequest {
+		@Expose
 		@SerializedName("invitation")
 		List<UUID> invitationsToAccept;
 	}

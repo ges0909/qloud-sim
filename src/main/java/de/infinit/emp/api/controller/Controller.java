@@ -5,6 +5,7 @@ import java.util.Map;
 import org.aeonbits.owner.ConfigCache;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
@@ -14,7 +15,7 @@ import spark.Response;
 public class Controller {
 	private static Controller instance = null;
 	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
-	static final Gson gson = new Gson();
+	static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 	protected Controller() {
 	}

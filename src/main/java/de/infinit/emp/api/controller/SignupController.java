@@ -3,6 +3,7 @@ package de.infinit.emp.api.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
@@ -41,13 +42,20 @@ public class SignupController extends Controller {
 	}
 
 	class AddUserAccountRequest {
+		@Expose
 		String email;
+		@Expose
 		String username;
+		@Expose
 		String firstname;
+		@Expose
 		String lastname;
+		@Expose
 		@SerializedName("display_name")
 		String displayName;
+		@Expose
 		String password;
+		@Expose
 		UUID verification;
 	}
 

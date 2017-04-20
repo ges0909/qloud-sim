@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
@@ -47,22 +48,30 @@ public class TagController extends Controller {
 	}
 
 	class CreateTagRequest {
+		@Expose
 		String label;
+		@Expose
 		@SerializedName("foreign_use")
 		boolean foreignUse;
+		@Expose
 		@SerializedName("policy")
 		Map<UUID, Integer> policies;
 	}
 
 	class UpdateTagRequest {
 		class PolicyList {
+			@Expose
 			Map<UUID, Integer> update;
+			@Expose
 			List<UUID> delete;
 		}
 
+		@Expose
 		String label;
+		@Expose
 		@SerializedName("foreign_use")
 		boolean foreignUse;
+		@Expose
 		@SerializedName("policy")
 		PolicyList policies;
 	}

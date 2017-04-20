@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.validation.constraints.Pattern;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -16,30 +17,36 @@ public class User {
 	@DatabaseField(generatedId = true)
 	UUID uuid;
 
+	@Expose
 	@SerializedName("email")
 	@DatabaseField(unique = true)
 	String email;
 
+	@Expose
 	@Pattern(regexp = "^[a-zA-Z0-9]{2,20}$")
 	@SerializedName("username")
 	@DatabaseField
 	String userName;
 
+	@Expose
 	@Pattern(regexp = "^.{1,50}$")
 	@SerializedName("firstname")
 	@DatabaseField
 	String firstName;
 
+	@Expose
 	@Pattern(regexp = "^.{1,50}$")
 	@SerializedName("lastname")
 	@DatabaseField
 	String lastName;
 
+	@Expose
 	@Pattern(regexp = "^.{1,100}$")
 	@SerializedName("display_name")
 	@DatabaseField
 	String displayName;
 
+	@Expose
 	@Pattern(regexp = "^.{5,50}$")
 	@DatabaseField
 	String password;

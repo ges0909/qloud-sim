@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.google.gson.annotations.Expose;
+
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.User;
@@ -33,15 +35,22 @@ public class PartnerController extends Controller {
 	}
 
 	class UserDataResponse {
+		@Expose
 		String email;
+		@Expose
 		String username;
+		@Expose
 		String firstname;
+		@Expose
 		String lastname;
+		@Expose
 		String display_name;
 	}
 
 	class DeleteUserRequest {
+		@Expose
 		Boolean disabled;
+		@Expose
 		Boolean deleted;
 	}
 

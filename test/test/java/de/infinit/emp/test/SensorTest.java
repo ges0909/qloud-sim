@@ -126,7 +126,7 @@ public class SensorTest {
 		sensorUuid2 = (String) res.body.get("uuid");
 	}
 	
-	//@Test
+	@Test
 	public void testG_Update_Sensor() throws IOException {
 		Map<String, Object> req = new HashMap<>();
 		req.put("description", "Testsensor 2");
@@ -136,14 +136,14 @@ public class SensorTest {
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	//@Test
+	@Test
 	public void testH_Get_Sensor() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	//@Test
+	@Test
 	public void testI_Get_Sensor_Data() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/data", userSid, userServer);
 		assertEquals(200, res.status);
@@ -164,21 +164,21 @@ public class SensorTest {
 		assertTrue(sensorUuids.contains(sensorUuid2));
 	}
 
-	//@Test
+	@Test
 	public void testK_Subscribe_For_Sensor_Events() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	//@Test
+	@Test
 	public void testL_Cancel_Sensor_Event_Subcription() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid + "/event", userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	//@Test
+	@Test
 	public void testM_Delete_Sensor() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
