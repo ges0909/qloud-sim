@@ -100,7 +100,7 @@ public class SensorController extends Controller {
 		sensor.setDescription(description);
 		sensor.setRecvInterval(config.recvInterval());
 		sensor.setBatteryOk(true);
-		sensor.setSent(false);
+		sensor.setSentAsEvent(false);
 		if (sensorModel.create(sensor) == null) {
 			return null;
 		}
@@ -113,7 +113,7 @@ public class SensorController extends Controller {
 		Capability capability = new Capability(sensor, 1, "binary_8bit", 1L, null);
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
-		capability = new Capability(sensor, 2, "binary_32bit", 0L, 1L);
+		capability = new Capability(sensor, 2, "binary_32bit", 0L, config.defaultDelta());
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
 		capability = new Capability(sensor, 3, "binary_16bit", 0L, null);

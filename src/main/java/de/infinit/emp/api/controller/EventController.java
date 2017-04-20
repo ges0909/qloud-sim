@@ -26,8 +26,8 @@ import spark.Request;
 import spark.Response;
 
 public class EventController extends Controller {
-	private static EventController instance = null;
 	static final Logger log = Logger.getLogger(EventController.class.getName());
+	private static EventController instance = null;
 	final EventModel eventModel = EventModel.instance();
 	final UserModel userModel = UserModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
@@ -147,10 +147,10 @@ public class EventController extends Controller {
 		List<Object> events = new ArrayList<>();
 		for (Event e : session.getEvents()) {
 			Sensor sensor = e.getSensor();
-			if (sensor.isEventAlreadySent()) {
+			if (sensor.isSentAsEvent()) {
 				continue;
 			}
-			sensor.setSent(true);
+			sensor.setSentAsEvent(true);
 			sensorModel.update(sensor);
 			List<Long> values = new ArrayList<>();
 			for (Capability c : sensor.getCapabilitiesByOrder()) {

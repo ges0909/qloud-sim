@@ -37,11 +37,11 @@ import de.infinit.emp.filter.LoggingFilter;
 import spark.template.freemarker.FreeMarkerEngine;
 
 public class Application {
+	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static final Logger log = Logger.getLogger(Application.class.getName());
-	static ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
+	static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(config.numberOfThreads());
+	static final FreeMarkerEngine fm = new FreeMarkerEngine(new FreeMarkerConfig());
 	static final Gson gson = new Gson();
-	static final FreeMarkerEngine fmTransformer = new FreeMarkerEngine(new FreeMarkerConfig());
-	static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(16);
 
 	public static void main(String[] args) throws IOException, SQLException {
 		port(config.port());
@@ -117,13 +117,13 @@ public class Application {
 
 	static void adminEndpoints() {
 		path("/config", () -> {
-			get("", ConfigController.instance()::showConfiguration, fmTransformer);
-			post("", ConfigController.instance()::saveConfiguration, fmTransformer);
+			get("", ConfigController.instance()::showConfiguration, fm);
+			post("", ConfigController.instance()::saveConfiguration, fm);
 			after((request, response) -> response.type("text/html"));
 		});
 		path("/upload", () -> {
-			get("", UploadController.instance()::displayUploadForm, fmTransformer);
-			post("", UploadController.instance()::uploadFile, fmTransformer);
+			get("", UploadController.instance()::displayUploadForm, fm);
+			post("", UploadController.instance()::uploadFile, fm);
 			after((request, response) -> response.type("text/html"));
 		});
 	}

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -52,10 +53,6 @@ public class Sensor {
 	@SerializedName("recv_time")
 	long recvTime;
 
-	@DatabaseField
-	@SerializedName("is_sent")
-	boolean sent;
-
 	@SerializedName("battery_ok")
 	@DatabaseField()
 	boolean batteryOk;
@@ -68,6 +65,10 @@ public class Sensor {
 
 	@ForeignCollectionField(orderColumnName = "order", orderAscending = true)
 	private transient Collection<Capability> capabilities;
+
+	@DatabaseField
+	@SerializedName("is_sent_as_event")
+	boolean sentAsEvent;
 
 	ScheduledFuture<?> future;
 
@@ -129,12 +130,12 @@ public class Sensor {
 		this.recvTime = recvTime;
 	}
 
-	public boolean isEventAlreadySent() {
-		return sent;
+	public boolean isSentAsEvent() {
+		return sentAsEvent;
 	}
 
-	public void setSent(boolean sent) {
-		this.sent = sent;
+	public void setSentAsEvent(boolean sentAsEvent) {
+		this.sentAsEvent = sentAsEvent;
 	}
 
 	public boolean isBatteryOk() {
@@ -188,25 +189,27 @@ public class Sensor {
 
 	public void startSimulation() {
 		Runnable task = () -> {
-			if (isEventAlreadySent()) {
+			if (isSentAsEvent()) {
 				return;
 			}
 			for (Capability c : getCapabilitiesByOrder()) {
 				if (c.getDelta() != null) {
-					c.setValue(c.getValue() + c.getDelta());
+					Long value = c.getValue();
+					c.setValue(value + c.getDelta());
 					CapabilityModel.instance().update(c);
 				}
 			}
-			setSent(false);
+			setSentAsEvent(false);
 			setRecvTime(Instant.now().getEpochSecond());
 			SensorModel.instance().update(this);
 		};
-		future = Application.getScheduledExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(),
-				TimeUnit.SECONDS);
+		ScheduledExecutorService executor = Application.getScheduledExecutor();
+		future = executor.scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
 	}
 
 	public void stopSimulation() {
-		future.cancel(false);
+		if (future != null)
+			future.cancel(false);
 	}
 
 	@Override
@@ -233,5 +236,4 @@ public class Sensor {
 			return false;
 		return true;
 	}
-
 }

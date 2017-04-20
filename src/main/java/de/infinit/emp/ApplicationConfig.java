@@ -36,7 +36,15 @@ public interface ApplicationConfig extends Accessible, Mutable {
 	@DefaultValue("[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}-[0-9A-Z]{5}")
 	String devicePattern();
 
-	@Key("sensor.default.recv.interval")
+	@Key("sensor.recv.interval")
 	@DefaultValue("900")
 	int recvInterval();
+	
+	@Key("sensor.default.delta")
+	@DefaultValue("1")
+	long defaultDelta();
+	
+	@Key("sensor.number.threads")
+	@DefaultValue("256")
+	int numberOfThreads();
 }
