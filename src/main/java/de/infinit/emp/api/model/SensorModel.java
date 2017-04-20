@@ -1,6 +1,6 @@
 package de.infinit.emp.api.model;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +9,7 @@ import de.infinit.emp.api.domain.Tag;
 
 public class SensorModel extends Model<Sensor, UUID> {
 	private static SensorModel instance = null;
+	final TagSensorModel tagSensorModel = TagSensorModel.instance();
 
 	private SensorModel() {
 		super(Sensor.class);
@@ -26,16 +27,7 @@ public class SensorModel extends Model<Sensor, UUID> {
 		return super.delete(sensor.getUuid());
 	}
 
-	public List<Sensor> queryForTaggedWith(Tag tagToSearch) {
-		List<Sensor> taggedSensors = new ArrayList<>();
-		for (Sensor sensor : super.queryForAll()) {
-			for (Tag tag : sensor.getTags()) {
-				if (tag.equals(tagToSearch)) {
-					taggedSensors.add(sensor);
-					break;
-				}
-			}
-		}
-		return taggedSensors;
+	public List<Sensor> queryForTaggedWith(Tag tag) throws SQLException {
+		return tagSensorModel.findSensorsByTag(tag);
 	}
 }

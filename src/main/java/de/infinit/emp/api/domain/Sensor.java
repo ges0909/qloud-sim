@@ -1,8 +1,10 @@
 package de.infinit.emp.api.domain;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -20,10 +22,12 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.infinit.emp.Application;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.TagSensorModel;
 
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
 	static final Logger log = Logger.getLogger(Sensor.class.getName());
+	final TagSensorModel tagSensorModel = TagSensorModel.instance();
 
 	@DatabaseField(generatedId = true)
 	UUID uuid;
@@ -60,9 +64,6 @@ public class Sensor {
 	@DatabaseField(foreign = true, columnName = "owner_id", foreignAutoRefresh = true)
 	private transient User owner;
 
-	@ForeignCollectionField
-	private transient Collection<Tag> tags;
-
 	@ForeignCollectionField(orderColumnName = "order", orderAscending = true)
 	private transient Collection<Capability> capabilities;
 
@@ -74,7 +75,6 @@ public class Sensor {
 
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
-		this.tags = new ArrayList<>();
 		this.capabilities = new ArrayList<>();
 	}
 
@@ -154,14 +154,6 @@ public class Sensor {
 		this.eventSent = sentAsEvent;
 	}
 
-	public Collection<Tag> getTags() {
-		return this.tags;
-	}
-
-	public void setTags(Collection<Tag> tags) {
-		this.tags = tags;
-	}
-
 	public Collection<Capability> getCapabilities() {
 		return capabilities;
 	}
@@ -170,7 +162,8 @@ public class Sensor {
 		this.capabilities = capabilities;
 	}
 
-	public UUID getOwnerUuid() {
+	public UUID getOwnerUuid() throws SQLException {
+		List<Tag> tags = tagSensorModel.findTagsBySensor(this);
 		for (Tag tag : tags) {
 			for (Policy policy : tag.getPolicies()) {
 				if (policy.getPolicy() == Policy.OWNER) {

@@ -20,12 +20,14 @@ import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
+import de.infinit.emp.api.domain.TagSensor;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.SessionModel;
 import de.infinit.emp.api.model.TagModel;
+import de.infinit.emp.api.model.TagSensorModel;
 import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
@@ -40,6 +42,7 @@ public class SensorController extends Controller {
 	final UserModel userModel = UserModel.instance();
 	final TagModel tagModel = TagModel.instance();
 	final EventModel eventModel = EventModel.instance();
+	final TagSensorModel tagSensorModel = TagSensorModel.instance();
 
 	private SensorController() {
 		super();
@@ -105,11 +108,6 @@ public class SensorController extends Controller {
 			return null;
 		}
 		//
-		Tag tagAll = user.getTagAll();
-		tagAll.setSensor(sensor);
-		sensor.getTags().add(tagAll); // tag sensor with user's 'tag_all' tag
-		tagModel.update(tagAll);
-		//
 		Capability capability = new Capability(sensor, 1, "binary_8bit", 1L, null);
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
@@ -122,9 +120,12 @@ public class SensorController extends Controller {
 		capability = new Capability(sensor, 4, "binary_32bit", 2214814041L, null);
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
+		// tag sensor with user's 'tag_all' tag
+		Tag tag = user.getTagAll();
+		TagSensor tagSensor = new TagSensor(tag, sensor);
+		tagSensorModel.create(tagSensor);
 		//
 		sensor.startSimulation();
-		//
 		return sensor;
 	}
 

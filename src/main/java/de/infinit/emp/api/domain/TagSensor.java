@@ -17,8 +17,11 @@ public class TagSensor {
 	}
 
 	public TagSensor(Tag tag, Sensor sensor) {
-		super();
 		this.tag = tag;
 		this.sensor = sensor;
+	}
+	
+	public int getId() {
+		return id;
 	}
 }

@@ -1,5 +1,6 @@
 package de.infinit.emp.api.controller;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,9 +10,11 @@ import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
+import de.infinit.emp.api.domain.TagSensor;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.TagModel;
+import de.infinit.emp.api.model.TagSensorModel;
 import de.infinit.emp.api.model.UserModel;
 import spark.Request;
 import spark.Response;
@@ -22,6 +25,7 @@ public class ObjectController extends Controller {
 	final UserModel userModel = UserModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
 	final TagModel tagModel = TagModel.instance();
+	final TagSensorModel tagSensorModel = TagSensorModel.instance();
 
 	class UpdateTagAttchamentRequest {
 		List<UUID> add;
@@ -50,9 +54,9 @@ public class ObjectController extends Controller {
 	}
 
 	// POST /api/object/:uuid/tag
-	public Object updateTagAttachment(Request request, Response response) {
+	public Object updateTagAttachment(Request request, Response response) throws SQLException {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -78,16 +82,17 @@ public class ObjectController extends Controller {
 		if (req.add != null) {
 			for (UUID tagUuid : req.add) {
 				Tag tag = tagModel.queryForId(tagUuid);
-				sensor.getTags().add(tag);
+				TagSensor tagSensor = new TagSensor(tag, sensor);
+				tagSensorModel.create(tagSensor);
 			}
 		}
 		if (req.delete != null) {
-			for (UUID tagUuid : req.add) {
+			for (UUID tagUuid : req.delete) {
 				Tag tag = tagModel.queryForId(tagUuid);
-				sensor.getTags().remove(tag);
+				TagSensor tagSensor = new TagSensor(tag, sensor);
+				tagSensorModel.delete(tagSensor.getId());
 			}
 		}
 		return ok();
 	}
-
 }

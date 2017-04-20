@@ -18,6 +18,7 @@ import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
+import de.infinit.emp.api.domain.TagSensor;
 import de.infinit.emp.api.domain.User;
 
 public class Persistence {
@@ -60,6 +61,7 @@ public class Persistence {
 		TableUtils.createTableIfNotExists(cs, Capability.class);
 		TableUtils.createTableIfNotExists(cs, Tag.class);
 		TableUtils.createTableIfNotExists(cs, Policy.class);
+		TableUtils.createTableIfNotExists(cs, TagSensor.class);
 		//
 		TableUtils.clearTable(cs, Event.class);
 		TableUtils.clearTable(cs, Session.class);

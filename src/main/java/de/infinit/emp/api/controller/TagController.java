@@ -1,5 +1,6 @@
 package de.infinit.emp.api.controller;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.PolicyModel;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.TagModel;
+import de.infinit.emp.api.model.TagSensorModel;
 import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
@@ -31,6 +33,7 @@ public class TagController extends Controller {
 	final UserModel userModel = UserModel.instance();
 	final PolicyModel policyModel = PolicyModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
+	final TagSensorModel tagSensorModel = TagSensorModel.instance();
 
 	private TagController() {
 		super();
@@ -209,7 +212,7 @@ public class TagController extends Controller {
 	}
 
 	// GET /api/tag/:uuid/object
-	public Object getTaggedObjects(Request request, Response response) {
+	public Object getTaggedObjects(Request request, Response response) throws SQLException {
 		Session session = request.session().attribute(SessionController.SESSION);
 		User user = session.getUser();		
 		if (user == null) {
@@ -229,7 +232,7 @@ public class TagController extends Controller {
 		if (count != null) {
 			log.warning("query parameter 'count': ignored");
 		}
-		List<Sensor> sensors = sensorModel.queryForTaggedWith(tag);
+		List<Sensor> sensors = tagSensorModel.findSensorsByTag(tag);
 		Map<UUID, Object> objects = new HashMap<>();
 		for (Sensor sensor : sensors) {
 			objects.put(sensor.getUuid(), Json.obj());

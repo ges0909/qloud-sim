@@ -25,9 +25,6 @@ public class Tag {
 	@ForeignCollectionField
 	private Collection<Policy> policies;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private transient Sensor sensor;
-
 	public Tag() {
 		// ORMLite needs a no-arg constructor
 		this.policies = new ArrayList<>();
@@ -74,14 +71,6 @@ public class Tag {
 
 	public void setPolicies(Collection<Policy> policies) {
 		this.policies = policies;
-	}
-
-	public Sensor getSensor() {
-		return sensor;
-	}
-
-	public void setSensor(Sensor sensor) {
-		this.sensor = sensor;
 	}
 
 	@Override
