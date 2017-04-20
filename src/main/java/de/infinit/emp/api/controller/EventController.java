@@ -11,6 +11,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.aeonbits.owner.ConfigCache;
+
+import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Event;
@@ -26,13 +29,13 @@ import spark.Request;
 import spark.Response;
 
 public class EventController extends Controller {
+	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	static final Logger log = Logger.getLogger(EventController.class.getName());
 	private static EventController instance = null;
 	final EventModel eventModel = EventModel.instance();
 	final UserModel userModel = UserModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
 	final CapabilityModel capabilityModel = CapabilityModel.instance();
-	long nextCounter = 0;
 
 	private EventController() {
 		super();
@@ -62,7 +65,7 @@ public class EventController extends Controller {
 			return status(Status.WRONG_USER);
 		}
 		// valid range 1..36000 seconds (10 hours), default: 3600 (1 hour )
-		long timeout = 36000;
+		long timeout = 3600;
 		String timeoutParam = request.queryParams("timeout");
 		if (timeoutParam != null) {
 			timeout = Long.parseLong(timeoutParam);
@@ -112,8 +115,8 @@ public class EventController extends Controller {
 		return ok();
 	}
 
-	// GET /API/event
-	public Object getSensorEvents(Request request, Response response) throws InterruptedException {
+	// GET /api/event
+	public Object getSensorEvents(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
 		User user = session.getUser();
 		if (user == null) {
@@ -135,35 +138,40 @@ public class EventController extends Controller {
 		if (next < 0 /* min */) {
 			return fail();
 		}
-
+		// block request
 		Random rn = new Random();
-		int effectiveTimeout = rn.nextInt(timeout) + 1;
-		TimeUnit.SECONDS.sleep(effectiveTimeout);
-
-		long eventId = 0;
-		String eventType = "sensor_data";
-		long eventTime = Instant.now().getEpochSecond();
-
+		int effectiveTimeout = rn.nextInt(config.eventTimout()) + 1;
+		try {
+			TimeUnit.SECONDS.sleep(effectiveTimeout);
+		} catch (InterruptedException e) {
+			// ignore execption
+		}
+		// return events
+		long id = 0;
 		List<Object> events = new ArrayList<>();
-		for (Event e : session.getEvents()) {
+		for (Event e : session.getSubcribedEvents()) {
 			Sensor sensor = e.getSensor();
-			if (sensor.isSentAsEvent()) {
-				continue;
+			if (sensor.isEventSent()) {
+				continue; // sent event only once
 			}
-			sensor.setSentAsEvent(true);
+			sensor.setEventSent(true);
 			sensorModel.update(sensor);
+			// get sensor status data
+			UUID uuid = e.getSensor().getUuid();
 			List<Long> values = new ArrayList<>();
 			for (Capability c : sensor.getCapabilitiesByOrder()) {
 				values.add(c.getValue());
 			}
+			// build sensor event
+			long eventTime = Instant.now().getEpochSecond();
 			String recvTime = String.valueOf(sensor.getRecvTime());
 			Map<String, Object> data = Json.obj(recvTime + "000", Json.arr(values.toArray()));
-			Object obj = Json.obj("event", eventType, "time", eventTime, "sensor", e.getSensor().getUuid(), "data", data, "id", eventId);
+			Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id", id);
+			id = id + 1;
+			// add sensor event to event list
 			events.add(obj);
-			eventId = eventId + 1;
 		}
 
-		nextCounter = nextCounter + 1;
-		return result("event", events, "next", nextCounter);
+		return result("event", events, "next", next);
 	}
 }

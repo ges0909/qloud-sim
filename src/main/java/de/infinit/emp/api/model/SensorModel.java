@@ -27,15 +27,15 @@ public class SensorModel extends Model<Sensor, UUID> {
 	}
 
 	public List<Sensor> queryForTaggedWith(Tag tagToSearch) {
-		List<Sensor> sensors = new ArrayList<>();
+		List<Sensor> taggedSensors = new ArrayList<>();
 		for (Sensor sensor : super.queryForAll()) {
 			for (Tag tag : sensor.getTags()) {
 				if (tag.equals(tagToSearch)) {
-					sensors.add(sensor);
+					taggedSensors.add(sensor);
 					break;
 				}
 			}
 		}
-		return sensors;
+		return taggedSensors;
 	}
 }

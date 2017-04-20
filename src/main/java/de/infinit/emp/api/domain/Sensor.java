@@ -67,8 +67,8 @@ public class Sensor {
 	private transient Collection<Capability> capabilities;
 
 	@DatabaseField
-	@SerializedName("is_sent_as_event")
-	boolean sentAsEvent;
+	@SerializedName("is_event_sent")
+	boolean eventSent;
 
 	ScheduledFuture<?> future;
 
@@ -130,14 +130,6 @@ public class Sensor {
 		this.recvTime = recvTime;
 	}
 
-	public boolean isSentAsEvent() {
-		return sentAsEvent;
-	}
-
-	public void setSentAsEvent(boolean sentAsEvent) {
-		this.sentAsEvent = sentAsEvent;
-	}
-
 	public boolean isBatteryOk() {
 		return batteryOk;
 	}
@@ -152,6 +144,14 @@ public class Sensor {
 
 	public void setOwner(User owner) {
 		this.owner = owner;
+	}
+
+	public boolean isEventSent() {
+		return eventSent;
+	}
+
+	public void setEventSent(boolean sentAsEvent) {
+		this.eventSent = sentAsEvent;
 	}
 
 	public Collection<Tag> getTags() {
@@ -189,7 +189,7 @@ public class Sensor {
 
 	public void startSimulation() {
 		Runnable task = () -> {
-			if (isSentAsEvent()) {
+			if (isEventSent()) {
 				return;
 			}
 			for (Capability c : getCapabilitiesByOrder()) {
@@ -199,8 +199,8 @@ public class Sensor {
 					CapabilityModel.instance().update(c);
 				}
 			}
-			setSentAsEvent(false);
 			setRecvTime(Instant.now().getEpochSecond());
+			setEventSent(false);
 			SensorModel.instance().update(this);
 		};
 		ScheduledExecutorService executor = Application.getScheduledExecutor();

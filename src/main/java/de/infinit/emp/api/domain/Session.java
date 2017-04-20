@@ -76,6 +76,10 @@ public class Session {
 		return events;
 	}
 
+	public Collection<Event> getSubcribedEvents() {
+		return getEvents();
+	}
+
 	public void setEvents(Collection<Event> events) {
 		this.events = events;
 	}

@@ -47,4 +47,8 @@ public interface ApplicationConfig extends Accessible, Mutable {
 	@Key("sensor.number.threads")
 	@DefaultValue("256")
 	int numberOfThreads();
+	
+	@Key("event.timeout")
+	@DefaultValue("55")
+	int eventTimout();
 }

@@ -100,7 +100,7 @@ public class SensorController extends Controller {
 		sensor.setDescription(description);
 		sensor.setRecvInterval(config.recvInterval());
 		sensor.setBatteryOk(true);
-		sensor.setSentAsEvent(false);
+		sensor.setEventSent(false);
 		if (sensorModel.create(sensor) == null) {
 			return null;
 		}
@@ -206,12 +206,14 @@ public class SensorController extends Controller {
 		res.time = Instant.now().getEpochSecond();
 		//
 		res.capabilities = res.new Capability();
-		res.capabilities.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getName).collect(Collectors.toList());
+		res.capabilities.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getName)
+				.collect(Collectors.toList());
 		res.capabilities.action = new ArrayList<>();
 		//
 		res.state = res.new State();
-		res.state.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getValue).collect(Collectors.toList());
-		res.state.action = new ArrayList<>();		
+		res.state.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getValue)
+				.collect(Collectors.toList());
+		res.state.action = new ArrayList<>();
 		return result("sensor", res);
 	}
 
