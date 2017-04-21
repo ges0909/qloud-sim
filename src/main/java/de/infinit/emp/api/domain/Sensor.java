@@ -1,16 +1,11 @@
 package de.infinit.emp.api.domain;
 
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -23,13 +18,9 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.infinit.emp.Application;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.SensorModel;
-import de.infinit.emp.api.model.TagSensorModel;
 
 @DatabaseTable(tableName = "sensors")
 public class Sensor {
-	static final Logger log = Logger.getLogger(Sensor.class.getName());
-	final TagSensorModel tagSensorModel = TagSensorModel.instance();
-
 	@Expose
 	@DatabaseField(generatedId = true)
 	UUID uuid;
@@ -46,8 +37,8 @@ public class Sensor {
 	String sdevice;
 
 	@Expose
-	@Pattern(regexp = "^.{0,200}$")
 	@SerializedName("description")
+	@Pattern(regexp = "^.{0,200}$")
 	@DatabaseField
 	String description;
 
@@ -61,8 +52,8 @@ public class Sensor {
 	int recvInterval;
 
 	@Expose
-	@DatabaseField
 	@SerializedName("recv_time")
+	@DatabaseField
 	long recvTime;
 
 	@Expose
@@ -76,11 +67,11 @@ public class Sensor {
 	@ForeignCollectionField(orderColumnName = "order", orderAscending = true)
 	private Collection<Capability> capabilities;
 
-	@DatabaseField
 	@SerializedName("is_event_sent")
+	@DatabaseField
 	boolean eventSent;
 
-	ScheduledFuture<?> future;
+	private ScheduledFuture<?> future;
 
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
@@ -171,20 +162,7 @@ public class Sensor {
 		this.capabilities = capabilities;
 	}
 
-	public UUID getOwnerUuid() throws SQLException {
-		List<Tag> tags = tagSensorModel.findTagsBySensor(this);
-		for (Tag tag : tags) {
-			for (Policy policy : tag.getPolicies()) {
-				if (policy.getPolicy() == Policy.OWNER) {
-					return tag.getUuid();
-				}
-			}
-		}
-		return null;
-	}
-
-	// ordering is ensured by ORMLite
-	// see @ForeignCollectionField configuration above
+	// ordering is ensured by ORMLite; see @ForeignCollectionField above
 	public Collection<Capability> getCapabilitiesByOrder() {
 		return getCapabilities();
 	}
@@ -205,8 +183,7 @@ public class Sensor {
 			setEventSent(false);
 			SensorModel.instance().update(this);
 		};
-		ScheduledExecutorService executor = Application.getScheduledExecutor();
-		future = executor.scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
+		future = Application.executor.scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
 	}
 
 	public void stopSimulation() {

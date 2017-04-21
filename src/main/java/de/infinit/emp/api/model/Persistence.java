@@ -35,7 +35,6 @@ public class Persistence {
 				cs = new JdbcConnectionSource(config.url());
 				((JdbcConnectionSource) cs).setUsername(config.username());
 				((JdbcConnectionSource) cs).setPassword(config.password());
-				createTabelsIfNotExists();
 			} catch (SQLException e) {
 				log.severe(e.toString());
 				e.printStackTrace();
@@ -51,8 +50,9 @@ public class Persistence {
 		}
 	}
 
-	private static void createTabelsIfNotExists() throws SQLException {
-		//
+	public static void createTabelsIfNotExists() throws SQLException {
+		ConnectionSource cs = getConnectionSource();
+		
 		TableUtils.createTableIfNotExists(cs, Session.class);
 		TableUtils.createTableIfNotExists(cs, Event.class);
 		TableUtils.createTableIfNotExists(cs, User.class);
@@ -62,7 +62,7 @@ public class Persistence {
 		TableUtils.createTableIfNotExists(cs, Tag.class);
 		TableUtils.createTableIfNotExists(cs, Policy.class);
 		TableUtils.createTableIfNotExists(cs, TagSensor.class);
-		//
+		
 		TableUtils.clearTable(cs, Event.class);
 		TableUtils.clearTable(cs, Session.class);
 	}
