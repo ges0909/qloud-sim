@@ -1,5 +1,6 @@
 package de.infinit.emp.api.domain;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -62,5 +63,9 @@ public class Event {
 
 	public void setSession(Session session) {
 		this.session = session;
+	}
+
+	public boolean isExpired() {
+		return this.expiresAt.toInstant().isBefore(Instant.now());
 	}
 }

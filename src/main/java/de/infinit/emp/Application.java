@@ -19,6 +19,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.aeonbits.owner.ConfigCache;
 
 import com.google.gson.Gson;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 
 import de.infinit.emp.admin.controller.ConfigController;
 import de.infinit.emp.admin.controller.UploadController;
@@ -31,7 +33,15 @@ import de.infinit.emp.api.controller.SessionController;
 import de.infinit.emp.api.controller.SignupController;
 import de.infinit.emp.api.controller.TagController;
 import de.infinit.emp.api.controller.UserController;
+import de.infinit.emp.api.domain.Capability;
+import de.infinit.emp.api.domain.Event;
+import de.infinit.emp.api.domain.Invitation;
+import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Sensor;
+import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.Tag;
+import de.infinit.emp.api.domain.TagSensor;
+import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.Persistence;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.filter.AuthenticationFilter;
@@ -70,8 +80,20 @@ public class Application {
 	}
 
 	private static void initApplication() throws SQLException {
-		// create database tables
-		Persistence.createTablesIfNotExists();
+		ConnectionSource cs = Persistence.getConnectionSource();
+		//
+		TableUtils.createTableIfNotExists(cs, Session.class);
+		TableUtils.createTableIfNotExists(cs, Event.class);
+		TableUtils.createTableIfNotExists(cs, User.class);
+		TableUtils.createTableIfNotExists(cs, Invitation.class);
+		TableUtils.createTableIfNotExists(cs, Sensor.class);
+		TableUtils.createTableIfNotExists(cs, Capability.class);
+		TableUtils.createTableIfNotExists(cs, Tag.class);
+		TableUtils.createTableIfNotExists(cs, Policy.class);
+		TableUtils.createTableIfNotExists(cs, TagSensor.class);
+		//
+		TableUtils.clearTable(cs, Event.class);
+		TableUtils.clearTable(cs, Session.class);
 		// start background sensor value generation
 		List<Sensor> sensors = SensorModel.instance().queryForAll();
 		sensors.stream().forEach(Sensor::startSimulation);

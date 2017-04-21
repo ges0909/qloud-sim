@@ -21,9 +21,6 @@ public class AuthenticationFilter {
 
 	public static void authenticateRequest(Request request, Response response) {
 		String path = request.pathInfo();
-		if (path.startsWith("/config") || path.startsWith("/upload")) {
-			return;
-		}
 		String method = request.requestMethod();
 		if (method.equals("GET") && path.equals("/api/session")) {
 			return; // new session requested => bypass authorization check
@@ -47,11 +44,14 @@ public class AuthenticationFilter {
 			halt(STATUS_NO_AUTH);
 		}
 		Session session = sessionModel.queryForId(UUID.fromString(sid));
-		request.session().attribute(SessionController.SESSION, session);
 		if (session == null) {
 			log.log(Level.SEVERE, "Authorization header: sid {0}: unknow session", sid);
 			halt(STATUS_NO_SESSION);
+		} else if (session.isExpired()) {
+			log.log(Level.SEVERE, "Session expired: sid {0}", sid);
+			halt(STATUS_NO_SESSION);
 		}
+		request.session().attribute(SessionController.SESSION, session);
 		log.log(Level.INFO, "valid sid: {0} ", sid);
 	}
 }

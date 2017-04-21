@@ -67,8 +67,7 @@ public class EventController extends Controller {
 			return fail();
 		}
 		Instant now = Instant.now();
-		now.plusSeconds(timeout);
-		Date expiresAt = Date.from(now);
+		Date expiresAt = Date.from(now.plusSeconds(timeout));
 		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensor().equals(sensor)).findFirst();
 		if (optional.isPresent()) {
 			Event event = optional.get();
@@ -78,6 +77,9 @@ public class EventController extends Controller {
 			}
 		} else {
 			Event event = new Event(session, sensor, expiresAt);
+			if (eventModel.create(event) == null) {
+				return fail();
+			}
 			session.getEvents().add(event);
 		}
 		return ok();
@@ -103,6 +105,9 @@ public class EventController extends Controller {
 		if (optional.isPresent()) {
 			Event event = optional.get();
 			session.getEvents().remove(event);
+			if (eventModel.delete(event.getUuid()) != 1) {
+				return fail();
+			}
 		}
 		return ok();
 	}
@@ -143,10 +148,15 @@ public class EventController extends Controller {
 		} catch (InterruptedException e) {
 			// ignore execption
 		}
-		// return events
+		//
 		long id = 0;
 		List<Object> events = new ArrayList<>();
 		for (Event e : session.getSubcribedEvents()) {
+			if (e.isExpired()) {
+				session.getEvents().remove(e);
+				eventModel.delete(e.getUuid());
+				continue;
+			}
 			Sensor sensor = e.getSensor();
 			if (sensor.isEventSent()) {
 				continue; // sent event only once
@@ -154,12 +164,12 @@ public class EventController extends Controller {
 			sensor.setEventSent(true);
 			sensorModel.update(sensor);
 			// get sensor status data
-			UUID uuid = e.getSensor().getUuid();
 			List<Long> values = new ArrayList<>();
 			for (Capability c : sensor.getCapabilitiesByOrder()) {
 				values.add(c.getValue());
 			}
 			// build sensor event
+			UUID uuid = e.getSensor().getUuid();
 			long eventTime = Instant.now().getEpochSecond();
 			String recvTime = String.valueOf(sensor.getRecvTime());
 			Map<String, Object> data = Json.obj(recvTime + "000", Json.arr(values.toArray()));
@@ -168,7 +178,6 @@ public class EventController extends Controller {
 			// add sensor event to event list
 			events.add(obj);
 		}
-
 		return result("event", events, "next", next);
 	}
 }

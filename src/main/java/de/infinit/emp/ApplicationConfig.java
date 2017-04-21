@@ -48,7 +48,11 @@ public interface ApplicationConfig extends Accessible, Mutable {
 	@DefaultValue("256")
 	Integer numberOfThreads();
 	
-	@Key("event.timeout")
+	@Key("event.timeout.seconds")
 	@DefaultValue("55")
 	Integer eventTimout();
+	
+	@Key("session.timeout.hours")
+	@DefaultValue("48")
+	Integer sessionTimout();
 }

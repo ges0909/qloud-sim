@@ -8,18 +8,7 @@ import org.aeonbits.owner.ConfigCache;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
 import de.infinit.emp.ApplicationConfig;
-import de.infinit.emp.api.domain.Capability;
-import de.infinit.emp.api.domain.Event;
-import de.infinit.emp.api.domain.Invitation;
-import de.infinit.emp.api.domain.Policy;
-import de.infinit.emp.api.domain.Sensor;
-import de.infinit.emp.api.domain.Session;
-import de.infinit.emp.api.domain.Tag;
-import de.infinit.emp.api.domain.TagSensor;
-import de.infinit.emp.api.domain.User;
 
 public class Persistence {
 	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
@@ -49,22 +38,4 @@ public class Persistence {
 			cs.close();
 		}
 	}
-
-	public static void createTablesIfNotExists() throws SQLException {
-		ConnectionSource cs = getConnectionSource();
-		
-		TableUtils.createTableIfNotExists(cs, Session.class);
-		TableUtils.createTableIfNotExists(cs, Event.class);
-		TableUtils.createTableIfNotExists(cs, User.class);
-		TableUtils.createTableIfNotExists(cs, Invitation.class);
-		TableUtils.createTableIfNotExists(cs, Sensor.class);
-		TableUtils.createTableIfNotExists(cs, Capability.class);
-		TableUtils.createTableIfNotExists(cs, Tag.class);
-		TableUtils.createTableIfNotExists(cs, Policy.class);
-		TableUtils.createTableIfNotExists(cs, TagSensor.class);
-		
-		TableUtils.clearTable(cs, Event.class);
-		TableUtils.clearTable(cs, Session.class);
-	}
-
 }

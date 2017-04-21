@@ -1,5 +1,7 @@
 package de.infinit.emp.api.controller;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 import com.google.gson.annotations.Expose;
@@ -39,9 +41,9 @@ public class SessionController extends Controller {
 	}
 
 	public Object requestNonAuthorizedSession(Request request, Response response) {
-		Session session = new Session();
 		String server = request.scheme() + "://" + request.host();
-		session.setServer(server);
+		Date expiresAt = Date.from(Instant.now().plusSeconds(config.sessionTimout()));
+		Session session = new Session(server, expiresAt);
 		if (sessionModel.create(session) == null) {
 			return fail();
 		}
