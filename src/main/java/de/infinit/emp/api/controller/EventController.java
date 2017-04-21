@@ -42,7 +42,7 @@ public class EventController extends Controller {
 	}
 
 	// GET /api/sensor/:uuid/event
-	public Object susbcribeForSensorEvents(Request request, Response response) {
+	public Object susbcribeForEvents(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
 		User user = session.getUser();
 		if (user == null) {
@@ -84,7 +84,7 @@ public class EventController extends Controller {
 	}
 
 	// DELETE /api/sensor/:uuid/event
-	public Object cancelSensorEventSubcription(Request request, Response response) {
+	public Object unsubscribeForEvents(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
 		User user = session.getUser();
 		if (user == null) {

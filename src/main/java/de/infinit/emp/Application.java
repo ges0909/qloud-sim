@@ -117,8 +117,8 @@ public class Application {
 				post("/:uuid", SensorController.instance()::updateSensor, gson::toJson);
 				delete("/:uuid", SensorController.instance()::deleteSensor, gson::toJson);
 				get("/:uuid/data", SensorController.instance()::getSensorData, gson::toJson);
-				get("/:uuid/event", EventController.instance()::susbcribeForSensorEvents, gson::toJson);
-				delete("/:uuid/event", EventController.instance()::cancelSensorEventSubcription, gson::toJson);
+				get("/:uuid/event", EventController.instance()::susbcribeForEvents, gson::toJson);
+				delete("/:uuid/event", EventController.instance()::unsubscribeForEvents, gson::toJson);
 				post("/:uuid/action", Controller.instance()::notImplemented, gson::toJson);
 			});
 			path("/event", () -> get("", EventController.instance()::getEvents, gson::toJson));
