@@ -92,8 +92,8 @@ public class Application {
 		TableUtils.createTableIfNotExists(cs, Policy.class);
 		TableUtils.createTableIfNotExists(cs, TagSensor.class);
 		//
-		TableUtils.clearTable(cs, Event.class);
-		TableUtils.clearTable(cs, Session.class);
+//		TableUtils.clearTable(cs, Event.class);
+//		TableUtils.clearTable(cs, Session.class);
 		// start background sensor value generation
 		List<Sensor> sensors = SensorModel.instance().queryForAll();
 		sensors.stream().forEach(Sensor::startSimulation);
