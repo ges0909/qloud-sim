@@ -22,7 +22,7 @@ public interface ApplicationConfig extends Accessible, Mutable {
 
 	@Key("spark.port")
 	@DefaultValue("4567")
-	int port();
+	Integer port();
 
 	@Key("qloud.key")
 	@DefaultValue("abcdefghijklmnopqrstuvwxyz")
@@ -38,17 +38,17 @@ public interface ApplicationConfig extends Accessible, Mutable {
 
 	@Key("sensor.recv.interval")
 	@DefaultValue("900")
-	int recvInterval();
+	Integer recvInterval();
 	
 	@Key("sensor.default.delta")
 	@DefaultValue("1")
-	long defaultDelta();
+	Long defaultDelta();
 	
 	@Key("sensor.number.threads")
 	@DefaultValue("256")
-	int numberOfThreads();
+	Integer numberOfThreads();
 	
 	@Key("event.timeout")
 	@DefaultValue("55")
-	int eventTimout();
+	Integer eventTimout();
 }

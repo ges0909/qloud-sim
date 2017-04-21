@@ -16,8 +16,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Logger;
-
 import org.aeonbits.owner.ConfigCache;
 
 import com.google.gson.Gson;
@@ -42,11 +40,10 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 public class Application {
 	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
-	static final Logger log = Logger.getLogger(Application.class.getName());
 	static final FreeMarkerEngine fm = new FreeMarkerEngine(new FreeMarkerConfig());
 	static final Gson gson = new Gson();
-	
-	public static ScheduledExecutorService executor;
+
+	private static ScheduledExecutorService executor = null;
 
 	public static void main(String[] args) throws IOException, SQLException {
 		initApplication();
@@ -55,7 +52,7 @@ public class Application {
 		staticFileLocation("/public"); // to serve css, ...
 
 		before(LoggingFilter::logRequest);
-		
+
 		serveApiEndpoints();
 		serveAdminEndpoints();
 
@@ -66,11 +63,16 @@ public class Application {
 		internalServerError(Controller.instance()::internalServerError);
 	}
 
+	public static ScheduledExecutorService getExecutor() {
+		if (executor == null)
+			executor = Executors.newScheduledThreadPool(config.numberOfThreads());
+		return executor;
+	}
+
 	private static void initApplication() throws SQLException {
 		// create database tables
-		Persistence.createTabelsIfNotExists();
+		Persistence.createTablesIfNotExists();
 		// start background sensor value generation
-		executor = Executors.newScheduledThreadPool(config.numberOfThreads());
 		List<Sensor> sensors = SensorModel.instance().queryForAll();
 		sensors.stream().forEach(Sensor::startSimulation);
 	}
@@ -115,11 +117,11 @@ public class Application {
 				post("/:uuid", SensorController.instance()::updateSensor, gson::toJson);
 				delete("/:uuid", SensorController.instance()::deleteSensor, gson::toJson);
 				get("/:uuid/data", SensorController.instance()::getSensorData, gson::toJson);
-				get("/:uuid/event", EventController.instance()::susbcribeSensorForEvents, gson::toJson);
+				get("/:uuid/event", EventController.instance()::susbcribeForSensorEvents, gson::toJson);
 				delete("/:uuid/event", EventController.instance()::cancelSensorEventSubcription, gson::toJson);
 				post("/:uuid/action", Controller.instance()::notImplemented, gson::toJson);
 			});
-			path("/event", () -> get("", EventController.instance()::getSensorEvents, gson::toJson));
+			path("/event", () -> get("", EventController.instance()::getEvents, gson::toJson));
 
 			after("/*", (request, response) -> response.type("application/json"));
 		});

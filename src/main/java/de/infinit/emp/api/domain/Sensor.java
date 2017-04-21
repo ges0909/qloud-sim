@@ -183,7 +183,7 @@ public class Sensor {
 			setEventSent(false);
 			SensorModel.instance().update(this);
 		};
-		future = Application.executor.scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
+		future = Application.getExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
 	}
 
 	public void stopSimulation() {

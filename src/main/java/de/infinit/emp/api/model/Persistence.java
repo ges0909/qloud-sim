@@ -50,7 +50,7 @@ public class Persistence {
 		}
 	}
 
-	public static void createTabelsIfNotExists() throws SQLException {
+	public static void createTablesIfNotExists() throws SQLException {
 		ConnectionSource cs = getConnectionSource();
 		
 		TableUtils.createTableIfNotExists(cs, Session.class);
