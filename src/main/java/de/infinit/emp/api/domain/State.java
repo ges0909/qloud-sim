@@ -18,12 +18,12 @@ public class State {
 	long recvTime;
 
 	@NotNull
-	@ForeignCollectionField(orderColumnName = "index", orderAscending = true)
-	Collection<Value> values;
-
-	@NotNull
 	@DatabaseField(defaultValue = "false")
 	boolean eventSent;
+
+	@NotNull
+	@ForeignCollectionField(orderColumnName = "index", orderAscending = true)
+	Collection<Value> values;
 
 	@NotNull
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "sensor_id")
@@ -41,10 +41,6 @@ public class State {
 		this.sensor = sensor;
 	}
 
-	public Collection<Value> getValues() {
-		return values;
-	}
-
 	public boolean isEventSent() {
 		return eventSent;
 	}
@@ -55,5 +51,9 @@ public class State {
 
 	public long getRecvTime() {
 		return recvTime;
+	}
+
+	public Collection<Value> getValues() {
+		return values;
 	}
 }

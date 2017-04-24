@@ -2,6 +2,7 @@ package de.infinit.emp.api.controller;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class SensorController extends Controller {
 	final TagModel tagModel = TagModel.instance();
 	final EventModel eventModel = EventModel.instance();
 	final TagSensorModel tagSensorModel = TagSensorModel.instance();
+	final ValueModel valueModel = ValueModel.instance();
 
 	private SensorController() {
 		super();
@@ -129,37 +131,40 @@ public class SensorController extends Controller {
 			return null;
 		}
 		// create capabilities, e.g. for 'EnergyCam'
-		Capability capability = new Capability(sensor, 1, "binary_8bit", null);
-		sensor.getCapabilities().add(capability);
-		capabilityModel.create(capability);
-		capability = new Capability(sensor, 2, "binary_32bit", config.defaultDelta());
-		sensor.getCapabilities().add(capability);
-		capabilityModel.create(capability);
-		capability = new Capability(sensor, 3, "binary_16bit", null);
-		sensor.getCapabilities().add(capability);
-		capabilityModel.create(capability);
-		capability = new Capability(sensor, 4, "binary_32bit", null);
-		sensor.getCapabilities().add(capability);
-		capabilityModel.create(capability);
+		Collection<Capability> capabilites = sensor.getCapabilities();
+		Capability c = new Capability(sensor, 1, "binary_8bit", null);
+		capabilites.add(c);
+		capabilityModel.create(c);
+		c = new Capability(sensor, 2, "binary_32bit", config.defaultDelta());
+		capabilites.add(c);
+		capabilityModel.create(c);
+		c = new Capability(sensor, 3, "binary_16bit", null);
+		capabilites.add(c);
+		capabilityModel.create(c);
+		c = new Capability(sensor, 4, "binary_32bit", null);
+		capabilites.add(c);
+		capabilityModel.create(c);
+		// set initial state and ...
+		State state = new State(sensor);
+		StateModel.instance().create(state);
+		Collection<Value> values = state.getValues();
+		// .. values
+		Value v = new Value(state, 1, 1L);
+		values.add(v);
+		valueModel.create(v);
+		v = new Value(state, 2, 0L);
+		values.add(v);
+		valueModel.create(v);
+		v = new Value(state, 3, 0L);
+		values.add(v);
+		valueModel.create(v);
+		v = new Value(state, 4, 2214814041L);
+		values.add(v);
+		valueModel.create(v);
 		// tag sensor with user's 'tag_all' tag
 		Tag tag = user.getTagAll();
 		TagSensor tagSensor = new TagSensor(tag, sensor);
 		tagSensorModel.create(tagSensor);
-		// set initial state and values
-		State state = new State(sensor);
-		StateModel.instance().create(state);
-		Value value = new Value(state, 1, 1L);
-		ValueModel.instance().create(value);
-		state.getValues().add(value);
-		value = new Value(state, 2, 0L);
-		ValueModel.instance().create(value);
-		state.getValues().add(value);
-		value = new Value(state, 3, 0L);
-		ValueModel.instance().create(value);
-		state.getValues().add(value);
-		value = new Value(state, 4, 2214814041L);
-		ValueModel.instance().create(value);
-		state.getValues().add(value);
 		//
 		sensor.startSimulation();
 		return sensor;
@@ -305,7 +310,9 @@ public class SensorController extends Controller {
 		}
 		Map<String, Object> data = new HashMap<>();
 		for (State state : sensor.getStates()) {
-			data.put(Long.toString(state.getRecvTime()), state.getValues());
+			String recvTime = Long.toString(state.getRecvTime()) + "000";
+			List<Long> values = state.getValues().stream().map(Value::getValue).collect(Collectors.toList());
+			data.put(recvTime, values);
 		}
 		return result("data", data);
 	}

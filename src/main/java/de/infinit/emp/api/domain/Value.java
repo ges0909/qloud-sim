@@ -24,7 +24,7 @@ public class Value {
 		// ORMLite needs a no-arg constructor
 	}
 	
-	public Value(@NotNull State state, @NotNull Integer index, @NotNull Long value) {
+	public Value(State state, Integer index, Long value) {
 		this.state = state;
 		this.index = index;
 		this.value = value;

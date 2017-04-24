@@ -149,6 +149,9 @@ public class SensorTest {
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 		assertNotNull(res.body.get("data"));
+		@SuppressWarnings("unchecked")
+		Map<String, Object> data = (Map<String, Object>) res.body.get("data");
+		assertTrue(data.size() > 0);
 	}
 
 	@Test

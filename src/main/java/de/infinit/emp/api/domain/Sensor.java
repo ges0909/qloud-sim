@@ -178,7 +178,7 @@ public class Sensor {
 				ValueModel.instance().create(newValue);
 			}
 		};
-		future = Application.getExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
+		future = Application.getExecutor().scheduleWithFixedDelay(task, recvInterval, recvInterval, TimeUnit.SECONDS);
 	}
 
 	public void stopSimulation() {
