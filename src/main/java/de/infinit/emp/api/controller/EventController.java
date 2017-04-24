@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import de.infinit.emp.Status;
-import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
@@ -22,6 +21,7 @@ import de.infinit.emp.api.domain.Value;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.StateModel;
 import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
@@ -33,6 +33,7 @@ public class EventController extends Controller {
 	final UserModel userModel = UserModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
 	final CapabilityModel capabilityModel = CapabilityModel.instance();
+	final StateModel stateModel = StateModel.instance();
 
 	private EventController() {
 		super();
@@ -159,25 +160,25 @@ public class EventController extends Controller {
 			if (e.isExpired()) {
 				session.getEvents().remove(e);
 				eventModel.delete(e.getUuid());
-				continue;
+			} else {
+				Sensor sensor = e.getSensor();
+				State state = sensor.getStates().stream().findFirst().get();
+				if (state.isEventSent()) {
+					continue; // sent event only once
+				}
+				state.setEventSent(true);
+				stateModel.update(state);
+				// build sensor event
+				UUID uuid = e.getSensor().getUuid();
+				long eventTime = Instant.now().getEpochSecond();
+				String recvTime = String.valueOf(state.getRecvTime());
+				List<Long> values = state.getValues().stream().map(Value::getValue).collect(Collectors.toList());
+				Map<String, Object> data = Json.obj(recvTime + "000", Json.arr(values.toArray()));
+				Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id", id);
+				id = id + 1;
+				// add sensor event to event list
+				events.add(obj);
 			}
-			Sensor sensor = e.getSensor();
-			State state = sensor.getState();
-			if (state.isEventSent()) {
-				continue; // sent event only once
-			}
-			state.setEventSent(true);
-			stateModel.update(state);
-			// build sensor event
-			UUID uuid = e.getSensor().getUuid();
-			long eventTime = Instant.now().getEpochSecond();
-			String recvTime = String.valueOf(sensor.getRecvTime());
-			List<Long> values = state.getValues().stream().map(Value::getValue).collect(Collectors.toList());
-			Map<String, Object> data = Json.obj(recvTime + "000", Json.arr(values.toArray()));
-			Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id", id);
-			id = id + 1;
-			// add sensor event to event list
-			events.add(obj);
 		}
 		return result("event", events, "next", next);
 	}

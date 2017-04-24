@@ -11,7 +11,7 @@ public class Value {
 	@NotNull
 	@DatabaseField(canBeNull = false)
 	Integer index;
-	
+
 	@NotNull
 	@DatabaseField(canBeNull = false)
 	Long value;
@@ -32,5 +32,9 @@ public class Value {
 
 	public Long getValue() {
 		return value;
+	}
+	
+	public Integer getIndex() {
+		return index;
 	}
 }

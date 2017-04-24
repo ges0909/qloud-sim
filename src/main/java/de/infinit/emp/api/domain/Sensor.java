@@ -1,6 +1,5 @@
 package de.infinit.emp.api.domain;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -16,9 +15,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 
 import de.infinit.emp.Application;
-import de.infinit.emp.api.model.CapabilityModel;
-import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.StateModel;
+import de.infinit.emp.api.model.ValueModel;
 
 public class Sensor {
 	@Expose
@@ -165,29 +163,20 @@ public class Sensor {
 
 	public void startSimulation() {
 		Runnable task = () -> {
-			State state = new State(this);
-			StateModel.instance().create(state);
-			
-			State s = getStates().stream().findFirst().get();
-			
-			for (Capability c : getCapabilities()) {
+			State newState = new State(this);
+			StateModel.instance().create(newState);
+			State lastState = getStates().stream().findFirst().get();
+			for (Value lastValue : lastState.getValues()) {
+				Integer index = lastValue.getIndex();
+				Capability c = getCapabilities().stream().filter(_c -> _c.getIndex().equals(index)).findFirst().get();
+				Value newValue;
 				if (c.getDelta() == null) {
-					Value = new Value(state, s.get)
-					state.getValues().add()
+					newValue = new Value(newState, index, lastValue.getValue());
+				} else {
+					newValue = new Value(newState, index, lastValue.getValue() + c.getDelta());
 				}
-				
+				ValueModel.instance().create(newValue);
 			}
-			
-			for (Value v : state.getValues()) {
-				if (v.getDelta() != null) {
-					Long value = v.getValue();
-					v.setValue(value + v.getDelta());
-					CapabilityModel.instance().update(v);
-				}
-			}
-			state.setEventSent(false);
-			setRecvTime(Instant.now().getEpochSecond());
-			SensorModel.instance().update(this);
 		};
 		future = Application.getExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
 	}

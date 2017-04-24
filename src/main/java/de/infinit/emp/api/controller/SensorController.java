@@ -2,6 +2,7 @@ package de.infinit.emp.api.controller;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -20,10 +21,10 @@ import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.State;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.TagSensor;
 import de.infinit.emp.api.domain.User;
-import de.infinit.emp.api.domain.State;
 import de.infinit.emp.api.domain.Value;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.EventModel;
@@ -34,7 +35,6 @@ import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.TagSensorModel;
 import de.infinit.emp.api.model.UserModel;
 import de.infinit.emp.api.model.ValueModel;
-import de.infinit.emp.utils.Json;
 import spark.Request;
 import spark.Response;
 
@@ -247,7 +247,8 @@ public class SensorController extends Controller {
 		res.capabilities.action = new ArrayList<>();
 		//
 		res.state = res.new State();
-		res.state.data = sensor.getStates().stream().findFirst().get().getValues().stream().map(Value::getValue).collect(Collectors.toList());
+		res.state.data = sensor.getStates().stream().findFirst().get().getValues().stream().map(Value::getValue)
+				.collect(Collectors.toList());
 		res.state.action = new ArrayList<>();
 		return result("sensor", res);
 	}
@@ -271,7 +272,7 @@ public class SensorController extends Controller {
 			return status(Status.WRONG_USER);
 		}
 		//
-		sensor.startSimulation();
+		sensor.stopSimulation();
 		// before sensor is deleted remove it from session event list
 		Event event = eventModel.findEventBySensor(sensor);
 		if (event != null) {
@@ -302,9 +303,10 @@ public class SensorController extends Controller {
 		if (!owner.equals(user)) {
 			return status(Status.WRONG_USER);
 		}
-		String timestamp = Long.toString(Instant.now().getEpochSecond());
-		List<Integer> values = Json.arr(1234, 5678, 901234, 9961);
-		Map<String, Object> obj = Json.obj(timestamp, values);
-		return result("data", obj);
+		Map<String, Object> data = new HashMap<>();
+		for (State state : sensor.getStates()) {
+			data.put(Long.toString(state.getRecvTime()), state.getValues());
+		}
+		return result("data", data);
 	}
 }

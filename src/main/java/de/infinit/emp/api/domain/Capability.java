@@ -43,4 +43,8 @@ public class Capability {
 	public Long getDelta() {
 		return delta;
 	}
+
+	public Integer getIndex() {
+		return index;
+	}
 }

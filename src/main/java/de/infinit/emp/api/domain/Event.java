@@ -30,7 +30,7 @@ public class Event {
 		// ORMLite needs a no-arg constructor
 	}
 
-	public Event(@NotNull Session session, Sensor sensor, Date expiresAt) {
+	public Event(Session session, Sensor sensor, Date expiresAt) {
 		this();
 		this.session = session;
 		this.sensor = sensor;
@@ -41,28 +41,12 @@ public class Event {
 		return uuid;
 	}
 
-	public Date getExpiresAt() {
-		return expiresAt;
-	}
-
 	public void setExpiresAt(Date expiresAt) {
 		this.expiresAt = expiresAt;
 	}
 
 	public Sensor getSensor() {
 		return sensor;
-	}
-
-	public void setSensor(Sensor sensor) {
-		this.sensor = sensor;
-	}
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
 	}
 
 	public boolean isExpired() {

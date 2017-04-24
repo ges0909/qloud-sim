@@ -14,7 +14,7 @@ public class Json {
 		}
 		return list;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static <T> Map<String, T> obj(Object... keyValuePairs) {
 		Map<String, T> map = new HashMap<>();

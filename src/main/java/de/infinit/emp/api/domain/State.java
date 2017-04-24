@@ -45,15 +45,15 @@ public class State {
 		return values;
 	}
 
-	public void setValues(Collection<Value> values) {
-		this.values = values;
-	}
-
 	public boolean isEventSent() {
 		return eventSent;
 	}
 
 	public void setEventSent(boolean eventSent) {
 		this.eventSent = eventSent;
+	}
+
+	public long getRecvTime() {
+		return recvTime;
 	}
 }
