@@ -20,7 +20,7 @@ public class TagSensor {
 		this.tag = tag;
 		this.sensor = sensor;
 	}
-	
+
 	public int getId() {
 		return id;
 	}

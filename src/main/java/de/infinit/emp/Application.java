@@ -39,9 +39,11 @@ import de.infinit.emp.api.domain.Invitation;
 import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.State;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.TagSensor;
 import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.domain.Value;
 import de.infinit.emp.api.model.Persistence;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.filter.AuthenticationFilter;
@@ -91,6 +93,8 @@ public class Application {
 		TableUtils.createTableIfNotExists(cs, Tag.class);
 		TableUtils.createTableIfNotExists(cs, Policy.class);
 		TableUtils.createTableIfNotExists(cs, TagSensor.class);
+		TableUtils.createTableIfNotExists(cs, State.class);
+		TableUtils.createTableIfNotExists(cs, Value.class);
 		//
 //		TableUtils.clearTable(cs, Event.class);
 //		TableUtils.clearTable(cs, Session.class);

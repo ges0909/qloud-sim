@@ -3,9 +3,7 @@ package de.infinit.emp.api.domain;
 import java.util.UUID;
 
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "invitations")
 public class Invitation {
 	@DatabaseField(generatedId = true)
 	UUID uuid;

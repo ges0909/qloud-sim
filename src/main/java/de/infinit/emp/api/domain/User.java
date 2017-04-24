@@ -10,9 +10,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "users")
 public class User {
 	@DatabaseField(generatedId = true)
 	UUID uuid;
@@ -159,18 +157,23 @@ public class User {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		User other = (User) obj;
 		if (uuid == null) {
-			if (other.uuid != null)
+			if (other.uuid != null) {
 				return false;
-		} else if (!uuid.equals(other.uuid))
+			}
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
+		}
 		return true;
 	}
 }

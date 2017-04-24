@@ -23,20 +23,24 @@ import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.TagSensor;
 import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.domain.State;
+import de.infinit.emp.api.domain.Value;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
 import de.infinit.emp.api.model.SessionModel;
+import de.infinit.emp.api.model.StateModel;
 import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.TagSensorModel;
 import de.infinit.emp.api.model.UserModel;
+import de.infinit.emp.api.model.ValueModel;
 import de.infinit.emp.utils.Json;
 import spark.Request;
 import spark.Response;
 
 public class SensorController extends Controller {
-	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	private static SensorController instance = null;
+	static final ApplicationConfig config = ConfigCache.getOrCreate(ApplicationConfig.class);
 	final SensorModel sensorModel = SensorModel.instance();
 	final CapabilityModel capabilityModel = CapabilityModel.instance();
 	final SessionModel sessionModel = SessionModel.instance();
@@ -77,7 +81,7 @@ public class SensorController extends Controller {
 			@Expose
 			List<Object> action;
 		}
-		
+
 		@Expose
 		UUID owner;
 		@Expose
@@ -107,12 +111,13 @@ public class SensorController extends Controller {
 		Random random = new Random();
 		StringBuilder sb = new StringBuilder();
 		while (sb.length() < length) {
-			sb.append(Integer.toHexString(random.nextInt()));
+			sb.append(Integer.toHexString(random.nextInt(0xff)));
 		}
 		return sb.toString();
 	}
 
 	public Sensor createSensor(User user, String code, String description) {
+		// create sensor
 		Sensor sensor = new Sensor();
 		sensor.setOwner(user);
 		sensor.setCode(code);
@@ -120,27 +125,41 @@ public class SensorController extends Controller {
 		sensor.setDescription(description);
 		sensor.setRecvInterval(config.recvInterval());
 		sensor.setBatteryOk(true);
-		sensor.setEventSent(false);
 		if (sensorModel.create(sensor) == null) {
 			return null;
 		}
-		//
-		Capability capability = new Capability(sensor, 1, "binary_8bit", 1L, null);
+		// create capabilities, e.g. for 'EnergyCam'
+		Capability capability = new Capability(sensor, 1, "binary_8bit", null);
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
-		capability = new Capability(sensor, 2, "binary_32bit", 0L, config.defaultDelta());
+		capability = new Capability(sensor, 2, "binary_32bit", config.defaultDelta());
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
-		capability = new Capability(sensor, 3, "binary_16bit", 0L, null);
+		capability = new Capability(sensor, 3, "binary_16bit", null);
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
-		capability = new Capability(sensor, 4, "binary_32bit", 2214814041L, null);
+		capability = new Capability(sensor, 4, "binary_32bit", null);
 		sensor.getCapabilities().add(capability);
 		capabilityModel.create(capability);
 		// tag sensor with user's 'tag_all' tag
 		Tag tag = user.getTagAll();
 		TagSensor tagSensor = new TagSensor(tag, sensor);
 		tagSensorModel.create(tagSensor);
+		// set initial state and values
+		State state = new State(sensor);
+		StateModel.instance().create(state);
+		Value value = new Value(state, 1, 1L);
+		ValueModel.instance().create(value);
+		state.getValues().add(value);
+		value = new Value(state, 2, 0L);
+		ValueModel.instance().create(value);
+		state.getValues().add(value);
+		value = new Value(state, 3, 0L);
+		ValueModel.instance().create(value);
+		state.getValues().add(value);
+		value = new Value(state, 4, 2214814041L);
+		ValueModel.instance().create(value);
+		state.getValues().add(value);
 		//
 		sensor.startSimulation();
 		return sensor;
@@ -224,13 +243,11 @@ public class SensorController extends Controller {
 		res.time = Instant.now().getEpochSecond();
 		//
 		res.capabilities = res.new Capability();
-		res.capabilities.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getName)
-				.collect(Collectors.toList());
+		res.capabilities.data = sensor.getCapabilities().stream().map(Capability::getName).collect(Collectors.toList());
 		res.capabilities.action = new ArrayList<>();
 		//
 		res.state = res.new State();
-		res.state.data = sensor.getCapabilitiesByOrder().stream().map(Capability::getValue)
-				.collect(Collectors.toList());
+		res.state.data = sensor.getStates().stream().findFirst().get().getValues().stream().map(Value::getValue).collect(Collectors.toList());
 		res.state.action = new ArrayList<>();
 		return result("sensor", res);
 	}

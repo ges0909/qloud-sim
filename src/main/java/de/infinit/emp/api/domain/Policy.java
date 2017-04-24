@@ -5,21 +5,19 @@ import java.util.UUID;
 import javax.validation.constraints.NotNull;
 
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "policies")
 public class Policy {
 	public static final int READ = 1;
 	public static final int WRITE = 2;
 	public static final int PROPAGATE = 3;
 	public static final int OWNER = 4;
-	
+
 	@NotNull
 	@DatabaseField(canBeNull = false)
 	UUID userUuid;
 
 	@NotNull
-	@DatabaseField(defaultValue = "4" /*OWNER*/, canBeNull = false)
+	@DatabaseField(defaultValue = "4" /* OWNER */, canBeNull = false)
 	int policyValue;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)

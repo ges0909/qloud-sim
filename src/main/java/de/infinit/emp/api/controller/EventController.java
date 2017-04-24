@@ -9,12 +9,16 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Capability;
 import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.Sensor;
 import de.infinit.emp.api.domain.Session;
+import de.infinit.emp.api.domain.State;
 import de.infinit.emp.api.domain.User;
+import de.infinit.emp.api.domain.Value;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.EventModel;
 import de.infinit.emp.api.model.SensorModel;
@@ -158,20 +162,17 @@ public class EventController extends Controller {
 				continue;
 			}
 			Sensor sensor = e.getSensor();
-			if (sensor.isEventSent()) {
+			State state = sensor.getState();
+			if (state.isEventSent()) {
 				continue; // sent event only once
 			}
-			sensor.setEventSent(true);
-			sensorModel.update(sensor);
-			// get sensor status data
-			List<Long> values = new ArrayList<>();
-			for (Capability c : sensor.getCapabilitiesByOrder()) {
-				values.add(c.getValue());
-			}
+			state.setEventSent(true);
+			stateModel.update(state);
 			// build sensor event
 			UUID uuid = e.getSensor().getUuid();
 			long eventTime = Instant.now().getEpochSecond();
 			String recvTime = String.valueOf(sensor.getRecvTime());
+			List<Long> values = state.getValues().stream().map(Value::getValue).collect(Collectors.toList());
 			Map<String, Object> data = Json.obj(recvTime + "000", Json.arr(values.toArray()));
 			Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id", id);
 			id = id + 1;

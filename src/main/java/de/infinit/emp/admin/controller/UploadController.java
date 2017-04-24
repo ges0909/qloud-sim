@@ -67,7 +67,7 @@ public class UploadController {
 			return new ModelAndView(model, "message.ftlh");
 		}
 
-		if (csvLines.size() == 0) {
+		if (csvLines.isEmpty()) {
 			Model model = new Model(request, "CVS-Datei ist leer.");
 			return new ModelAndView(model, "message.ftlh");
 		}

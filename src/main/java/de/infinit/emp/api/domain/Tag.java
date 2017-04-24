@@ -6,14 +6,12 @@ import java.util.UUID;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "tags")
 public class Tag {
 	@DatabaseField(generatedId = true)
 	UUID uuid;
 
-	@DatabaseField(foreign = true, canBeNull=false)
+	@DatabaseField(foreign = true, canBeNull = false)
 	User owner;
 
 	@DatabaseField
@@ -83,18 +81,23 @@ public class Tag {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Tag other = (Tag) obj;
 		if (uuid == null) {
-			if (other.uuid != null)
+			if (other.uuid != null) {
 				return false;
-		} else if (!uuid.equals(other.uuid))
+			}
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
+		}
 		return true;
 	}
 }

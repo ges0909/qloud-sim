@@ -11,9 +11,7 @@ import javax.validation.constraints.NotNull;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "sessions")
 public class Session {
 	@DatabaseField(generatedId = true)
 	UUID sid;
@@ -83,7 +81,7 @@ public class Session {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
 	public Date getExpiresAt() {
 		return expiresAt;
 	}
@@ -91,7 +89,7 @@ public class Session {
 	public boolean isExpired() {
 		return this.expiresAt.toInstant().isBefore(Instant.now());
 	}
-	
+
 	public Collection<Event> getEvents() {
 		return events;
 	}
@@ -103,7 +101,7 @@ public class Session {
 	public void setEvents(Collection<Event> events) {
 		this.events = events;
 	}
-	
+
 	public void setExpiresAt(Date expiresAt) {
 		this.expiresAt = expiresAt;
 	}

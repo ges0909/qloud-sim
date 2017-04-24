@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -13,13 +14,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.infinit.emp.Application;
 import de.infinit.emp.api.model.CapabilityModel;
 import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.StateModel;
 
-@DatabaseTable(tableName = "sensors")
 public class Sensor {
 	@Expose
 	@DatabaseField(generatedId = true)
@@ -37,7 +37,6 @@ public class Sensor {
 	String sdevice;
 
 	@Expose
-	@SerializedName("description")
 	@Pattern(regexp = "^.{0,200}$")
 	@DatabaseField
 	String description;
@@ -62,20 +61,20 @@ public class Sensor {
 	boolean batteryOk;
 
 	@DatabaseField(foreign = true, columnName = "owner_id", foreignAutoRefresh = true)
-	private User owner;
+	User owner;
 
-	@ForeignCollectionField(orderColumnName = "order", orderAscending = true)
-	private Collection<Capability> capabilities;
+	@ForeignCollectionField(orderColumnName = "index", orderAscending = true)
+	Collection<Capability> capabilities;
 
-	@SerializedName("is_event_sent")
-	@DatabaseField
-	boolean eventSent;
+	@ForeignCollectionField(orderColumnName = "recvTime", orderAscending = true)
+	Collection<State> states;
 
-	private ScheduledFuture<?> future;
+	ScheduledFuture<?> future;
 
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
 		this.capabilities = new ArrayList<>();
+		this.states = new ArrayList<>();
 	}
 
 	public UUID getUuid() {
@@ -146,14 +145,7 @@ public class Sensor {
 		this.owner = owner;
 	}
 
-	public boolean isEventSent() {
-		return eventSent;
-	}
-
-	public void setEventSent(boolean sentAsEvent) {
-		this.eventSent = sentAsEvent;
-	}
-
+	// ordering by 'order' (see @ForeignCollectionField above)
 	public Collection<Capability> getCapabilities() {
 		return capabilities;
 	}
@@ -162,33 +154,48 @@ public class Sensor {
 		this.capabilities = capabilities;
 	}
 
-	// ordering is ensured by ORMLite; see @ForeignCollectionField above
-	public Collection<Capability> getCapabilitiesByOrder() {
-		return getCapabilities();
+	// ordering by 'recvTime' (see @ForeignCollectionField above)
+	public Collection<State> getStates() {
+		return states;
+	}
+
+	public void setStates(Collection<State> states) {
+		this.states = states;
 	}
 
 	public void startSimulation() {
 		Runnable task = () -> {
-			if (isEventSent()) {
-				return;
+			State state = new State(this);
+			StateModel.instance().create(state);
+			
+			State s = getStates().stream().findFirst().get();
+			
+			for (Capability c : getCapabilities()) {
+				if (c.getDelta() == null) {
+					Value = new Value(state, s.get)
+					state.getValues().add()
+				}
+				
 			}
-			for (Capability c : getCapabilitiesByOrder()) {
-				if (c.getDelta() != null) {
-					Long value = c.getValue();
-					c.setValue(value + c.getDelta());
-					CapabilityModel.instance().update(c);
+			
+			for (Value v : state.getValues()) {
+				if (v.getDelta() != null) {
+					Long value = v.getValue();
+					v.setValue(value + v.getDelta());
+					CapabilityModel.instance().update(v);
 				}
 			}
+			state.setEventSent(false);
 			setRecvTime(Instant.now().getEpochSecond());
-			setEventSent(false);
 			SensorModel.instance().update(this);
 		};
 		future = Application.getExecutor().scheduleWithFixedDelay(task, 0, getRecvInterval(), TimeUnit.SECONDS);
 	}
 
 	public void stopSimulation() {
-		if (future != null)
+		if (future != null) {
 			future.cancel(false);
+		}
 	}
 
 	@Override
@@ -201,18 +208,23 @@ public class Sensor {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Sensor other = (Sensor) obj;
 		if (uuid == null) {
-			if (other.uuid != null)
+			if (other.uuid != null) {
 				return false;
-		} else if (!uuid.equals(other.uuid))
+			}
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
+		}
 		return true;
 	}
 }
