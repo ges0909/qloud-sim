@@ -187,4 +187,11 @@ public class SensorTest {
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
+	
+	@Test
+	public void testN_Delete_Sensor_2() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/sensor/" + sensorUuid2, userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
 }

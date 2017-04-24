@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -252,8 +253,11 @@ public class SensorController extends Controller {
 		res.capabilities.action = new ArrayList<>();
 		//
 		res.state = res.new State();
-		res.state.data = sensor.getStates().stream().findFirst().get().getValues().stream().map(Value::getValue)
-				.collect(Collectors.toList());
+		res.state.data = new ArrayList<>();
+		Optional<State> optional = sensor.getStates().stream().findFirst();
+		if (optional.isPresent()) {
+			res.state.data = optional.get().getValues().stream().map(Value::getValue).collect(Collectors.toList());
+		}
 		res.state.action = new ArrayList<>();
 		return result("sensor", res);
 	}
