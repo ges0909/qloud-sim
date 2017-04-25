@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 
-public class State {
+public class OldState {
 	@DatabaseField(generatedId = true)
 	int id;
 
@@ -17,45 +17,29 @@ public class State {
 	long recvTime;
 
 	@NotNull
-	@DatabaseField(defaultValue = "false")
-	boolean eventSent;
-
-	@NotNull
 	@ForeignCollectionField(orderColumnName = "index", orderAscending = true)
-	Collection<Value> values;
+	Collection<OldValue> oldValues;
 
 	@NotNull
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "sensor_id")
 	private Sensor sensor;
 
-	public State() {
+	public OldState() {
 		// ORMLite needs a no-arg constructor
-		this.values = new ArrayList<>();
-		this.eventSent = false;
+		this.oldValues = new ArrayList<>();
 	}
 
-	public State(Sensor sensor) {
+	public OldState(Sensor sensor, long recvTime) {
 		this();
 		this.sensor = sensor;
-	}
-
-	public boolean isEventSent() {
-		return eventSent;
-	}
-
-	public void setEventSent(boolean eventSent) {
-		this.eventSent = eventSent;
+		this.recvTime = recvTime;
 	}
 
 	public long getRecvTime() {
 		return recvTime;
 	}
 
-	public void setRecvTime(long recvTime) {
-		this.recvTime = recvTime;
-	}
-
-	public Collection<Value> getValues() {
-		return values;
+	public Collection<OldValue> getOldValues() {
+		return oldValues;
 	}
 }

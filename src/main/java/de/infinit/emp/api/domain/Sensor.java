@@ -1,5 +1,6 @@
 package de.infinit.emp.api.domain;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -15,6 +16,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 
 import de.infinit.emp.Application;
+import de.infinit.emp.api.model.OldStateModel;
+import de.infinit.emp.api.model.OldValueModel;
 import de.infinit.emp.api.model.StateModel;
 import de.infinit.emp.api.model.ValueModel;
 
@@ -28,11 +31,6 @@ public class Sensor {
 	@Pattern(regexp = "^.{10,50}$")
 	@DatabaseField(unique = true, canBeNull = false)
 	String code;
-
-	@Expose
-	@NotNull
-	@DatabaseField(unique = true, canBeNull = false)
-	String sdevice;
 
 	@Expose
 	@Pattern(regexp = "^.{0,200}$")
@@ -61,70 +59,72 @@ public class Sensor {
 	@DatabaseField(foreign = true, columnName = "owner_id", foreignAutoRefresh = true)
 	User owner;
 
-	@ForeignCollectionField(orderColumnName = "index", orderAscending = true)
+	@Expose
+	@NotNull
+	@DatabaseField(unique = true, canBeNull = false)
+	String sdevice;
+
+	@DatabaseField(foreign = true, columnName = "state_id", foreignAutoRefresh = true)
+	State state;
+
+	@ForeignCollectionField(orderAscending = true /* ascending */, orderColumnName = "index")
 	Collection<Capability> capabilities;
 
-	@ForeignCollectionField(orderColumnName = "recvTime", orderAscending = true)
-	Collection<State> states;
+	@ForeignCollectionField(orderAscending = true /* ascending */, orderColumnName = "recvTime")
+	Collection<OldState> oldStates;
 
 	ScheduledFuture<?> future;
 
 	public Sensor() {
 		// ORMLite needs a no-arg constructor
 		this.capabilities = new ArrayList<>();
-		this.states = new ArrayList<>();
+		this.oldStates = new ArrayList<>();
 	}
 
-	public UUID getUuid() {
-		return uuid;
+	// ordering by 'order' (see @ForeignCollectionField above)
+	public Collection<Capability> getCapabilities() {
+		return capabilities;
 	}
 
 	public String getCode() {
 		return code;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getSdevice() {
-		return sdevice;
-	}
-
-	public void setSdevice(String sdevice) {
-		this.sdevice = sdevice;
-	}
-
 	public String getDescription() {
 		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public String getModel() {
 		return model;
 	}
 
-	public void setModel(String model) {
-		this.model = model;
+	public User getOwner() {
+		return owner;
+	}
+
+	// ordering by 'recvTime' (see @ForeignCollectionField above)
+	public Collection<OldState> getOldStates() {
+		return oldStates;
 	}
 
 	public int getRecvInterval() {
 		return recvInterval;
 	}
 
-	public void setRecvInterval(int recvInterval) {
-		this.recvInterval = recvInterval;
-	}
-
 	public long getRecvTime() {
 		return recvTime;
 	}
 
-	public void setRecvTime(long recvTime) {
-		this.recvTime = recvTime;
+	public String getSdevice() {
+		return sdevice;
+	}
+
+	public State getState() {
+		return state;
+	}
+
+	public UUID getUuid() {
+		return uuid;
 	}
 
 	public boolean isBatteryOk() {
@@ -135,47 +135,63 @@ public class Sensor {
 		this.batteryOk = batteryOk;
 	}
 
-	public User getOwner() {
-		return owner;
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
 	}
 
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
 
-	// ordering by 'order' (see @ForeignCollectionField above)
-	public Collection<Capability> getCapabilities() {
-		return capabilities;
+	public void setRecvInterval(int recvInterval) {
+		this.recvInterval = recvInterval;
 	}
 
-	public void setCapabilities(Collection<Capability> capabilities) {
-		this.capabilities = capabilities;
+	public void setRecvTime(long recvTime) {
+		this.recvTime = recvTime;
 	}
 
-	// ordering by 'recvTime' (see @ForeignCollectionField above)
-	public Collection<State> getStates() {
-		return states;
+	public void setSdevice(String sdevice) {
+		this.sdevice = sdevice;
 	}
 
-	public void setStates(Collection<State> states) {
-		this.states = states;
+	public void setState(State state) {
+		this.state = state;
+	}
+
+	public Capability getCapabilityOfIndex(Integer index) {
+		return capabilities.stream().filter(c -> c.getIndex().equals(index)).findFirst().orElse(null);
 	}
 
 	public void startSimulation() {
 		Runnable task = () -> {
-			State newState = new State(this);
-			StateModel.instance().create(newState);
-			State lastState = getStates().stream().findFirst().get();
-			for (Value lastValue : lastState.getValues()) {
-				Integer index = lastValue.getIndex();
-				Capability c = getCapabilities().stream().filter(_c -> _c.getIndex().equals(index)).findFirst().get();
-				Value newValue;
-				if (c.getDelta() == null) {
-					newValue = new Value(newState, index, lastValue.getValue());
-				} else {
-					newValue = new Value(newState, index, lastValue.getValue() + c.getDelta());
+			// add current state to history
+			OldState oldState = new OldState(this, state.getRecvTime());
+			OldStateModel.instance().create(oldState);
+			oldStates.add(oldState);
+			//
+			state.setRecvTime(Instant.now().getEpochSecond());
+			state.setEventSent(false);
+			StateModel.instance().update(state);
+			for (Value value : this.state.getValues()) {
+				// add current state value to history
+				OldValue oldValue = new OldValue(oldState, value);
+				OldValueModel.instance().create(oldValue);
+				oldState.getOldValues().add(oldValue);
+				// derive new value from current state value
+				Capability capability = getCapabilityOfIndex(value.getIndex());
+				if (capability != null && capability.getDelta() != null) {
+					value.setValue(value.getValue() + capability.getDelta());
+					ValueModel.instance().update(value);
 				}
-				ValueModel.instance().create(newValue);
 			}
 		};
 		future = Application.getExecutor().scheduleWithFixedDelay(task, recvInterval, recvInterval, TimeUnit.SECONDS);
@@ -185,14 +201,6 @@ public class Sensor {
 		if (future != null) {
 			future.cancel(false);
 		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
-		return result;
 	}
 
 	@Override
@@ -215,5 +223,13 @@ public class Sensor {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		return result;
 	}
 }

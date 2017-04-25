@@ -160,26 +160,23 @@ public class EventController extends Controller {
 			if (e.isExpired()) {
 				session.getEvents().remove(e);
 				eventModel.delete(e.getUuid());
-			} else {
-				Sensor sensor = e.getSensor();
-				Optional<State> optional = sensor.getStates().stream().findFirst();
-				if (optional.isPresent()) {
-					State state = optional.get();
-					if (!state.isEventSent()) {
-						state.setEventSent(true);
-						stateModel.update(state);
-						// build sensor event
-						UUID uuid = e.getSensor().getUuid();
-						long eventTime = Instant.now().getEpochSecond();
-						String recvTime = String.valueOf(state.getRecvTime()) + "000";
-						List<Long> values = state.getValues().stream().map(Value::getValue).collect(Collectors.toList());
-						Map<String, Object> data = Json.obj(recvTime, values);
-						Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id", id);
-						id = id + 1;
-						// add sensor event to event list
-						events.add(obj);
-					}
-				}
+				continue;
+			}
+			Sensor sensor = e.getSensor();
+			State state = sensor.getState();
+			if (!state.isEventSent()) {
+				state.setEventSent(true);
+				stateModel.update(state);
+				// build sensor event
+				UUID uuid = e.getSensor().getUuid();
+				long eventTime = Instant.now().getEpochSecond();
+				String recvTime = String.valueOf(state.getRecvTime()) + "000";
+				List<Long> values = state.getValues().stream().map(Value::getValue).collect(Collectors.toList());
+				Map<String, Object> data = Json.obj(recvTime, values);
+				Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id", id);
+				id = id + 1;
+				// add sensor event to event list
+				events.add(obj);
 			}
 		}
 		return result("event", events, "next", next);
