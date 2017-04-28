@@ -101,7 +101,7 @@ public class SensorController extends Controller {
 		int recvInterval;
 		@Expose
 		@SerializedName("recv_time")
-		int recvTime;
+		long recvTime;
 		@Expose
 		@SerializedName("battery_ok")
 		boolean batteryOk;
@@ -261,6 +261,7 @@ public class SensorController extends Controller {
 		GetSensorResponse res = convert(sensor, GetSensorResponse.class);
 		res.owner = owner.getUuid();
 		res.time = Instant.now().getEpochSecond();
+		res.recvTime = sensor.getState().getRecvTime();
 		//
 		res.capabilities = res.new Capability();
 		res.capabilities.data = sensor.getCapabilities().stream().map(Capability::getName).collect(Collectors.toList());

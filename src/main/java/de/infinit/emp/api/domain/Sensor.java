@@ -47,11 +47,6 @@ public class Sensor {
 	int recvInterval;
 
 	@Expose
-	@SerializedName("recv_time")
-	@DatabaseField
-	long recvTime;
-
-	@Expose
 	@SerializedName("battery_ok")
 	@DatabaseField()
 	boolean batteryOk;
@@ -111,10 +106,6 @@ public class Sensor {
 		return recvInterval;
 	}
 
-	public long getRecvTime() {
-		return recvTime;
-	}
-
 	public String getSdevice() {
 		return sdevice;
 	}
@@ -153,10 +144,6 @@ public class Sensor {
 
 	public void setRecvInterval(int recvInterval) {
 		this.recvInterval = recvInterval;
-	}
-
-	public void setRecvTime(long recvTime) {
-		this.recvTime = recvTime;
 	}
 
 	public void setSdevice(String sdevice) {

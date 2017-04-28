@@ -138,7 +138,7 @@ public class SensorTest {
 		assertEquals("ok", res.body.get("status"));
 	}
 
-	// @Test
+	@Test
 	public void testH_Get_Sensor() throws IOException {
 		RestClient.Response res = RestClient.GET("/api/sensor/" + sensorUuid, userSid, userServer);
 		assertEquals(200, res.status);
