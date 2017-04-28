@@ -1,11 +1,11 @@
 package de.infinit.emp;
 
 import org.aeonbits.owner.Accessible;
-import org.aeonbits.owner.Mutable;
 import org.aeonbits.owner.Config.Sources;
+import org.aeonbits.owner.Mutable;
 
-@Sources({ 
-	"file:${user.home}/.qs.config.properties", 
+@Sources({
+	"file:${user.home}/.qs.config.properties",
 	"classpath:qs.default.config.properties" })
 public interface ApplicationConfig extends Accessible, Mutable {
 	@Key("db.url")
@@ -39,20 +39,20 @@ public interface ApplicationConfig extends Accessible, Mutable {
 	@Key("sensor.recv.interval")
 	@DefaultValue("900")
 	Integer recvInterval();
-	
+
 	@Key("sensor.default.delta")
 	@DefaultValue("1")
 	Long defaultDelta();
-	
+
 	@Key("sensor.number.threads")
 	@DefaultValue("256")
 	Integer numberOfThreads();
-	
+
 	@Key("event.timeout.seconds")
 	@DefaultValue("55")
 	Integer eventTimout();
-	
-	@Key("session.timeout.hours")
-	@DefaultValue("48")
+
+	@Key("session.timeout.seconds")
+	@DefaultValue("172800") /* 48 h */
 	Integer sessionTimout();
 }
