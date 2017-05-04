@@ -114,22 +114,22 @@ public class TagController extends Controller {
 
 	public Object createTag(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
 		CreateTagRequest req = decode(request.body(), CreateTagRequest.class);
 		Tag tag = new Tag(user, req.label, req.foreignUse);
+		if (tagModel.create(tag) == null) {
+			return fail();
+		}
 		Collection<Policy> policies = tag.getPolicies();
 		for (UUID uuid : req.policies.keySet()) {
 			Policy policy = new Policy(tag, uuid, req.policies.get(uuid));
 			if (policyModel.create(policy) == null) {
 				return fail();
 			}
-			policies.add(new Policy(tag, uuid, req.policies.get(uuid)));
-		}
-		if (tagModel.create(tag) == null) {
-			return fail();
+			policies.add(policy);
 		}
 		return result("uuid", tag.getUuid());
 	}
@@ -137,7 +137,7 @@ public class TagController extends Controller {
 	// POST /api/tag/:uuid
 	public Object updateTag(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -169,7 +169,7 @@ public class TagController extends Controller {
 	// Get list of tags associated with current user.
 	public Object getTag(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -187,22 +187,22 @@ public class TagController extends Controller {
 
 	public Object getTags(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
 		List<Tag> ownerTags = tagModel.queryForUserTags(user);
 		Map<String, Object> tags = new HashMap<>();
 		for (Tag tag : ownerTags) {
-			tags.put(tag.getUuid().toString(), Json.obj("owner", tag.getOwner().getUuid(), "label", tag.getLabel(), "foreign_use",
-					tag.isForeignUse(), "policy", getPolicies(tag)));
+			tags.put(tag.getUuid().toString(), Json.obj("owner", tag.getOwner().getUuid(), "label", tag.getLabel(),
+					"foreign_use", tag.isForeignUse(), "policy", getPolicies(tag)));
 		}
 		return result("tag", tags);
 	}
 
 	public Object deleteTag(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}
@@ -214,6 +214,11 @@ public class TagController extends Controller {
 		if (!user.equals(tag.getOwner())) {
 			return status(Status.ACCESS_DENIED);
 		}
+		for (Policy policy : tag.getPolicies()) {
+			if (policyModel.delete(policy.getId()) != 1) {
+				return fail();
+			}
+		}
 		if (tagModel.delete(uuid) != 1) {
 			return fail();
 		}
@@ -223,7 +228,7 @@ public class TagController extends Controller {
 	// GET /api/tag/:uuid/object
 	public Object getTaggedObjects(Request request, Response response) throws SQLException {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user == null) {
 			return status(Status.NO_AUTH);
 		}

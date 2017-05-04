@@ -2,7 +2,7 @@ package de.infinit.emp.api.model;
 
 import de.infinit.emp.api.domain.Policy;
 
-public class PolicyModel extends Model<Policy, Void> {
+public class PolicyModel extends Model<Policy, Integer> {
 	private static PolicyModel instance = null;
 
 	private PolicyModel() {

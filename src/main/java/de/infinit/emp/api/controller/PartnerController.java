@@ -8,10 +8,13 @@ import java.util.stream.Collectors;
 import com.google.gson.annotations.Expose;
 
 import de.infinit.emp.Status;
+import de.infinit.emp.api.domain.Policy;
 import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.InvitationModel;
+import de.infinit.emp.api.model.PolicyModel;
 import de.infinit.emp.api.model.SensorModel;
+import de.infinit.emp.api.model.TagModel;
 import de.infinit.emp.api.model.UserModel;
 import spark.Request;
 import spark.Response;
@@ -22,6 +25,8 @@ public class PartnerController extends Controller {
 	final UserModel userModel = UserModel.instance();
 	final InvitationModel invitationModel = InvitationModel.instance();
 	final SensorModel sensorModel = SensorModel.instance();
+	final TagModel tagModel = TagModel.instance();
+	final PolicyModel policyModel = PolicyModel.instance();
 
 	private PartnerController() {
 		super();
@@ -56,7 +61,7 @@ public class PartnerController extends Controller {
 
 	public Object getAccounts(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user != null) {
 			return status(Status.NO_AUTH);
 		}
@@ -67,7 +72,7 @@ public class PartnerController extends Controller {
 
 	public Object getAccount(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user != null) {
 			return status(Status.NO_AUTH);
 		}
@@ -81,7 +86,7 @@ public class PartnerController extends Controller {
 
 	public Object deleteAccount(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
-		User user = session.getUser();		
+		User user = session.getUser();
 		if (user != null) {
 			return status(Status.NO_AUTH);
 		}
@@ -97,7 +102,15 @@ public class PartnerController extends Controller {
 		if (user == null) {
 			return status(Status.WRONG_USER);
 		}
-		if (userModel.delete(user) != 1) { // incl. sensors assigned to user and pending invitations
+		for (Policy policy : user.getTagAll().getPolicies()) {
+			if (policyModel.delete(policy.getId()) != 1) {
+				return fail();
+			}
+		}
+		if (tagModel.delete(user.getTagAll().getUuid()) != 1) {
+			return fail();
+		}
+		if (userModel.delete(user) != 1) {
 			return fail();
 		}
 		return ok();

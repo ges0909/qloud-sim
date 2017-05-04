@@ -30,6 +30,7 @@ public class TagTest {
 	static String userServer;
 	static String userUuid;
 	static String tagUuid;
+	static String otherTagUuid;
 
 	@BeforeClass
 	public static void setUp() throws IOException, SQLException {
@@ -78,7 +79,8 @@ public class TagTest {
 		assertEquals(200, res.status);
 		userSid = (String) res.body.get("sid");
 		userServer = (String) res.body.get("server");
-		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user", userUuid);
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz", "user",
+				userUuid);
 		res = RestClient.POST("/api/session", req, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -86,7 +88,8 @@ public class TagTest {
 
 	@Test
 	public void testD_Create_Tag() throws IOException {
-		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy", Json.obj(UUID.randomUUID().toString(), 1));
+		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy",
+				Json.obj(UUID.randomUUID().toString(), 1));
 		RestClient.Response res = RestClient.POST("/api/tag", req, userSid, userServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
@@ -119,6 +122,46 @@ public class TagTest {
 	@Test
 	public void testH_Delete_Tag() throws IOException {
 		RestClient.Response res = RestClient.DELETE("/api/tag/" + tagUuid, userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testI_Create_Other_Tag() throws IOException {
+		Map<String, Object> req = Json.obj("label", "Simulator", "foreign_use", false, "policy",
+				Json.obj(UUID.randomUUID().toString(), 1));
+		RestClient.Response res = RestClient.POST("/api/tag", req, userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+		assertNotNull(res.body.get("uuid"));
+		otherTagUuid = (String) res.body.get("uuid");
+	}
+
+	@Test
+	public void testK_Delete_Other_Tag() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/tag/" + otherTagUuid, userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testL_Close_User_Session() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/session", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testM_Delete_User_Account() throws IOException {
+		RestClient.Response res = RestClient.POST("/api/partner/user/" + userUuid, Json.obj("deleted", true),
+				partnerSid, partnerServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testN_Close_Partner_Session() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/session", partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}

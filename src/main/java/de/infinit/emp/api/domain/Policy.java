@@ -12,6 +12,9 @@ public class Policy {
 	public static final int PROPAGATE = 3;
 	public static final int OWNER = 4;
 
+	@DatabaseField(generatedId = true)
+	int id;
+
 	@NotNull
 	@DatabaseField(canBeNull = false)
 	UUID userUuid;
@@ -20,17 +23,21 @@ public class Policy {
 	@DatabaseField(defaultValue = "4" /* OWNER */, canBeNull = false)
 	int policyValue;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private transient Tag tag;
+	@DatabaseField(foreign = true, columnName = "tag_id")
+	private Tag tag;
 
 	public Policy() {
 		// ORMLite needs a no-arg constructor
 	}
 
 	public Policy(Tag tag, @NotNull UUID userUuid, @NotNull int policyValue) {
-		this.userUuid = userUuid;
 		this.tag = tag;
+		this.userUuid = userUuid;
 		this.policyValue = policyValue;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public UUID getUserUuid() {
