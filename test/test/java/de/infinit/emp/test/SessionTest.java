@@ -54,7 +54,15 @@ public class SessionTest {
 	}
 
 	@Test
-	public void testB_Create_User_Account() throws IOException {
+	public void testB_Login_As_Partner() throws IOException {
+		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
+		RestClient.Response res = RestClient.POST("/api/session", req, partnerSid, partnerServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+	
+	@Test
+	public void testC_Create_User_Account() throws IOException {
 		Map<String, Object> body = Json.obj("info", Json.obj("companyId", Json.arr("12345")));
 		RestClient.Response resp = RestClient.POST("/api/signup/verification", body, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
@@ -68,14 +76,6 @@ public class SessionTest {
 		resp = RestClient.POST("/api/signup/user", body, partnerSid, partnerServer);
 		assertEquals(200, resp.status);
 		assertEquals("ok", resp.body.get("status"));
-	}
-
-	@Test
-	public void testC_Login_As_Partner() throws IOException {
-		Map<String, Object> req = Json.obj("partner", "brightone", "key", "abcdefghijklmnopqrstuvwxyz");
-		RestClient.Response res = RestClient.POST("/api/session", req, partnerSid, partnerServer);
-		assertEquals(200, res.status);
-		assertEquals("ok", res.body.get("status"));
 	}
 
 	@Test

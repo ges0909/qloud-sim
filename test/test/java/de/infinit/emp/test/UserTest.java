@@ -40,7 +40,6 @@ public class UserTest {
 		initialURL = "http://localhost:" + config.port();
 		Application.main(null);
 		Spark.awaitInitialization();
-
 	}
 
 	@AfterClass
@@ -161,6 +160,36 @@ public class UserTest {
 	public void testJ_Get_Accept_Invitation() throws IOException {
 		Map<String, Object> req = Json.obj("invitation", Json.arr(invitationUuid));
 		RestClient.Response res = RestClient.POST("/api/user/link", req, otherUserSid, otherUserServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testK_Close_Other_User_Session() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/session", otherUserSid, otherUserServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testL_Close_User_Session() throws IOException {
+		RestClient.Response res = RestClient.DELETE("/api/session", userSid, userServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testM_Delete_Other_User_Account() throws IOException {
+		RestClient.Response res = RestClient.POST("/api/partner/user/" + otherUserUuid, Json.obj("deleted", true),
+				partnerSid, partnerServer);
+		assertEquals(200, res.status);
+		assertEquals("ok", res.body.get("status"));
+	}
+
+	@Test
+	public void testN_Delete_User_Account() throws IOException {
+		RestClient.Response res = RestClient.POST("/api/partner/user/" + userUuid, Json.obj("deleted", true),
+				partnerSid, partnerServer);
 		assertEquals(200, res.status);
 		assertEquals("ok", res.body.get("status"));
 	}
