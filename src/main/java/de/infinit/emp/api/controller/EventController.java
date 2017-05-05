@@ -46,6 +46,18 @@ public class EventController extends Controller {
 		return instance;
 	}
 
+	public boolean unsubscribe(Session session, Sensor sensor) {
+		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensor().equals(sensor)).findFirst();
+		if (optional.isPresent()) {
+			Event event = optional.get();
+			session.getEvents().remove(event);
+			if (eventModel.delete(event.getUuid()) != 1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	// GET /api/sensor/:uuid/event
 	public Object susbcribeForEvents(Request request, Response response) {
 		Session session = request.session().attribute(SessionController.SESSION);
@@ -106,13 +118,8 @@ public class EventController extends Controller {
 		if (!owner.equals(user)) {
 			return status(Status.WRONG_USER);
 		}
-		Optional<Event> optional = session.getEvents().stream().filter(e -> e.getSensor().equals(sensor)).findFirst();
-		if (optional.isPresent()) {
-			Event event = optional.get();
-			session.getEvents().remove(event);
-			if (eventModel.delete(event.getUuid()) != 1) {
-				return fail();
-			}
+		if (!unsubscribe(session, sensor)) {
+			return fail();
 		}
 		return ok();
 	}
@@ -173,7 +180,8 @@ public class EventController extends Controller {
 				String recvTime = String.valueOf(state.getRecvTime()) + "000";
 				List<Long> values = state.getValues().stream().map(Value::getValue).collect(Collectors.toList());
 				Map<String, Object> data = Json.obj(recvTime, values);
-				Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id", id);
+				Object obj = Json.obj("event", "sensor_data", "time", eventTime, "sensor", uuid, "data", data, "id",
+						id);
 				id = id + 1;
 				// add sensor event to event list
 				events.add(obj);

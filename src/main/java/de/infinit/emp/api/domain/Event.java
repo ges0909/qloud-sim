@@ -31,7 +31,6 @@ public class Event {
 	}
 
 	public Event(Session session, Sensor sensor, Date expiresAt) {
-		this();
 		this.session = session;
 		this.sensor = sensor;
 		this.expiresAt = expiresAt;

@@ -19,7 +19,6 @@ import com.google.gson.annotations.SerializedName;
 import de.infinit.emp.ApplicationConfig;
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Capability;
-import de.infinit.emp.api.domain.Event;
 import de.infinit.emp.api.domain.OldState;
 import de.infinit.emp.api.domain.OldValue;
 import de.infinit.emp.api.domain.Sensor;
@@ -155,7 +154,7 @@ public class SensorController extends Controller {
 		c = new Capability(sensor, 4, "binary_32bit", null);
 		capabilityModel.create(c);
 		capabilites.add(c);
-		
+
 		// .. values
 		Collection<Value> values = state.getValues();
 
@@ -291,12 +290,11 @@ public class SensorController extends Controller {
 		if (!owner.equals(user)) {
 			return status(Status.WRONG_USER);
 		}
-		//
+		// stop background simulation
 		sensor.stopSimulation();
 		// before sensor is deleted remove it from session event list
-		Event event = eventModel.findEventBySensor(sensor);
-		if (event != null) {
-			eventModel.delete(event.getUuid());
+		if (!EventController.instance().unsubscribe(session, sensor)) {
+			return fail();
 		}
 		// delete sensor
 		if (sensorModel.delete(uuid) != 1) {
