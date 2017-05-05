@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import de.infinit.emp.Status;
 import de.infinit.emp.api.domain.Policy;
+import de.infinit.emp.api.domain.Session;
 import de.infinit.emp.api.domain.Tag;
 import de.infinit.emp.api.domain.User;
 import de.infinit.emp.api.model.PolicyModel;
@@ -60,6 +61,13 @@ public class SignupController extends Controller {
 	}
 
 	public Object reserveAccount(Request request, Response response) {
+		Session session = request.session().attribute(SessionController.SESSION);
+		if (session.getUser() != null) {
+			return status(Status.WRONG_USER);
+		}
+		if (session.getPartner() == null) {
+			return status(Status.NO_SESSION);
+		}
 		ReserveUserAccountRequest body = decode(request.body(), ReserveUserAccountRequest.class);
 		User user = new User();
 		if (userModel.create(user) == null) {
